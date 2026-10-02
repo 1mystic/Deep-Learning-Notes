@@ -9,6 +9,7 @@ order: 3
 # How this site works
 
 This page doubles as a test sheet: if everything below renders, your setup is healthy.
+To contribute notes or improvements, visit the [contribution guide on GitHub](https://github.com/1mystic/Deep-Learning-Notes/contribute.md).
 
 ## Adding a note
 
