@@ -14,6 +14,7 @@ const state = {
   loaded: false,
   error: null,
   tag: null,
+  expanded: new Set(), // folders expanded via "+N more"
   homeScroll: 0,
   reader: null          // live reader instance, if one is open
 };
@@ -153,9 +154,14 @@ function cardHtml(n) {
   </a>`;
 }
 
+const FOLDER_VISIBLE = 2; // rows shown on a folder card before "+N more"
+
 function folderCardHtml(folder, notes) {
   const meta = collectionMeta(folder, notes);
-  const items = notes.map((n) => {
+  const expanded = state.expanded && state.expanded.has(folder);
+  const visible = expanded ? notes : notes.slice(0, FOLDER_VISIBLE);
+  const hidden = notes.length - visible.length;
+  const items = visible.map((n) => {
     if (n.pending) return `<li><span class="f-link is-pending">${esc(displayFileName(n.file))}</span></li>`;
     return `<li><a class="f-link" href="#/n/${encodeURIComponent(n.id)}"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(n.title || displayFileName(n.file))}</span><span class="f-min">${n.minutes || 1} min</span></a></li>`;
   }).join('');
@@ -163,7 +169,7 @@ function folderCardHtml(folder, notes) {
   return `<div class="card card-folder" data-c="${esc(meta.color)}" data-folder="${esc(folder)}">
     <div class="card-head"><span class="tile tile-folder">${icon('folder')}</span><span class="card-title">${esc(meta.title)}</span><span class="folder-count">${notes.length} ${notes.length === 1 ? 'note' : 'notes'}</span></div>
     ${meta.summary ? `<p class="card-sum">${esc(meta.summary)}</p>` : ''}
-    <ul class="folder-list">${items}</ul>
+    <ul class="folder-list">${items}${hidden > 0 ? `<li><button class="f-more" type="button" data-expand="${esc(folder)}">+${hidden} more</button></li>` : ''}${expanded && notes.length > FOLDER_VISIBLE ? `<li><button class="f-more" type="button" data-collapse="${esc(folder)}">Show less</button></li>` : ''}</ul>
     ${meta.tags.length ? `<div class="card-tags">${meta.tags.slice(0, 4).map((t) => `<button class="tag tag-btn" type="button" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>` : ''}
     <div class="card-foot"><span>${totalMin} min total</span><span>${notes.reduce((a, n) => a + (n.words || 0), 0).toLocaleString()} words</span></div>
   </div>`;
@@ -233,6 +239,10 @@ function refreshHome() {
 }
 
 app.addEventListener('click', (e) => {
+  const ex = e.target.closest('[data-expand]');
+  if (ex) { state.expanded.add(ex.dataset.expand); refreshHome(); return; }
+  const cx = e.target.closest('[data-collapse]');
+  if (cx) { state.expanded.delete(cx.dataset.collapse); refreshHome(); return; }
   const t = e.target.closest('[data-tag]');
   if (t) { state.tag = t.dataset.tag || null; refreshHome(); }
 });

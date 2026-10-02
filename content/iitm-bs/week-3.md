@@ -6,38 +6,11 @@ color: blue
 order: 3
 ---
 
-# Deep Learning — Illustrated Instructor Notes for Quiz 1 (Week 3)
+# Deep Learning : Illustrated Notes for Week 3
 
-> **Living document.** One unified file for Weeks 1–4. New material is added *in place* under the right week/topic as we go.
-> **Style:** first principles → logic → implications → many solved examples → traps → things to think about.
-> **Legend:** **[Intuition]** mental model · **[Derivation]** first-principles derivation · **[Ex]** solved example · **[!]** trap · **[Exam]** exam pattern · **[?]** think about it · ✓ / ✗ check / fails
-
----
 
 ## Contents
 
-- **Week 1 — Neurons, Boolean Functions, MP Neuron, Perceptron, PLA** ✓
-  - 1.0 Week-1 map
-  - 1.1 History in one page
-  - 1.2 From biological to artificial neuron
-  - 1.3 Boolean functions from first principles
-  - 1.4 McCulloch–Pitts (MP) neuron & thresholding logic
-  - 1.5 The perceptron: weights, bias, geometry
-  - 1.6 Implementing Boolean functions & predicate/clause expressions with a perceptron
-  - 1.7 Errors and error surfaces
-  - 1.8 Perceptron Learning Algorithm (PLA): derivation & hand runs
-  - 1.9 Convergence theorem (proof, annotated)
-  - 1.10 Linearly separable functions (definitions, counting, implications)
-  - 1.11 Representation power of a network of perceptrons
-  - 1.12 Week-1 exam toolkit & practice set
-- **Week 2 — MLPs, representation power, sigmoid neurons, gradient descent** ✓
-  - 2.0 Week-2 map
-  - 2.1 From perceptron to sigmoid neuron
-  - 2.2 A typical supervised machine learning setup
-  - 2.3 Learning parameters by guesswork (and why it fails)
-  - 2.4 Learning parameters: gradient descent
-  - 2.5 Multilayer networks and representation power
-  - 2.6 Week-2 exam toolkit & practice set
 - **Week 3 — Feedforward networks, output functions & losses, backpropagation** ✓
   - 3.0 Week-3 map
   - 3.1 Feedforward neural networks
@@ -52,20 +25,9 @@ order: 3
   - 3.10 Full hand run
   - 3.11 Symmetry, vanishing gradients, common slips
   - 3.12 Week-3 exam toolkit & practice set
-- **Week 4 — GD variants, momentum, NAG, SGD, adaptive methods, schedules** ✓
-  - 4.0 Week-4 map
-  - 4.1 GD on a quadratic: exact analysis
-  - 4.2 Momentum-based GD
-  - 4.3 Nesterov accelerated gradient
-  - 4.4 Stochastic and mini-batch GD
-  - 4.5 Adaptive learning rates (AdaGrad, RMSProp, AdaDelta, Adam, AdaMax, NAdam)
-  - 4.6 Learning-rate schedules
-  - 4.7 Comparison of all optimisers
-  - 4.8 Week-4 exam toolkit & practice set
 
 ---
 
-# WEEK 3 — Feedforward Networks, Output Functions, Losses, Backpropagation
 
 ## 3.0 Week-3 map
 
