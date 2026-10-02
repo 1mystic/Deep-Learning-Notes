@@ -1,5 +1,5 @@
 ---
-title: Deep Learning — Week 1 (Neurons, Perceptron, PLA)
+title: Week 1 (Neurons, Perceptron, PLA)
 summary: Week 1 from first principles: MP neuron, perceptrons, Boolean functions, PLA derivation, convergence proof and exam toolkit.
 tags: [deep-learning, quiz-1, week-1]
 color: blue

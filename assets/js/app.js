@@ -194,6 +194,11 @@ function homeHtml() {
   ].sort((a, b) => (a.order - b.order) || String(a.title).localeCompare(String(b.title)));
   const pending = notes.some((n) => n.pending);
   const folders = (CFG.collections || []).length;
+  const booksStrip = `<a class="books-strip" data-c="yellow" href="https://github.com/1mystic/Deep-Learning-Notes/tree/main/books" target="_blank" rel="noopener noreferrer">
+    <span class="tile tile-sm">${icon('book')}</span>
+    <span class="books-text"><strong>Reference bookshelf</strong><span>Extra deep-learning textbooks, cheat-sheets and overviews collected in the repo's <code>books/</code> folder.</span></span>
+    <span class="books-cta">Browse books ${icon('enter')}</span>
+  </a>`;
   return `<div class="home"><div class="home-bg" aria-hidden="true"></div>
     <section class="hero">
       <h1>${esc(CFG.heroTitle || 'Notes')}</h1>
@@ -203,6 +208,7 @@ function homeHtml() {
     <div class="toolbar" role="group" aria-label="Filter by tag">${tags.length ? `<button class="chip-btn" type="button" data-tag="" aria-pressed="${!state.tag}">All</button>` + tags.map((t) => `<button class="chip-btn" type="button" data-tag="${esc(t)}" aria-pressed="${state.tag === t}">${esc(t)}</button>`).join('') : ''}</div>
     ${blocks.length ? `<div class="grid" id="grid">${blocks.map((b) => b.html).join('')}</div>`
       : `<div class="notice"><h2>No notes with this tag</h2><p>Try “All”, or pick another tag.</p></div>`}
+    ${booksStrip}
   </div>`;
 }
 

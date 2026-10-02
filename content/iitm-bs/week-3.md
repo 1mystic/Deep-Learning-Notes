@@ -1,5 +1,5 @@
 ---
-title: Deep Learning — Week 3 (Feedforward Nets, Losses, Backprop)
+title: Week 3 (Feedforward Nets, Losses, Backprop)
 summary: Week 3 from first principles: feedforward networks, output functions and losses, backpropagation with shapes and derivations.
 tags: [deep-learning, quiz-1, week-3]
 color: blue

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-02T11:06:14.884Z",
+  "generated": "2026-10-02T11:08:42.188Z",
   "notes": [
     {
       "id": "how-this-site-works",
@@ -53,7 +53,7 @@
     {
       "id": "week-1",
       "file": "iitm-bs/week-1.md",
-      "title": "Deep Learning — Week 1 (Neurons, Perceptron, PLA)",
+      "title": "Week 1 (Neurons, Perceptron, PLA)",
       "summary": "Week 1 from first principles: MP neuron, perceptrons, Boolean functions, PLA derivation, convergence proof and exam toolkit.",
       "tags": [
         "deep-learning",
@@ -63,7 +63,7 @@
       "color": "blue",
       "order": 1,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T11:05:08.022Z",
+      "updated": "2026-10-02T11:08:27.880Z",
       "words": 6751,
       "minutes": 31,
       "sections": 58,
@@ -74,12 +74,12 @@
         "1.2 From biological to artificial neuron",
         "1.3 Boolean functions from first principles"
       ],
-      "v": "1e62c946"
+      "v": "85e1bc5c"
     },
     {
       "id": "week-2",
       "file": "iitm-bs/week-2.md",
-      "title": "Deep Learning — Week 2 (MLPs, Sigmoid, Gradient Descent)",
+      "title": "Week 2 (MLPs, Sigmoid, Gradient Descent)",
       "summary": "Week 2 from first principles: sigmoid neurons, MLPs, representation power and gradient descent with worked examples.",
       "tags": [
         "deep-learning",
@@ -89,7 +89,7 @@
       "color": "blue",
       "order": 2,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T11:04:54.524Z",
+      "updated": "2026-10-02T11:08:32.845Z",
       "words": 2602,
       "minutes": 12,
       "sections": 37,
@@ -100,12 +100,12 @@
         "2.2 A typical supervised machine learning setup",
         "2.3 Learning parameters by guesswork (and why it fails)"
       ],
-      "v": "fa3303d1"
+      "v": "2f9cdf3e"
     },
     {
       "id": "week-3",
       "file": "iitm-bs/week-3.md",
-      "title": "Deep Learning — Week 3 (Feedforward Nets, Losses, Backprop)",
+      "title": "Week 3 (Feedforward Nets, Losses, Backprop)",
       "summary": "Week 3 from first principles: feedforward networks, output functions and losses, backpropagation with shapes and derivations.",
       "tags": [
         "deep-learning",
@@ -115,7 +115,7 @@
       "color": "blue",
       "order": 3,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T11:05:41.772Z",
+      "updated": "2026-10-02T11:08:35.614Z",
       "words": 3073,
       "minutes": 14,
       "sections": 40,
@@ -126,12 +126,12 @@
         "3.2 Learning the parameters (intuition)",
         "3.3 Output functions and loss functions"
       ],
-      "v": "5cd383da"
+      "v": "c43e2ba2"
     },
     {
       "id": "week-4",
       "file": "iitm-bs/week-4.md",
-      "title": "Deep Learning — Week 4 (GD Variants, Momentum, Adam, Schedules)",
+      "title": "Week 4 (GD Variants, Momentum, Adam, Schedules)",
       "summary": "Week 4 from first principles: GD analysis, momentum, NAG, SGD, AdaGrad, RMSProp, Adam and learning-rate schedules.",
       "tags": [
         "deep-learning",
@@ -141,7 +141,7 @@
       "color": "blue",
       "order": 4,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T11:06:08.118Z",
+      "updated": "2026-10-02T11:08:38.638Z",
       "words": 2743,
       "minutes": 12,
       "sections": 34,
@@ -152,7 +152,7 @@
         "4.2 Momentum-based gradient descent",
         "4.3 Nesterov Accelerated Gradient (NAG)"
       ],
-      "v": "9d1870c2"
+      "v": "7581f8af"
     },
     {
       "id": "exam-traps-cheatsheet",
