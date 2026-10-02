@@ -1,3 +1,11 @@
+---
+title: Deep Learning — Week 2 (MLPs, Sigmoid, Gradient Descent)
+summary: Week 2 from first principles: sigmoid neurons, MLPs, representation power and gradient descent with worked examples.
+tags: [deep-learning, quiz-1, week-2]
+color: blue
+order: 2
+---
+
 # Deep Learning — Illustrated Instructor Notes for Quiz 1 (Week 2)
 
 > **Living document.** One unified file for Weeks 1–4. New material is added *in place* under the right week/topic as we go.

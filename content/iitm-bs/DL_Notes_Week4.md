@@ -1,3 +1,11 @@
+---
+title: Deep Learning — Week 4 (GD Variants, Momentum, Adam, Schedules)
+summary: Week 4 from first principles: GD analysis, momentum, NAG, SGD, AdaGrad, RMSProp, Adam and learning-rate schedules.
+tags: [deep-learning, quiz-1, week-4]
+color: blue
+order: 4
+---
+
 # Deep Learning — Illustrated Instructor Notes for Quiz 1 (Week 4)
 
 > **Living document.** One unified file for Weeks 1–4. New material is added *in place* under the right week/topic as we go.

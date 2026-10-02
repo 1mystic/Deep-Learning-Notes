@@ -1,3 +1,11 @@
+---
+title: Deep Learning — Week 1 (Neurons, Perceptron, PLA)
+summary: Week 1 from first principles: MP neuron, perceptrons, Boolean functions, PLA derivation, convergence proof and exam toolkit.
+tags: [deep-learning, quiz-1, week-1]
+color: blue
+order: 1
+---
+
 # Deep Learning — Illustrated Instructor Notes for Quiz 1 (Week 1)
 
 > **Living document.** One unified file for Weeks 1–4. New material is added *in place* under the right week/topic as we go.

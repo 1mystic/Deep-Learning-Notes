@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-02T10:54:18.332Z",
+  "generated": "2026-10-02T10:57:45.095Z",
   "notes": [
     {
       "id": "how-this-site-works",
@@ -51,29 +51,92 @@
       "v": "d9c0e2fa"
     },
     {
-      "id": "deep-learning-iitm",
-      "file": "iitm-bs/Deep-Learning-IITM.md",
-      "title": "Deep Learning — Illustrated Instructor Notes for Quiz 1 (Weeks 1–4)",
-      "summary": "Living document. One unified file for Weeks 1–4 covering perceptrons, MLPs, backprop and optimisers with derivations, solved examples and exam traps.",
+      "id": "dl_notes_week1",
+      "file": "iitm-bs/DL_Notes_Week1.md",
+      "title": "Deep Learning — Week 1 (Neurons, Perceptron, PLA)",
+      "summary": "Week 1 from first principles: MP neuron, perceptrons, Boolean functions, PLA derivation, convergence proof and exam toolkit.",
       "tags": [
         "deep-learning",
         "quiz-1",
-        "weeks-1-4"
+        "week-1"
       ],
       "color": "blue",
       "order": 1,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T10:49:29.803Z",
-      "words": 9463,
-      "minutes": 43,
-      "sections": 97,
+      "updated": "2026-10-02T10:57:34.760Z",
+      "words": 7018,
+      "minutes": 32,
+      "sections": 59,
       "outline": [
-        "WEEK 1",
-        "WEEK 2 — MLPs, Representation Power, Sigmoid Neurons, Gradient Descent",
-        "WEEK 3 — (to be added)",
-        "WEEK 4 — (to be added)"
+        "WEEK 1"
       ],
-      "v": "4641ac10"
+      "v": "cad5012c"
+    },
+    {
+      "id": "dl_notes_week2",
+      "file": "iitm-bs/DL_Notes_Week2.md",
+      "title": "Deep Learning — Week 2 (MLPs, Sigmoid, Gradient Descent)",
+      "summary": "Week 2 from first principles: sigmoid neurons, MLPs, representation power and gradient descent with worked examples.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "week-2"
+      ],
+      "color": "blue",
+      "order": 2,
+      "folder": "iitm-bs",
+      "updated": "2026-10-02T10:57:36.676Z",
+      "words": 2918,
+      "minutes": 13,
+      "sections": 38,
+      "outline": [
+        "WEEK 2 — MLPs, Representation Power, Sigmoid Neurons, Gradient Descent"
+      ],
+      "v": "9e8b14c9"
+    },
+    {
+      "id": "dl_notes_week3",
+      "file": "iitm-bs/DL_Notes_Week3.md",
+      "title": "Deep Learning — Week 3 (Feedforward Nets, Losses, Backprop)",
+      "summary": "Week 3 from first principles: feedforward networks, output functions and losses, backpropagation with shapes and derivations.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "week-3"
+      ],
+      "color": "blue",
+      "order": 3,
+      "folder": "iitm-bs",
+      "updated": "2026-10-02T10:57:38.794Z",
+      "words": 3363,
+      "minutes": 15,
+      "sections": 41,
+      "outline": [
+        "WEEK 3 — Feedforward Networks, Output Functions, Losses, Backpropagation"
+      ],
+      "v": "2e790628"
+    },
+    {
+      "id": "dl_notes_week4",
+      "file": "iitm-bs/DL_Notes_Week4.md",
+      "title": "Deep Learning — Week 4 (GD Variants, Momentum, Adam, Schedules)",
+      "summary": "Week 4 from first principles: GD analysis, momentum, NAG, SGD, AdaGrad, RMSProp, Adam and learning-rate schedules.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "week-4"
+      ],
+      "color": "blue",
+      "order": 4,
+      "folder": "iitm-bs",
+      "updated": "2026-10-02T10:57:40.645Z",
+      "words": 3058,
+      "minutes": 14,
+      "sections": 35,
+      "outline": [
+        "WEEK 4 — Gradient Descent and Its Variants: Momentum, NAG, SGD, Adaptive Methods, Schedules"
+      ],
+      "v": "acad0f1f"
     },
     {
       "id": "exam-traps-cheatsheet",
@@ -86,9 +149,9 @@
         "revision"
       ],
       "color": "red",
-      "order": 2,
+      "order": 5,
       "folder": "iitm-bs",
-      "updated": "2026-10-02T10:53:16.490Z",
+      "updated": "2026-10-02T10:57:42.609Z",
       "words": 162,
       "minutes": 1,
       "sections": 5,
@@ -98,7 +161,7 @@
         "Geometry",
         "Learning"
       ],
-      "v": "bf584178"
+      "v": "5a12c176"
     }
   ]
 }

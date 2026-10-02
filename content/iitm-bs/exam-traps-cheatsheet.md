@@ -3,7 +3,7 @@ title: Exam traps cheat-sheet
 summary: The slips that cost marks in Week 1 problems, each with the correct statement next to it.
 tags: [deep-learning, quiz-1, revision]
 color: red
-order: 2
+order: 5
 ---
 
 # Exam traps cheat-sheet
