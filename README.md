@@ -1,6 +1,6 @@
 <div align="center">
 
-# Deep Learning Notes
+
 
 ![Deep Learning Notes](assets/readme-banner.svg)
 
