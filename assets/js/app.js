@@ -232,7 +232,7 @@ class Reader {
       <div class="rail" id="rail" aria-hidden="true"></div>
       <nav class="toc" id="toc" aria-label="Table of contents">
         <div class="toc-head"><h2>Table of Contents</h2>
-          <button class="icon-btn toc-pin" id="pinBtn" type="button" aria-pressed="${this.pinned}" aria-label="Pin table of contents" title="Pin table of contents">${icon('pin')}</button></div>
+          <button class="icon-btn toc-pin" id="pinBtn" type="button" aria-pressed="${this.pinned}" aria-label="Pin table of contents" title="Pin table of contents">${icon('panel')}</button></div>
         <div class="toc-tabs" role="tablist"><button class="toc-tab" role="tab" data-tab="toc" aria-selected="true">Contents</button><button class="toc-tab" role="tab" data-tab="ann" aria-selected="false">Notes <span id="annCount"></span></button></div>
         <div class="toc-body" id="tocBody"><ol class="toc-list" id="tocList"></ol></div>
         <div class="toc-body" id="annBody" hidden></div>
@@ -247,7 +247,6 @@ class Reader {
           <button class="icon-btn" id="btnAnn" type="button" aria-pressed="false" aria-label="Annotate" title="Annotate: highlight and add notes">${icon('highlighter')}</button>
           <button class="icon-btn" id="btnPrint" type="button" aria-label="Print or save as PDF" title="Print / save as PDF">${icon('print')}</button>
           <button class="icon-btn theme-btn" id="btnTheme" type="button" aria-label="Toggle theme" title="Toggle theme"><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
-          <button class="icon-btn" id="btnToc" type="button" aria-label="Table of contents" title="Table of contents">${icon('panel')}</button>
           <div class="progress" aria-hidden="true"><i id="progress"></i></div>
         </header>
         <article class="doc" id="doc" aria-label="${esc(this.meta.title || '')}"><div class="doc-skel"><div class="sk" style="height:34px;width:70%"></div><div class="sk"></div><div class="sk"></div><div class="sk" style="width:80%"></div></div></article>
@@ -384,7 +383,6 @@ class Reader {
   /* ------------------------------------------------------------- panels */
   setToc(open) {
     this.el.classList.toggle('toc-open', open);
-    $('#btnToc').setAttribute('aria-expanded', String(open));
   }
 
   setPinned(v) {
@@ -475,9 +473,6 @@ class Reader {
     const el = this.el;
     // pin / unpin
     $('#pinBtn').addEventListener('click', () => this.setPinned(!this.pinned));
-    $('#btnToc').addEventListener('click', () => {
-      if (window.innerWidth > 1000) this.setPinned(!this.pinned); else this.setToc(!el.classList.contains('toc-open'));
-    });
     $('#scrim').addEventListener('click', () => this.setToc(false));
     $('#btnSearch').addEventListener('click', () => search.open());
     $('#btnTheme').addEventListener('click', () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'));

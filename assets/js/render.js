@@ -345,7 +345,7 @@ async function drawMermaid(box) {
   try {
     const { svg } = await mm.render(id, withClasses(box.dataset.src, P));
     box.classList.remove('mm-err');
-    box.innerHTML = `<div class="mm-svg">${svg}</div><button class="mm-expand icon-btn" type="button" aria-label="Expand diagram" title="Expand">${icon('maximize')}</button>`;
+    box.innerHTML = `<div class="mm-scroll"><div class="mm-svg">${svg}</div></div><button class="mm-expand icon-btn" type="button" aria-label="Expand diagram" title="Expand">${icon('maximize')}</button>`;
     const el = box.querySelector('.mm-svg svg');
     if (el) { colorize(el); fitDiagram(box); }
   } catch (err) {

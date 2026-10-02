@@ -22,7 +22,7 @@
 /* ---------- tokens ---------- */
 :root {
   color-scheme: light;
-  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font: "Readex Pro", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
   --bg: #f8f9f8;
@@ -355,10 +355,11 @@ body[data-view="note"] .site-header { display: none; }
 .m.m-err { color: var(--red-ink); }
 .m-pre { display: none; }
 
-.mermaid-box { position: relative; margin: 1.5em 0; padding: 12px; min-height: 90px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow-x: auto; text-align: center; }
+.mermaid-box { position: relative; margin: 1.5em 0; padding: 12px; min-height: 90px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; text-align: center; }
+.mm-scroll { overflow-x: auto; overflow-y: hidden; }
 .mm-skel { padding: 30px 0; font-size: 13px; color: var(--muted); }
 .mm-svg svg { display: block; margin: 0 auto; max-width: none; }
-.mm-expand { position: absolute; top: 8px; right: 8px; opacity: 0; background: var(--surface); border: 1px solid var(--line); transition: opacity .15s; }
+.mm-expand { position: absolute; top: 8px; right: 8px; z-index: 1; opacity: 0; background: var(--surface); border: 1px solid var(--line); transition: opacity .15s; }
 .mermaid-box:hover .mm-expand, .mm-expand:focus-visible { opacity: 1; }
 @media (hover: none) { .mm-expand { opacity: 1; } }
 .mm-error { text-align: left; color: var(--red-ink); font-size: 14px; }
