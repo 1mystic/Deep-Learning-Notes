@@ -3,7 +3,7 @@ title: Backpropagation & Optimisation — Derivations
 summary: The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.
 tags: [deep-learning, derivations, calculus]
 color: green
-order: 2
+order: 1
 ---
 
 $$

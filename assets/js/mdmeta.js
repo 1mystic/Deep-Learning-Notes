@@ -175,6 +175,7 @@
       meta: {
         id: id, file: file, title: title, summary: summary, tags: toList(data.tags), color: color,
         order: data.order !== undefined ? Number(data.order) : null,
+        folder: String(file || '').includes('/') ? String(file).split('/').slice(0, -1).join('/') : '',
         updated: data.updated || '', words: words, minutes: Math.max(1, Math.round(words / 220)),
         sections: heads.length, outline: outline
       },

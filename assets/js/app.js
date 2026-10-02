@@ -104,6 +104,34 @@ async function loadManifest() {
 }
 
 /* ==================================================================== library */
+function folderOf(n) {
+  if (n.folder) return n.folder;
+  const f = n.file || '';
+  return f.includes('/') ? f.split('/').slice(0, -1).join('/') : '';
+}
+
+function prettyFolder(folder) {
+  return String(folder || '').split('/').pop().replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function collectionMeta(folder, notes) {
+  const c = (CFG.collections || []).find((x) => x.folder === folder) || {};
+  const tags = Array.from(new Set((notes || []).flatMap((n) => n.tags || []))).sort((a, b) => a.localeCompare(b));
+  return {
+    folder,
+    title: c.title || prettyFolder(folder),
+    summary: c.summary || '',
+    color: c.color || ((notes && notes[0] && notes[0].color) || 'blue'),
+    order: c.order ?? 1e9,
+    tags
+  };
+}
+
+function folderOrder(folder) {
+  const c = (CFG.collections || []).find((x) => x.folder === folder);
+  return c && c.order != null ? c.order : 1e9;
+}
+
 function displayFileName(file) {
   return String(file || '')
     .replace(/\.md$/i, '')
@@ -125,20 +153,50 @@ function cardHtml(n) {
   </a>`;
 }
 
+function folderCardHtml(folder, notes) {
+  const meta = collectionMeta(folder, notes);
+  const items = notes.map((n) => {
+    if (n.pending) return `<li><span class="f-link is-pending">${esc(displayFileName(n.file))}</span></li>`;
+    return `<li><a class="f-link" href="#/n/${encodeURIComponent(n.id)}"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(n.title || displayFileName(n.file))}</span><span class="f-min">${n.minutes || 1} min</span></a></li>`;
+  }).join('');
+  const totalMin = notes.reduce((a, n) => a + (n.minutes || 1), 0);
+  return `<div class="card card-folder" data-c="${esc(meta.color)}" data-folder="${esc(folder)}">
+    <div class="card-head"><span class="tile tile-folder">${icon('folder')}</span><span class="card-title">${esc(meta.title)}</span><span class="folder-count">${notes.length} ${notes.length === 1 ? 'note' : 'notes'}</span></div>
+    ${meta.summary ? `<p class="card-sum">${esc(meta.summary)}</p>` : ''}
+    <ul class="folder-list">${items}</ul>
+    ${meta.tags.length ? `<div class="card-tags">${meta.tags.slice(0, 4).map((t) => `<button class="tag tag-btn" type="button" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>` : ''}
+    <div class="card-foot"><span>${totalMin} min total</span><span>${notes.reduce((a, n) => a + (n.words || 0), 0).toLocaleString()} words</span></div>
+  </div>`;
+}
+
 function homeHtml() {
   const notes = sortedNotes();
   const words = notes.reduce((a, n) => a + (n.words || 0), 0);
   const tags = Array.from(new Set(notes.flatMap((n) => n.tags || []))).sort((a, b) => a.localeCompare(b));
-  const shown = state.tag ? notes.filter((n) => (n.tags || []).includes(state.tag)) : notes;
+  const match = (n) => !state.tag || (n.tags || []).includes(state.tag);
+  const rootNotes = notes.filter((n) => !folderOf(n) && match(n));
+  const byFolder = new Map();
+  notes.filter((n) => folderOf(n) && match(n)).forEach((n) => {
+    const f = folderOf(n);
+    if (!byFolder.has(f)) byFolder.set(f, []);
+    byFolder.get(f).push(n);
+  });
+  // single ordered stream: standalone notes (by their `order`) interleaved with folders (by collections order)
+  const blocks = [
+    ...rootNotes.map((n) => ({ kind: 'note', order: n.order ?? 1e9, title: n.title, html: cardHtml(n) })),
+    ...Array.from(byFolder.entries()).map(([folder, ns]) => ({ kind: 'folder', order: folderOrder(folder), title: folder, html: folderCardHtml(folder, ns) }))
+  ].sort((a, b) => (a.order - b.order) || String(a.title).localeCompare(String(b.title)));
   const pending = notes.some((n) => n.pending);
+  const folders = (CFG.collections || []).length;
   return `<div class="home"><div class="home-bg" aria-hidden="true"></div>
     <section class="hero">
       <h1>${esc(CFG.heroTitle || 'Notes')}</h1>
       ${CFG.heroText ? `<p>${esc(CFG.heroText)}</p>` : ''}
-      <div class="hero-stats"><span>${notes.length} ${notes.length === 1 ? 'note' : 'notes'}</span>${pending ? '' : `<span>${formatCount(words)} words</span>`}</div>
+      <div class="hero-stats"><span>${notes.length} ${notes.length === 1 ? 'note' : 'notes'}${folders ? ` · ${folders} ${folders === 1 ? 'collection' : 'collections'}` : ''}</span>${pending ? '' : `<span>${formatCount(words)} words</span>`}</div>
     </section>
     <div class="toolbar" role="group" aria-label="Filter by tag">${tags.length ? `<button class="chip-btn" type="button" data-tag="" aria-pressed="${!state.tag}">All</button>` + tags.map((t) => `<button class="chip-btn" type="button" data-tag="${esc(t)}" aria-pressed="${state.tag === t}">${esc(t)}</button>`).join('') : ''}</div>
-    <div class="grid" id="grid">${shown.map(cardHtml).join('')}</div>
+    ${blocks.length ? `<div class="grid" id="grid">${blocks.map((b) => b.html).join('')}</div>`
+      : `<div class="notice"><h2>No notes with this tag</h2><p>Try “All”, or pick another tag.</p></div>`}
   </div>`;
 }
 

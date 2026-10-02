@@ -16,9 +16,15 @@ figure or result depends on them. Do not add copyrighted course material unless 
 
 ## Add a note
 
-1. Create a Markdown file inside `content/`. Use a descriptive, lowercase filename such as
-   `gradient-descent-intuition.md`.
-2. Add front matter when it helps the library card. All fields are optional:
+1. Create a Markdown file inside `content/`, or inside a collection folder such as
+   `content/iitm-bs/` or `content/granular-dl-concepts/`. Use a descriptive, lowercase filename such as
+   `gradient-descent-intuition.md`. Files at the root render as standalone cards; files inside a
+   collection folder render grouped under that folder's card (which lists each note title).
+2. Add front matter at the very top of the file. All fields are technically optional, but
+   `tags` is what makes the note discoverable — without it the library card renders with
+   no tags and the note disappears as soon as anyone filters by tag. Set it **before**
+   you run the manifest builder, because `content/manifest.json` just copies what you
+   wrote here:
 
    ```yaml
    ---
@@ -31,6 +37,9 @@ figure or result depends on them. Do not add copyrighted course material unless 
    ```
 
    Available colors are `green`, `blue`, `red` and `yellow`. Lower `order` values appear first.
+   Reuse existing tags when they fit (`deep-learning`, `quiz-1`, `derivations`, `revision`, …)
+   so filters stay useful; check `content/manifest.json` or the tag bar on the site for the
+   current list.
 3. Write the note with GitHub-flavoured Markdown. Use the existing notes as examples for equations, Mermaid diagrams,
    callouts, code blocks and cross-links.
 4. Rebuild the manifest from the repository root:
@@ -56,6 +65,7 @@ figure or result depends on them. Do not add copyrighted course material unless 
 - Keep paragraphs focused and use tables or lists when they improve scanning.
 - Use `$...$` for inline mathematics and fenced `mermaid` blocks for diagrams.
 - Keep front matter valid YAML and avoid changing generated `content/manifest.json` by hand when the build script is available.
+- Watch the build output: `node tools/build-manifest.mjs` now warns when a note has no `tags` or `order`.
 
 ## Site changes
 
@@ -67,7 +77,8 @@ pastel light/dark theme. Preserve keyboard navigation, responsive layouts, acces
 Before opening a pull request:
 
 - Run `node tools/build-manifest.mjs` after adding or renaming a note.
-- Review the generated card title, summary, tags and ordering in the library.
+- Review the generated card title, summary, tags and ordering in the library. If you added a new
+  folder, also add it to `config.js → collections` with a title, summary, color and `order`.
 - Test the affected note or interface in a local browser.
 - Confirm that links work and that equations, diagrams, code and callouts render as expected.
 - Keep each pull request focused and describe what changed and how it was checked.

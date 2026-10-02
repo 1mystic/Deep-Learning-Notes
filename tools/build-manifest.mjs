@@ -43,6 +43,13 @@ function build() {
     const { meta } = MD.parseNote(text, id, file);
     meta.updated = meta.updated || fs.statSync(full).mtime.toISOString();
     meta.v = crypto.createHash('sha1').update(text).digest('hex').slice(0, 8);
+    meta.folder = file.includes('/') ? file.split('/').slice(0, -1).join('/') : '';
+    if (!meta.tags || meta.tags.length === 0) {
+      console.warn(`! "${file}" has no tags — add e.g. "tags: [deep-learning, quiz-1]" to its front matter so it shows up under tag filters.`);
+    }
+    if (meta.order === null || meta.order === undefined) {
+      console.warn(`! "${file}" has no "order" — it will sort last. Add e.g. "order: 5" to control card position.`);
+    }
     notes.push(meta);
   }
   notes.sort((a, b) => (a.order ?? 1e9) - (b.order ?? 1e9) || a.title.localeCompare(b.title));

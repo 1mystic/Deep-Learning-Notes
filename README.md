@@ -55,6 +55,17 @@ python3 -m http.server 8000
 
 - Files or folders starting with `_` (and `README.md`) are skipped, which is handy for drafts.
 - Sub-folders are fine: `content/week-2/gradients.md`.
+- Sub-folders render as **folder cards** on the home page: the card shows the collection
+  title/summary (from `config.js → collections`), lists each file inside by its note title,
+  and looks distinct from standalone cards (dashed border, folder icon).
+- To add a collection, move/create `.md` files under `content/my-folder/` and add an entry
+  in `config.js`:
+  ```js
+  { folder: "my-folder", title: "My Folder", summary: "What lives here.", color: "blue", order: 2 }
+  ```
+  Home order is explicit: standalone notes sort by their `order`, folders by their
+  collection `order`, interleaved. `content/how-this-site-works.md` uses `order: 0` so it
+  stays first.
 
 ### 3.2 Optional front matter
 

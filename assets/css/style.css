@@ -186,6 +186,22 @@ body[data-view="note"] .site-header { display: none; }
 .sk { height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--surface-2), var(--hover), var(--surface-2)); background-size: 200% 100%; animation: sk 1.3s linear infinite; }
 @keyframes sk { to { background-position: -200% 0; } }
 
+/* ---------- folder / collection cards ---------- */
+.card-folder { border-style: dashed; border-width: 1.5px; background: color-mix(in srgb, var(--c, var(--blue)) 22%, var(--surface)); }
+.card-folder:hover, .card-folder:focus-within { transform: translateY(-2px); border-color: var(--c, var(--blue)); box-shadow: 0 0 0 3px var(--c, var(--blue)), var(--shadow); }
+.tile-folder { border: 1.5px dashed var(--ink, var(--blue-ink)); background: var(--surface); color: var(--ink, var(--blue-ink)); }
+.folder-count { margin-left: auto; flex: none; font-size: 12px; font-weight: 650; color: var(--ink, var(--blue-ink)); background: var(--surface); border: 1px solid var(--line); padding: 2px 9px; border-radius: 999px; }
+.folder-list { list-style: none; margin: 2px 0 0; padding: 0; display: grid; gap: 7px; }
+.folder-list li { min-width: 0; }
+.f-link { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-decoration: none; transition: border-color .15s, box-shadow .15s, transform .15s; }
+a.f-link:hover { border-color: var(--c, var(--blue)); box-shadow: 0 0 0 2px var(--c, var(--blue)); transform: translateY(-1px); }
+.f-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink, var(--blue-ink)); flex: none; }
+.f-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.f-min { flex: none; font-size: 12px; color: var(--muted); }
+.f-link.is-pending { color: var(--muted); }
+.tag-btn { cursor: pointer; border: 0; font: inherit; }
+.tag-btn:hover { filter: brightness(.96); }
+
 .site-footer {
   max-width: 1120px; margin: 0 auto; padding: 24px 24px 30px; border-top: 1px solid var(--line);
   display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; color: var(--muted); font-size: 13px;

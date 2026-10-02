@@ -3,7 +3,7 @@ title: How this site works
 summary: Add a note by dropping in a markdown file. A quick tour of front matter, maths, diagrams, callouts, annotation, search and printing.
 tags: [guide]
 color: yellow
-order: 3
+order: 0
 ---
 
 # How this site works

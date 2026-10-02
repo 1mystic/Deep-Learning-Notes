@@ -11,6 +11,15 @@ window.SITE_CONFIG = {
   contentDir: "content/",                 // where your .md files live
   manifest: "content/manifest.json",      // list of notes (see README → "Adding a note")
 
+  /* ---- collections (folders on the home page) ---- */
+  // Notes at content/ root render as standalone cards.
+  // Notes inside a listed folder render grouped under one folder card.
+  // `folder` must match the sub-folder name inside content/.
+  collections: [
+    { folder: "iitm-bs", title: "Deep Learning IITM BS", summary: "IITM BS course notes: full Weeks 1–4 file plus the exam-traps cheat-sheet.", color: "blue", order: 1 },
+    { folder: "granular-dl-concepts", title: "Granular DL Concepts", summary: "Single-topic deep dives: backpropagation, optimisers and derivations.", color: "green", order: 2 }
+  ],
+
   /* ---- look & feel ---- */
   defaultTheme: "system",                 // "system" | "light" | "dark"
   chips: true,                            // turn **[Ex]**, **[!]**, **[Exam]** … into small coloured chips

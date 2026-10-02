@@ -1,30 +1,6 @@
 {
-  "generated": "2026-10-02T06:08:10.530Z",
+  "generated": "2026-10-02T10:54:18.332Z",
   "notes": [
-    {
-      "id": "backpropagation-and-optimisation",
-      "file": "backpropagation-and-optimisation.md",
-      "title": "Backpropagation & Optimisation — Derivations",
-      "summary": "The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.",
-      "tags": [
-        "deep-learning",
-        "derivations",
-        "calculus"
-      ],
-      "color": "green",
-      "order": 2,
-      "updated": "2026-10-02T05:25:23.000Z",
-      "words": 449,
-      "minutes": 2,
-      "sections": 8,
-      "outline": [
-        "1. The chain rule on a computation graph",
-        "2. Gradients, layer by layer",
-        "3. Optimisers",
-        "4. Checklist"
-      ],
-      "v": "ca4bd4af"
-    },
     {
       "id": "how-this-site-works",
       "file": "how-this-site-works.md",
@@ -34,8 +10,9 @@
         "guide"
       ],
       "color": "yellow",
-      "order": 3,
-      "updated": "2026-10-02T05:42:47.137Z",
+      "order": 0,
+      "folder": "",
+      "updated": "2026-10-02T10:53:12.853Z",
       "words": 497,
       "minutes": 2,
       "sections": 9,
@@ -46,41 +23,47 @@
         "Callouts, tasks and code",
         "Using the reader"
       ],
-      "v": "7f25a862"
+      "v": "d5f6651f"
     },
     {
-      "id": "exam-traps-cheatsheet",
-      "file": "exam-traps-cheatsheet.md",
-      "title": "Exam traps cheat-sheet",
-      "summary": "The slips that cost marks in Week 1 problems, each with the correct statement next to it.",
+      "id": "backpropagation-and-optimisation",
+      "file": "granular-dl-concepts/backpropagation-and-optimisation.md",
+      "title": "Backpropagation & Optimisation — Derivations",
+      "summary": "The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.",
       "tags": [
         "deep-learning",
-        "quiz-1",
-        "revision"
+        "derivations",
+        "calculus"
       ],
-      "color": "red",
-      "order": 4,
-      "updated": "2026-10-02T05:24:45.000Z",
-      "words": 162,
-      "minutes": 1,
-      "sections": 5,
+      "color": "green",
+      "order": 1,
+      "folder": "granular-dl-concepts",
+      "updated": "2026-10-02T10:53:20.377Z",
+      "words": 449,
+      "minutes": 2,
+      "sections": 8,
       "outline": [
-        "Counting",
-        "Thresholds",
-        "Geometry",
-        "Learning"
+        "1. The chain rule on a computation graph",
+        "2. Gradients, layer by layer",
+        "3. Optimisers",
+        "4. Checklist"
       ],
-      "v": "52a7e875"
+      "v": "d9c0e2fa"
     },
     {
       "id": "deep-learning-iitm",
-      "file": "Deep-Learning-IITM.md",
+      "file": "iitm-bs/Deep-Learning-IITM.md",
       "title": "Deep Learning — Illustrated Instructor Notes for Quiz 1 (Weeks 1–4)",
-      "summary": "Living document. One unified file for Weeks 1–4. New material is added in place under the right week/topic as we go. Style: first principles → logic → implications → many solved examples →…",
-      "tags": [],
-      "color": "yellow",
-      "order": null,
-      "updated": "2026-10-02T05:38:26.836Z",
+      "summary": "Living document. One unified file for Weeks 1–4 covering perceptrons, MLPs, backprop and optimisers with derivations, solved examples and exam traps.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "weeks-1-4"
+      ],
+      "color": "blue",
+      "order": 1,
+      "folder": "iitm-bs",
+      "updated": "2026-10-02T10:49:29.803Z",
       "words": 9463,
       "minutes": 43,
       "sections": 97,
@@ -90,7 +73,32 @@
         "WEEK 3 — (to be added)",
         "WEEK 4 — (to be added)"
       ],
-      "v": "bf4390b2"
+      "v": "4641ac10"
+    },
+    {
+      "id": "exam-traps-cheatsheet",
+      "file": "iitm-bs/exam-traps-cheatsheet.md",
+      "title": "Exam traps cheat-sheet",
+      "summary": "The slips that cost marks in Week 1 problems, each with the correct statement next to it.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "revision"
+      ],
+      "color": "red",
+      "order": 2,
+      "folder": "iitm-bs",
+      "updated": "2026-10-02T10:53:16.490Z",
+      "words": 162,
+      "minutes": 1,
+      "sections": 5,
+      "outline": [
+        "Counting",
+        "Thresholds",
+        "Geometry",
+        "Learning"
+      ],
+      "v": "bf584178"
     }
   ]
 }
