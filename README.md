@@ -1,5 +1,7 @@
 # Deep Learning Notes
 
+![Deep Learning Notes](assets/readme-banner.svg)
+
 A static, fast, pastel-coloured home for markdown notes. No framework, no build step for the site itself.
 Maths (KaTeX + mhchem), diagrams (Mermaid), code highlighting, full-text search, a table of contents,
 live annotation and print-to-PDF — all loaded lazily, only when a note needs them.
@@ -21,6 +23,11 @@ The site then reads each file itself to build the cards.
 
 Files or folders starting with `_` (and `README.md`) are skipped — handy for drafts.
 Sub-folders are fine: `content/week-2/gradients.md`.
+
+## Contributing
+
+Notes, corrections, worked examples and improvements are welcome. Read the [contribution guide](contribute.md)
+for the note format, content standards, local preview steps and pull request checklist.
 
 ### Optional front matter (top of the .md file)
 

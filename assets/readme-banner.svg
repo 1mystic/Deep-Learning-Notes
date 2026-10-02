@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 220" role="img" aria-labelledby="title desc">
+  <title id="title">Deep Learning Notes</title>
+  <desc id="desc">A pastel notebook-inspired banner for the Deep Learning Notes project.</desc>
+  <rect width="1200" height="220" rx="18" fill="#f8f9f8"/>
+  <path d="M0 42h1200M0 84h1200M0 126h1200M0 168h1200" stroke="#e3e7e3"/>
+  <path d="M72 0v220" stroke="#f2a6a6" stroke-width="2"/>
+  <rect x="112" y="42" width="142" height="104" rx="16" fill="#d0e1f6"/>
+  <rect x="278" y="70" width="132" height="82" rx="16" fill="#cde8d4"/>
+  <rect x="1010" y="35" width="112" height="112" rx="56" fill="#f8ebbb"/>
+  <circle cx="928" cy="156" r="28" fill="#f7d3d3"/>
+  <path d="M146 80h76M146 101h54M314 98h60M314 119h39" stroke="#2c5f99" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+  <path d="M482 83h376" stroke="#232628" stroke-width="3" stroke-linecap="round" opacity=".16"/>
+  <text x="482" y="122" fill="#232628" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="750">Deep Learning Notes</text>
+  <text x="484" y="151" fill="#4a5053" font-family="Inter, Arial, sans-serif" font-size="16">Derivations, intuition and exam-ready patterns</text>
+</svg>
