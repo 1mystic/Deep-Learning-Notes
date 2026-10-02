@@ -1,33 +1,9 @@
 {
-  "generated": "2026-10-02T05:28:12.078Z",
+  "generated": "2026-10-02T05:54:31.481Z",
   "notes": [
     {
-      "id": "deep-learning-quiz-1",
-      "file": "deep-learning-quiz-1.md",
-      "title": "Deep Learning — Illustrated Instructor Notes for Quiz 1 (Weeks 1–4)",
-      "summary": "First-principles notes with solved examples, traps and exam patterns. Week 1 covers neurons, Boolean functions, the McCulloch–Pitts neuron, the perceptron and PLA.",
-      "tags": [
-        "deep-learning",
-        "quiz-1",
-        "week-1"
-      ],
-      "color": "blue",
-      "order": 1,
-      "updated": "2026-10-02T05:24:45.528Z",
-      "words": 1182,
-      "minutes": 5,
-      "sections": 22,
-      "outline": [
-        "WEEK 1",
-        "WEEK 2",
-        "WEEK 3",
-        "WEEK 4"
-      ],
-      "v": "757eb550"
-    },
-    {
       "id": "backpropagation-and-optimisation",
-      "file": "backpropagation-and-optimisation.md",
+      "file": "Backpropagation-and-optimisation.md",
       "title": "Backpropagation & Optimisation — Derivations",
       "summary": "The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.",
       "tags": [
@@ -37,7 +13,7 @@
       ],
       "color": "green",
       "order": 2,
-      "updated": "2026-10-02T05:25:23.399Z",
+      "updated": "2026-10-02T05:25:23.000Z",
       "words": 449,
       "minutes": 2,
       "sections": 8,
@@ -51,7 +27,7 @@
     },
     {
       "id": "how-this-site-works",
-      "file": "how-this-site-works.md",
+      "file": "How-this-site-works.md",
       "title": "How this site works",
       "summary": "Add a note by dropping in a markdown file. A quick tour of front matter, maths, diagrams, callouts, annotation, search and printing.",
       "tags": [
@@ -59,8 +35,8 @@
       ],
       "color": "yellow",
       "order": 3,
-      "updated": "2026-10-02T05:25:23.399Z",
-      "words": 486,
+      "updated": "2026-10-02T05:42:47.137Z",
+      "words": 497,
       "minutes": 2,
       "sections": 9,
       "outline": [
@@ -70,11 +46,11 @@
         "Callouts, tasks and code",
         "Using the reader"
       ],
-      "v": "fe98919c"
+      "v": "7f25a862"
     },
     {
       "id": "exam-traps-cheatsheet",
-      "file": "exam-traps-cheatsheet.md",
+      "file": "Exam-traps-cheatsheet.md",
       "title": "Exam traps cheat-sheet",
       "summary": "The slips that cost marks in Week 1 problems, each with the correct statement next to it.",
       "tags": [
@@ -84,7 +60,7 @@
       ],
       "color": "red",
       "order": 4,
-      "updated": "2026-10-02T05:24:45.528Z",
+      "updated": "2026-10-02T05:24:45.000Z",
       "words": 162,
       "minutes": 1,
       "sections": 5,
@@ -95,6 +71,26 @@
         "Learning"
       ],
       "v": "52a7e875"
+    },
+    {
+      "id": "deep-learning-iitm",
+      "file": "Deep-Learning-IITM.md",
+      "title": "Deep Learning — Illustrated Instructor Notes for Quiz 1 (Weeks 1–4)",
+      "summary": "Living document. One unified file for Weeks 1–4. New material is added in place under the right week/topic as we go. Style: first principles → logic → implications → many solved examples →…",
+      "tags": [],
+      "color": "yellow",
+      "order": null,
+      "updated": "2026-10-02T05:38:26.836Z",
+      "words": 9463,
+      "minutes": 43,
+      "sections": 97,
+      "outline": [
+        "WEEK 1",
+        "WEEK 2 — MLPs, Representation Power, Sigmoid Neurons, Gradient Descent",
+        "WEEK 3 — (to be added)",
+        "WEEK 4 — (to be added)"
+      ],
+      "v": "bf4390b2"
     }
   ]
 }
