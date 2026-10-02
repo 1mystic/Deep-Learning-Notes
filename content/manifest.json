@@ -1,0 +1,100 @@
+{
+  "generated": "2026-10-02T05:28:12.078Z",
+  "notes": [
+    {
+      "id": "deep-learning-quiz-1",
+      "file": "deep-learning-quiz-1.md",
+      "title": "Deep Learning — Illustrated Instructor Notes for Quiz 1 (Weeks 1–4)",
+      "summary": "First-principles notes with solved examples, traps and exam patterns. Week 1 covers neurons, Boolean functions, the McCulloch–Pitts neuron, the perceptron and PLA.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "week-1"
+      ],
+      "color": "blue",
+      "order": 1,
+      "updated": "2026-10-02T05:24:45.528Z",
+      "words": 1182,
+      "minutes": 5,
+      "sections": 22,
+      "outline": [
+        "WEEK 1",
+        "WEEK 2",
+        "WEEK 3",
+        "WEEK 4"
+      ],
+      "v": "757eb550"
+    },
+    {
+      "id": "backpropagation-and-optimisation",
+      "file": "backpropagation-and-optimisation.md",
+      "title": "Backpropagation & Optimisation — Derivations",
+      "summary": "The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.",
+      "tags": [
+        "deep-learning",
+        "derivations",
+        "calculus"
+      ],
+      "color": "green",
+      "order": 2,
+      "updated": "2026-10-02T05:25:23.399Z",
+      "words": 449,
+      "minutes": 2,
+      "sections": 8,
+      "outline": [
+        "1. The chain rule on a computation graph",
+        "2. Gradients, layer by layer",
+        "3. Optimisers",
+        "4. Checklist"
+      ],
+      "v": "ca4bd4af"
+    },
+    {
+      "id": "how-this-site-works",
+      "file": "how-this-site-works.md",
+      "title": "How this site works",
+      "summary": "Add a note by dropping in a markdown file. A quick tour of front matter, maths, diagrams, callouts, annotation, search and printing.",
+      "tags": [
+        "guide"
+      ],
+      "color": "yellow",
+      "order": 3,
+      "updated": "2026-10-02T05:25:23.399Z",
+      "words": 486,
+      "minutes": 2,
+      "sections": 9,
+      "outline": [
+        "Adding a note",
+        "Maths",
+        "Diagrams",
+        "Callouts, tasks and code",
+        "Using the reader"
+      ],
+      "v": "fe98919c"
+    },
+    {
+      "id": "exam-traps-cheatsheet",
+      "file": "exam-traps-cheatsheet.md",
+      "title": "Exam traps cheat-sheet",
+      "summary": "The slips that cost marks in Week 1 problems, each with the correct statement next to it.",
+      "tags": [
+        "deep-learning",
+        "quiz-1",
+        "revision"
+      ],
+      "color": "red",
+      "order": 4,
+      "updated": "2026-10-02T05:24:45.528Z",
+      "words": 162,
+      "minutes": 1,
+      "sections": 5,
+      "outline": [
+        "Counting",
+        "Thresholds",
+        "Geometry",
+        "Learning"
+      ],
+      "v": "52a7e875"
+    }
+  ]
+}
