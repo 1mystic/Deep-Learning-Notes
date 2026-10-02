@@ -110,7 +110,7 @@ function cardHtml(n) {
   }
   const upd = parseDate(n.updated);
   return `<a class="card" href="#/n/${encodeURIComponent(n.id)}" data-c="${esc(n.color)}" data-id="${esc(n.id)}">
-    <div class="card-head"><span class="tile">${icon('file')}</span><span class="card-title">${esc(n.title)}</span></div>
+    <div class="card-head"><span class="tile">${icon('file')}</span><span class="card-title">${esc(n.file)}</span></div>
     ${n.summary ? `<p class="card-sum">${esc(n.summary)}</p>` : ''}
     ${n.outline && n.outline.length ? `<ul class="card-outline">${n.outline.slice(0, 4).map((o) => `<li><span>${esc(o)}</span></li>`).join('')}</ul>` : ''}
     ${n.tags && n.tags.length ? `<div class="card-tags">${n.tags.slice(0, 4).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
