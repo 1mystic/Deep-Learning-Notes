@@ -1,9 +1,9 @@
 {
-  "generated": "2026-10-02T05:54:31.481Z",
+  "generated": "2026-10-02T06:08:10.530Z",
   "notes": [
     {
       "id": "backpropagation-and-optimisation",
-      "file": "Backpropagation-and-optimisation.md",
+      "file": "backpropagation-and-optimisation.md",
       "title": "Backpropagation & Optimisation — Derivations",
       "summary": "The chain rule on a computation graph, layer-by-layer gradients, Jacobians, and the update rules of SGD, momentum and Adam, with the full algebra shown.",
       "tags": [
@@ -27,7 +27,7 @@
     },
     {
       "id": "how-this-site-works",
-      "file": "How-this-site-works.md",
+      "file": "how-this-site-works.md",
       "title": "How this site works",
       "summary": "Add a note by dropping in a markdown file. A quick tour of front matter, maths, diagrams, callouts, annotation, search and printing.",
       "tags": [
@@ -50,7 +50,7 @@
     },
     {
       "id": "exam-traps-cheatsheet",
-      "file": "Exam-traps-cheatsheet.md",
+      "file": "exam-traps-cheatsheet.md",
       "title": "Exam traps cheat-sheet",
       "summary": "The slips that cost marks in Week 1 problems, each with the correct statement next to it.",
       "tags": [
