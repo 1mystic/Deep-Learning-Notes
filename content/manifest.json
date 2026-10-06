@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-02T11:08:42.188Z",
+  "generated": "2026-10-06T07:18:58.650Z",
   "notes": [
     {
       "id": "how-this-site-works",
@@ -49,6 +49,27 @@
         "4. Checklist"
       ],
       "v": "d9c0e2fa"
+    },
+    {
+      "id": "tsp-hamiltonian-cycles",
+      "file": "algorithmic-search/tsp-hamiltonian-cycles.html",
+      "title": "TSP, Animated: Hamiltonian Cycles to Research-Grade Solvers",
+      "summary": "Interactive visual walkthrough from Hamiltonian cycles to modern TSP solvers. Opens as a standalone page in a new tab.",
+      "tags": [
+        "algorithms",
+        "search",
+        "tsp"
+      ],
+      "color": "red",
+      "order": 1,
+      "folder": "algorithmic-search",
+      "updated": "2026-10-03T05:52:59.000Z",
+      "words": 0,
+      "minutes": 0,
+      "sections": 0,
+      "outline": [],
+      "external": true,
+      "v": "11df2e42"
     },
     {
       "id": "week-1",

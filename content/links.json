@@ -1,0 +1,13 @@
+[
+  {
+    "id": "tsp-hamiltonian-cycles",
+    "title": "TSP, Animated: Hamiltonian Cycles to Research-Grade Solvers",
+    "summary": "Interactive visual walkthrough from Hamiltonian cycles to modern TSP solvers. Opens as a standalone page in a new tab.",
+    "tags": ["algorithms", "search", "tsp"],
+    "color": "red",
+    "order": 1,
+    "folder": "algorithmic-search",
+    "file": "algorithmic-search/tsp-hamiltonian-cycles.html",
+    "external": true
+  }
+]

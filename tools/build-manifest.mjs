@@ -6,7 +6,10 @@
  *
  *  Files and folders starting with "_" (and README.md) are ignored — handy for drafts.
  *  The site works without this script too: you can list files by hand in manifest.json
- *  (e.g. ["my-note.md", "another.md"]), it will just fetch them to build the cards.    */
+ *  (e.g. ["my-note.md", "another.md"]), it will just fetch them to build the cards.
+ *
+ *  External resources (standalone .html pages, PDFs, …) that should open in a new tab
+ *  are listed in content/links.json and merged into the manifest below.              */
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -52,10 +55,40 @@ function build() {
     }
     notes.push(meta);
   }
+  // external resources (new-tab links) from content/links.json
+  const linksFile = path.join(dir, 'links.json');
+  if (fs.existsSync(linksFile)) {
+    let links = [];
+    try { links = JSON.parse(fs.readFileSync(linksFile, 'utf8')); }
+    catch (e) { console.warn(`! could not parse content/links.json — ${e.message}`); }
+    if (!Array.isArray(links)) { console.warn('! content/links.json must be an array — ignoring.'); links = []; }
+    for (const link of links) {
+      if (!link || !link.id || !link.file) { console.warn('! a content/links.json entry needs at least "id" and "file" — skipping one.'); continue; }
+      const target = path.join(root, link.file);
+      if (!fs.existsSync(target)) { console.warn(`! "${link.file}" (links.json → "${link.id}") does not exist — skipping.`); continue; }
+      if (seen.has(link.id)) { console.warn(`! links.json id "${link.id}" collides with another note — rename one of them.`); continue; }
+      seen.set(link.id, link.file);
+      const bytes = fs.readFileSync(target);
+      notes.push({
+        id: link.id,
+        file: link.file,
+        title: link.title || link.id,
+        summary: link.summary || '',
+        tags: Array.isArray(link.tags) ? link.tags : [],
+        color: link.color || 'blue',
+        order: link.order !== undefined ? Number(link.order) : null,
+        folder: link.folder || (link.file.includes('/') ? link.file.split('/').slice(0, -1).join('/') : ''),
+        updated: link.updated || fs.statSync(target).mtime.toISOString(),
+        words: 0, minutes: 0, sections: 0, outline: [],
+        external: true,
+        v: crypto.createHash('sha1').update(bytes).digest('hex').slice(0, 8)
+      });
+    }
+  }
   notes.sort((a, b) => (a.order ?? 1e9) - (b.order ?? 1e9) || a.title.localeCompare(b.title));
   fs.writeFileSync(out, JSON.stringify({ generated: new Date().toISOString(), notes }, null, 2) + '\n');
   console.log(`manifest.json: ${notes.length} note${notes.length === 1 ? '' : 's'}`);
-  for (const n of notes) console.log(`  - ${n.file}  (${n.words} words, ${n.sections} sections)`);
+  for (const n of notes) console.log(n.external ? `  - ${n.file}  (external link → opens in new tab)` : `  - ${n.file}  (${n.words} words, ${n.sections} sections)`);
 }
 
 build();
@@ -64,7 +97,7 @@ if (process.argv.includes('--watch')) {
   console.log('\nWatching content/ for changes… (Ctrl+C to stop)');
   let timer;
   fs.watch(dir, { recursive: true }, (_evt, name) => {
-    if (!name || name === 'manifest.json' || !/\.md$/i.test(name)) return;
+    if (!name || name === 'manifest.json' || !(/\.md$/i.test(name) || /(^|\/)links\.json$/.test(name))) return;
     clearTimeout(timer);
     timer = setTimeout(() => { try { build(); } catch (e) { console.error(e.message); } }, 250);
   });

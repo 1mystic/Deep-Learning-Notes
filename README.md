@@ -56,8 +56,11 @@ python3 -m http.server 8000
 - Files or folders starting with `_` (and `README.md`) are skipped, which is handy for drafts.
 - Sub-folders are fine: `content/week-2/gradients.md`.
 - Sub-folders render as **folder cards** on the home page: the card shows the collection
-  title/summary (from `config.js → collections`), lists each file inside by its note title,
+  title/summary (from `config.js → collections`), previews a few contained note titles,
   and looks distinct from standalone cards (dashed border, folder icon).
+- Clicking a folder card's title, count pill or “view all” opens a **folder page**
+  (`#/f/<folder>`) listing every file inside as full cards; the reader's Library link
+  returns home. Tag filtering works on both views.
 - To add a collection, move/create `.md` files under `content/my-folder/` and add an entry
   in `config.js`:
   ```js
@@ -66,6 +69,15 @@ python3 -m http.server 8000
   Home order is explicit: standalone notes sort by their `order`, folders by their
   collection `order`, interleaved. `content/how-this-site-works.md` uses `order: 0` so it
   stays first.
+- Standalone pages (self-contained `.html`, PDFs, …) that should open in a new tab instead
+  of the reader go in `content/links.json`:
+  ```json
+  [{ "id": "my-demo", "title": "My Demo", "summary": "What it is.",
+     "tags": ["algorithms"], "color": "red", "order": 1,
+     "folder": "my-folder", "file": "my-folder/my-demo.html", "external": true }]
+  ```
+  `file` is repo-root-relative and must exist; `folder` should match a `config.js`
+  collection so the link renders inside that folder's card. Rebuild the manifest after editing.
 
 ### 3.2 Optional front matter
 

@@ -14,10 +14,12 @@ window.SITE_CONFIG = {
   /* ---- collections (folders on the home page) ---- */
   // Notes at content/ root render as standalone cards.
   // Notes inside a listed folder render grouped under one folder card.
-  // `folder` must match the sub-folder name inside content/.
+  // `folder` matches a sub-folder inside content/, or the `folder` of a
+  // content/links.json entry (external pages that open in a new tab).
   collections: [
     { folder: "iitm-bs", title: "Deep Learning IITM BS", summary: "IITM BS course notes: full Weeks 1–4 file plus the exam-traps cheat-sheet.", color: "blue", order: 1 },
-    { folder: "granular-dl-concepts", title: "Granular DL Concepts", summary: "Single-topic deep dives: backpropagation, optimisers and derivations.", color: "green", order: 2 }
+    { folder: "granular-dl-concepts", title: "Granular DL Concepts", summary: "Single-topic deep dives: backpropagation, optimisers and derivations.", color: "green", order: 2 },
+    { folder: "algorithmic-search", title: "Algorithmic and Search Problems", summary: "Interactive, research-grade visual essays on algorithms and search — each opens in a new tab.", color: "red", order: 3 }
   ],
 
   /* ---- look & feel ---- */

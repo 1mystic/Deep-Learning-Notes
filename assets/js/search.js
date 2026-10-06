@@ -140,8 +140,9 @@ export function createSearch({ getNotes, go }) {
   function row(it, i) {
     if (it.kind === 'note') {
       const n = it.note;
+      const kind = n.external ? 'New tab ↗' : 'Note';
       return `<li role="presentation"><button type="button" class="res" role="option" id="res-${i}" data-i="${i}" data-c="${esc(n.color || 'blue')}" aria-selected="false">` +
-        `<div class="res-top"><span class="dot"></span><span>Note</span></div><div class="res-title">${esc(n.title)}</div>` +
+        `<div class="res-top"><span class="dot"></span><span>${kind}</span></div><div class="res-title">${esc(n.title)}</div>` +
         (n.summary ? `<div class="res-sn">${esc(n.summary)}</div>` : '') + '</button></li>';
     }
     const trail = (it.path || []).filter((x) => x !== it.noteTitle);
@@ -180,12 +181,13 @@ export function createSearch({ getNotes, go }) {
     if (!it) { preview.innerHTML = ''; return; }
     if (it.kind === 'note') {
       const n = it.note;
-      preview.innerHTML = `<div class="pv-top" data-c="${esc(n.color || 'blue')}"><span class="dot"></span><span>Note</span></div>` +
+      const openLabel = n.external ? 'Open in new tab' : 'Open note';
+      preview.innerHTML = `<div class="pv-top" data-c="${esc(n.color || 'blue')}"><span class="dot"></span><span>${n.external ? 'New tab ↗' : 'Note'}</span></div>` +
         `<h3 class="pv-title">${esc(n.title)}</h3>` +
         (n.tags && n.tags.length ? `<div class="pv-tags" data-c="${esc(n.color || 'blue')}">${n.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : '') +
         `<p class="pv-text">${esc(n.summary || '')}</p>` +
         (n.outline && n.outline.length ? `<ul class="pv-list">${n.outline.map((o) => `<li>${esc(o)}</li>`).join('')}</ul>` : '') +
-        `<button type="button" class="btn primary" data-open>Open note ${icon('enter')}</button>`;
+        `<button type="button" class="btn primary" data-open>${openLabel} ${icon('enter')}</button>`;
     } else {
       const trail = (it.path || []).filter((x) => x !== it.noteTitle);
       preview.innerHTML = `<div class="pv-top" data-c="${esc(it.color)}"><span class="dot"></span><span>${esc(it.noteTitle)}</span></div>` +
@@ -199,6 +201,8 @@ export function createSearch({ getNotes, go }) {
   function choose(i) {
     const it = items[i];
     if (!it) return;
+    // external pages open directly in a new tab (synchronous: popup-safe)
+    if (it.kind === 'note' && it.note.external && it.note.url) { close(); window.open(it.note.url, '_blank', 'noopener'); return; }
     close();
     if (it.kind === 'note') go(it.note.id, null);
     else go(it.n, it.sid || null);

@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TSP, visually: from Hamiltonian cycles to research-grade solvers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DCE4E9; --panel:#F3F6F8; --ink:#182536; --muted:#586a7c; --grid:#d3dde4;
+  --route:#2546C8; --gold:#C47F06; --teal:#13806C; --rose:#B8325A; --chip:#e6ecf0;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1823; --panel:#152433; --ink:#E3E9EF; --muted:#94a5b6; --grid:#1f3243;
+    --route:#7E9CFF; --gold:#EDB53F; --teal:#41C2A8; --rose:#F27299; --chip:#1c2e40;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1823; --panel:#152433; --ink:#E3E9EF; --muted:#94a5b6; --grid:#1f3243;
+  --route:#7E9CFF; --gold:#EDB53F; --teal:#41C2A8; --rose:#F27299; --chip:#1c2e40;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Archivo,"Helvetica Neue",Arial,sans-serif;}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 18px 40px}
+header h1{font-size:clamp(1.25rem,2.4vw,1.9rem);font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+header p{margin:0 0 16px;color:var(--muted);font-family:Newsreader,Georgia,serif;font-size:1.05rem;line-height:1.5;max-width:75ch}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:1fr}}
+.player{background:var(--panel);border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:var(--panel)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bigplay{position:absolute;inset:0;margin:auto;width:112px;height:112px;border-radius:50%;border:3px solid var(--ink);background:var(--panel);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.bigplay svg{width:42px;height:42px;margin-left:6px}
+.bigplay.hide{display:none}
+.caption{min-height:5.4em;padding:14px 20px;border-top:2px solid var(--ink);font-family:Newsreader,Georgia,serif;font-size:clamp(1rem,1.6vw,1.25rem);line-height:1.5;}
+.caption .ct{font-family:Archivo,sans-serif;font-weight:700;font-size:.8rem;color:var(--muted);display:block;margin-bottom:2px;letter-spacing:.01em}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-top:1px solid var(--grid)}
+.controls button,.controls select{font:600 .88rem Archivo,sans-serif;color:var(--ink);background:var(--chip);border:1.5px solid var(--ink);border-radius:4px;padding:6px 10px;cursor:pointer}
+.controls button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.controls button:focus-visible,.controls select:focus-visible,.chap button:focus-visible,.bigplay:focus-visible,.bar:focus-visible{outline:3px solid var(--route);outline-offset:2px}
+.time{font:600 .85rem Archivo,sans-serif;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.bar{position:relative;height:16px;margin:0 14px 12px;cursor:pointer;border-radius:3px;background:var(--chip);border:1.5px solid var(--ink)}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--route)}
+.bar .tick{position:absolute;top:-1px;bottom:-1px;width:2px;background:var(--ink);opacity:.35}
+.chap{background:var(--panel);border:2px solid var(--ink);border-radius:6px;padding:8px;max-height:calc(100vh - 40px);overflow:auto}
+.chap h2{font-size:.95rem;margin:6px 8px 8px;font-weight:700}
+.chap ol{list-style:none;margin:0;padding:0;counter-reset:c}
+.chap li{counter-increment:c}
+.chap button{width:100%;text-align:left;display:grid;grid-template-columns:2em 1fr auto;gap:6px;align-items:baseline;background:none;border:0;border-radius:4px;padding:7px 8px;color:var(--ink);font:500 .9rem Archivo,sans-serif;cursor:pointer}
+.chap button::before{content:counter(c);color:var(--muted);font-weight:700}
+.chap button span{color:var(--muted);font-size:.78rem;font-variant-numeric:tabular-nums}
+.chap button.on{background:var(--ink);color:var(--panel)}
+.chap button.on::before,.chap button.on span{color:var(--panel)}
+.note{color:var(--muted);font-size:.85rem;margin:14px 2px 0;line-height:1.5;max-width:90ch}
+kbd{font:600 .8rem Archivo,sans-serif;border:1px solid var(--muted);border-radius:3px;padding:0 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>The Travelling Salesperson Problem, animated</h1>
+  <p>A narrated walk from Hamiltonian cycles and graph conditions to the course heuristics, exact methods and research-grade solvers. Every number on screen is computed live on the same 14-city instance.</p>
+</header>
+<div class="layout">
+  <div class="player">
+    <div class="stage" id="stage">
+      <canvas id="cv" aria-label="Animated TSP explanation"></canvas>
+      <button class="bigplay" id="bigplay" aria-label="Play video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l15 8-15 8z"/></svg></button>
+    </div>
+    <div class="caption" id="cap" aria-live="polite"><span class="ct" id="capt">Chapter</span><span id="capx"></span></div>
+    <div class="bar" id="bar" role="slider" tabindex="0" aria-label="Seek"><div class="fill" id="fill"></div></div>
+    <div class="controls">
+      <button id="prev" aria-label="Previous chapter">Prev</button>
+      <button id="play">Play</button>
+      <button id="next" aria-label="Next chapter">Next</button>
+      <select id="rate" aria-label="Speed"><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+      <button id="narr" aria-pressed="false">Voice narration</button>
+      <button id="fs">Full screen</button>
+      <span class="time" id="time">0:00 / 0:00</span>
+    </div>
+  </div>
+  <nav class="chap" aria-label="Chapters"><h2>Chapters</h2><ol id="chaps"></ol></nav>
+</div>
+<p class="note">Keys: <kbd>Space</kbd> play or pause, <kbd>Left</kbd> and <kbd>Right</kbd> previous or next chapter. Voice narration uses your browser's built-in speech; with it on, the video waits for each sentence to finish.</p>
+</div>
+<script>
+const SEED=3;
+// ---------- TSP algorithm engine (all values computed, nothing hard-coded) ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const TSP = (function(){
+  const N = 14;
+  const rnd = mulberry32(SEED);
+  const P = [];
+  while(P.length<N){
+    const p=[0.06+0.88*rnd(),0.06+0.88*rnd()];
+    if(P.every(q=>Math.hypot(p[0]-q[0],p[1]-q[1])>0.17)) P.push(p);
+  }
+  const D = P.map(a=>P.map(b=>Math.hypot(a[0]-b[0],a[1]-b[1])*100));
+  const L = t=>{let s=0;for(let i=0;i<t.length;i++)s+=D[t[i]][t[(i+1)%t.length]];return s};
+  // nearest neighbour
+  function nn(s){const v=new Array(N).fill(false);const t=[s];v[s]=true;let c=s;
+    while(t.length<N){let b=-1;for(let j=0;j<N;j++)if(!v[j]&&(b<0||D[c][j]<D[c][b]))b=j;t.push(b);v[b]=true;c=b}return t}
+  const nnTour=nn(0);
+  // greedy edge
+  function greedy(){const E=[];for(let i=0;i<N;i++)for(let j=i+1;j<N;j++)E.push([D[i][j],i,j]);E.sort((a,b)=>a[0]-b[0]);
+    const deg=new Array(N).fill(0),par=[...Array(N).keys()];const f=x=>par[x]===x?x:(par[x]=f(par[x]));
+    const log=[],acc=[];for(const [w,i,j] of E){if(acc.length===N)break;let st='ok';
+      if(deg[i]>=2||deg[j]>=2)st='deg';else if(f(i)===f(j)&&acc.length<N-1)st='cycle';
+      log.push({i,j,st});if(st==='ok'){deg[i]++;deg[j]++;par[f(i)]=f(j);acc.push([i,j])}}
+    return {log,edges:acc}}
+  function edgesToTour(edges){const adj=[...Array(N)].map(()=>[]);edges.forEach(([a,b])=>{adj[a].push(b);adj[b].push(a)});
+    const t=[0];let prev=-1,c=0;while(t.length<N){const n=adj[c][0]!==prev?adj[c][0]:adj[c][1];prev=c;c=n;t.push(c)}return t}
+  const gr=greedy();const greedyTour=edgesToTour(gr.edges);
+  // savings (Clarke-Wright), hub 0
+  function savings(){const hub=0;const S=[];for(let i=1;i<N;i++)for(let j=i+1;j<N;j++)S.push([D[hub][i]+D[hub][j]-D[i][j],i,j]);S.sort((a,b)=>b[0]-a[0]);
+    let routes=[];for(let i=1;i<N;i++)routes.push([i]);const merges=[];
+    const find=x=>routes.findIndex(r=>r.includes(x));
+    for(const [s,i,j] of S){if(routes.length===1)break;const a=find(i),b=find(j);if(a===b)continue;
+      let A=routes[a],B=routes[b];const endA=A[0]===i||A[A.length-1]===i,endB=B[0]===j||B[B.length-1]===j;if(!endA||!endB)continue;
+      if(A[A.length-1]!==i)A=A.slice().reverse();if(B[0]!==j)B=B.slice().reverse();const M=A.concat(B);
+      routes=routes.filter((_,k)=>k!==a&&k!==b);routes.push(M);merges.push({i,j,s,routes:routes.map(r=>r.slice())})}
+    return {merges,tour:[0].concat(routes[0])}}
+  const sv=savings();
+  // MST (Prim)
+  function prim(){const inT=new Array(N).fill(false),key=new Array(N).fill(1e9),p=new Array(N).fill(-1);key[0]=0;const E=[];
+    for(let k=0;k<N;k++){let u=-1;for(let v=0;v<N;v++)if(!inT[v]&&(u<0||key[v]<key[u]))u=v;inT[u]=true;if(p[u]>=0)E.push([p[u],u]);
+      for(let v=0;v<N;v++)if(!inT[v]&&D[u][v]<key[v]){key[v]=D[u][v];p[v]=u}}return E}
+  const mst=prim();const mstLen=mst.reduce((s,[a,b])=>s+D[a][b],0);
+  const degM=new Array(N).fill(0);mst.forEach(([a,b])=>{degM[a]++;degM[b]++});
+  const odd=[...Array(N).keys()].filter(i=>degM[i]%2);
+  function minMatch(V){const k=V.length,memo=new Map();
+    function go(m){if(m===(1<<k)-1)return[0,[]];if(memo.has(m))return memo.get(m);let i=0;while(m>>i&1)i++;let best=[1e18,null];
+      for(let j=i+1;j<k;j++)if(!(m>>j&1)){const r=go(m|1<<i|1<<j);const c=r[0]+D[V[i]][V[j]];if(c<best[0])best=[c,[[V[i],V[j]]].concat(r[1])]}
+      memo.set(m,best);return best}return go(0)[1]}
+  const match=minMatch(odd);
+  function euler(E){const adj=[...Array(N)].map(()=>[]);E.forEach(([a,b],id)=>{adj[a].push([b,id]);adj[b].push([a,id])});
+    const used=new Array(E.length).fill(false),st=[0],circ=[];while(st.length){const v=st[st.length-1];while(adj[v].length&&used[adj[v][adj[v].length-1][1]])adj[v].pop();
+      if(!adj[v].length){circ.push(st.pop())}else{const [w,id]=adj[v].pop();used[id]=true;st.push(w)}}return circ}
+  const eul=euler(mst.concat(match));const seen=new Set();const chrTour=[];eul.forEach(v=>{if(!seen.has(v)){seen.add(v);chrTour.push(v)}});
+  // 2-opt (best improvement) from NN
+  function twoOpt(t0){let t=t0.slice();const moves=[];while(true){let best=0,bi=-1,bj=-1;
+      for(let i=0;i<N-1;i++)for(let j=i+2;j<N;j++){if(i===0&&j===N-1)continue;const a=t[i],b=t[i+1],c=t[j],d=t[(j+1)%N];
+        const g=D[a][b]+D[c][d]-D[a][c]-D[b][d];if(g>best+1e-9){best=g;bi=i;bj=j}}
+      if(bi<0)break;const before=t.slice();const a=t[bi],b=t[bi+1],c=t[bj],d=t[(bj+1)%N];
+      t=t.slice(0,bi+1).concat(t.slice(bi+1,bj+1).reverse(),t.slice(bj+1));moves.push({before,after:t.slice(),rem:[[a,b],[c,d]],add:[[a,c],[b,d]],gain:best,len:L(t)})}
+    return {moves,tour:t}}
+  const two=twoOpt(nnTour);
+  // Held-Karp optimal
+  function heldKarp(){const F=1<<N;const dp=new Float64Array(F*N).fill(1e18),pr=new Int8Array(F*N).fill(-1);dp[1*N+0]=0;
+    for(let m=1;m<F;m+=2)for(let j=0;j<N;j++){const cur=dp[m*N+j];if(cur>=1e18)continue;for(let k=1;k<N;k++)if(!(m>>k&1)){const nm=m|1<<k,v=cur+D[j][k];if(v<dp[nm*N+k]){dp[nm*N+k]=v;pr[nm*N+k]=j}}}
+    let best=1e18,bj=-1;for(let j=1;j<N;j++){const v=dp[(F-1)*N+j]+D[j][0];if(v<best){best=v;bj=j}}
+    const t=[];let m=F-1,j=bj;while(j!==-1){t.push(j);const p=pr[m*N+j];m&=~(1<<j);j=p}return t.reverse()}
+  const opt=heldKarp();
+  // Simulated annealing (2-opt neighbourhood)
+  function sa(){const r=mulberry32(7);let t=[...Array(N).keys()];for(let i=N-1;i>0;i--){const j=Math.floor(r()*(i+1));[t[i],t[j]]=[t[j],t[i]]}
+    let cur=L(t),best=t.slice(),bl=cur,T=60;const snaps=[];const iters=9000;
+    for(let it=0;it<iters;it++){let i=1+Math.floor(r()*(N-1)),j=1+Math.floor(r()*(N-1));if(i>j)[i,j]=[j,i];if(i===j)continue;
+      const nt=t.slice(0,i).concat(t.slice(i,j+1).reverse(),t.slice(j+1));const nl=L(nt);const dE=nl-cur;
+      if(dE<0||r()<Math.exp(-dE/T)){t=nt;cur=nl;if(cur<bl){bl=cur;best=t.slice()}}T*=0.9993;
+      if(it%150===0)snaps.push({t:t.slice(),T,len:cur,best:bl})}
+    snaps.push({t:best.slice(),T,len:bl,best:bl});return {snaps,tour:best}}
+  const saR=sa();
+  // Ant System
+  function aco(){const r=mulberry32(11);const tau=[...Array(N)].map(()=>new Array(N).fill(1));const a=1,b=3,rho=0.4,Q=100;let best=null,bl=1e18;const snaps=[];
+    for(let it=0;it<30;it++){const tours=[];for(let k=0;k<N;k++){const s=k%N;const t=[s],v=new Set([s]);while(t.length<N){const c=t[t.length-1];const w=[];let sum=0;
+          for(let j=0;j<N;j++)if(!v.has(j)){const x=Math.pow(tau[c][j],a)*Math.pow(1/D[c][j],b);w.push([j,x]);sum+=x}
+          let u=r()*sum,ch=w[w.length-1][0];for(const [j,x] of w){u-=x;if(u<=0){ch=j;break}}t.push(ch);v.add(ch)}tours.push(t)}
+      for(let i=0;i<N;i++)for(let j=0;j<N;j++)tau[i][j]*=1-rho;
+      tours.forEach(t=>{const l=L(t);if(l<bl){bl=l;best=t.slice()}for(let i=0;i<N;i++){const x=t[i],y=t[(i+1)%N];tau[x][y]+=Q/l;tau[y][x]+=Q/l}});
+      let mx=0;tau.forEach(row=>row.forEach(v=>mx=Math.max(mx,v)));snaps.push({tau:tau.map(row=>row.map(v=>v/mx)),best:best.slice(),bl})}
+    return {snaps,tour:best}}
+  const ac=aco();
+  return {N,P,D,L,nnTour,gr,greedyTour,sv,mst,mstLen,odd,match,eul,chrTour,two,opt,saR,ac};
+})();
+// ---------- Branch & Bound on a 5-city matrix (course bound: sum of two cheapest edges per city / 2) ----------
+const BB = (function(){
+  const names=['A','B','C','D','E'];
+  const M=[[0,3,1,5,8],[3,0,6,7,9],[1,6,0,4,2],[5,7,4,0,3],[8,9,2,3,0]];
+  const n=5;
+  function lb(path){let s=0;const pos=new Map(path.map((c,i)=>[c,i]));
+    for(let c=0;c<n;c++){const fixed=[];if(pos.has(c)){const i=pos.get(c);if(i>0)fixed.push(M[c][path[i-1]]);if(i<path.length-1)fixed.push(M[c][path[i+1]])}
+      if(path.length===n&&(i=>i===0||i===n-1)(pos.get(c))){fixed.push(M[path[0]][path[n-1]])}
+      const exclude=new Set();if(pos.has(c)){const i=pos.get(c);if(i>0)exclude.add(path[i-1]);if(i<path.length-1)exclude.add(path[i+1])}
+      const rest=[];for(let d=0;d<n;d++)if(d!==c&&!exclude.has(d))rest.push(M[c][d]);rest.sort((a,b)=>a-b);
+      let k=0;while(fixed.length<2)fixed.push(rest[k++]);s+=fixed[0]+fixed[1]}return s/2}
+  const rows=M.map((r,i)=>{const o=r.filter((_,j)=>j!==i).sort((a,b)=>a-b);return {two:[o[0],o[1]],sum:o[0]+o[1]}});
+  const rootLB=lb([0]);
+  // best-first B&B over prefixes starting at A
+  let open=[{path:[0],lb:rootLB}],best=Infinity,bestPath=null;const log=[];let expanded=0,generated=1;
+  while(open.length){open.sort((a,b)=>a.lb-b.lb||b.path.length-a.path.length);const nd=open.shift();
+    if(nd.lb>=best){log.push({path:nd.path,lb:nd.lb,act:'prune'});continue}
+    if(nd.path.length===n){const c=nd.lb;if(c<best){best=c;bestPath=nd.path}log.push({path:nd.path,lb:c,act:'tour'});continue}
+    expanded++;log.push({path:nd.path,lb:nd.lb,act:'expand'});
+    for(let c=1;c<n;c++)if(!nd.path.includes(c)){const p=nd.path.concat(c);generated++;open.push({path:p,lb:lb(p)})}}
+  return {names,M,rows,rootLB,log,best,bestPath,expanded,generated};
+})();
+
+// ================= rendering core =================
+const W=1600,H=900, FS='Archivo, "Helvetica Neue", Arial, sans-serif';
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);['bg','panel','ink','muted','grid','route','gold','teal','rose','chip'].forEach(k=>C[k]=cs.getPropertyValue('--'+k).trim())}
+readColors();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors();render()})}catch(e){}
+function resize(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);render()}
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const lin=(t,a,b)=>clamp((t-a)/(b-a));
+const pr=(t,a,b)=>ease(lin(t,a,b));
+function txt(s,x,y,o={}){ctx.save();ctx.font=`${o.w||500} ${o.s||24}px ${FS}`;ctx.fillStyle=o.c||C.ink;ctx.textAlign=o.a||'left';ctx.textBaseline=o.b||'alphabetic';ctx.globalAlpha=o.al??1;ctx.fillText(s,x,y);ctx.restore()}
+function wrap(s,x,y,maxW,lh,o={}){ctx.save();ctx.font=`${o.w||500} ${o.s||24}px ${FS}`;const words=s.split(' ');let line='';const lines=[];
+  for(const w of words){const tl=line?line+' '+w:w;if(ctx.measureText(tl).width>maxW&&line){lines.push(line);line=w}else line=tl}if(line)lines.push(line);ctx.restore();
+  lines.forEach((l,i)=>txt(l,x,y+i*lh,o));return y+lines.length*lh}
+function ln(x1,y1,x2,y2,c,w=2,dash=null,al=1){ctx.save();ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineCap='round';ctx.globalAlpha=al;if(dash)ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore()}
+function dot(x,y,r,fill,stroke,sw=2,al=1){ctx.save();ctx.globalAlpha=al;ctx.beginPath();ctx.arc(x,y,r,0,7);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=sw;ctx.stroke()}ctx.restore()}
+function rect(x,y,w,h,fill,stroke,sw=2,al=1){ctx.save();ctx.globalAlpha=al;if(fill){ctx.fillStyle=fill;ctx.fillRect(x,y,w,h)}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=sw;ctx.strokeRect(x,y,w,h)}ctx.restore()}
+function arrow(x1,y1,x2,y2,c,w=2.5,curve=0,al=1){ctx.save();ctx.globalAlpha=al;ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=w;const mx=(x1+x2)/2-(y2-y1)*curve,my=(y1+y2)/2+(x2-x1)*curve;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,my,x2,y2);ctx.stroke();const a=Math.atan2(y2-my,x2-mx);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-14*Math.cos(a-.4),y2-14*Math.sin(a-.4));ctx.lineTo(x2-14*Math.cos(a+.4),y2-14*Math.sin(a+.4));ctx.fill();ctx.restore();return[mx,my]}
+const f1=x=>x.toFixed(1), fmt=x=>x.toLocaleString('en-US');
+// map
+const MX=60,MY=56,MW=800,MH=790;
+const {N,P,D,L}=TSP;const LET='ABCDEFGHIJKLMN';
+const M=i=>[MX+P[i][0]*MW,MY+P[i][1]*MH];
+const OPT=L(TSP.opt);const gap=x=>((x/OPT-1)*100).toFixed(1)+'%';
+function edge(a,b,c,w=3,p=1,dash=null,al=1){const [x1,y1]=M(a),[x2,y2]=M(b);ln(x1,y1,x1+(x2-x1)*p,y1+(y2-y1)*p,c,w,dash,al)}
+function cities(o={}){for(let i=0;i<N;i++){const a=o.appear?o.appear(i):1;if(a<=0)continue;const [x,y]=M(i);const col=o.col?o.col(i):null;
+  dot(x,y,11*Math.min(1,a*1.3),col||C.panel,col?C.ink:C.ink,2.5,a);txt(LET[i],x+15,y-12,{s:19,w:700,c:C.muted,al:a})}}
+function tour(t,p=1,c=C.route,w=4,al=1){const n=t.length,k=p*n;for(let i=0;i<n;i++){const q=clamp(k-i);if(q<=0)break;edge(t[i],t[(i+1)%n],c,w,q,null,al)}}
+function panelRule(){ln(900,40,900,860,C.grid,2)}
+function heading(s,y=96){txt(s,940,y,{s:34,w:800})}
+function lines(arr,t,x=940,y=150,lh=40,mw=600){let yy=y;for(const it of arr){const a=pr(t,it.at,it.at+.6);if(a<=0)continue;yy=wrap(it.s,x,yy,mw,it.lh||36,{s:it.sz||26,w:it.w||500,c:it.c||C.ink,al:a})+(lh-36)}return yy}
+function bg(){ctx.fillStyle=C.panel;ctx.fillRect(0,0,W,H);ctx.save();ctx.strokeStyle=C.grid;ctx.globalAlpha=.55;ctx.lineWidth=1;for(let x=0;x<=W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}ctx.restore()}
+const cap=(s)=>[Math.max(3.2,1.1+s.split(/\s+/).length*0.36),s];
+const fact=n=>{let r=1n;for(let i=2n;i<=BigInt(n);i++)r*=i;return r};
+const toursN=Number(fact(N-1)/2n);
+
+// precomputed extras
+const nnAll=(()=>{let best=1e9,bs=0;for(let s=0;s<N;s++){const v=new Array(N).fill(false);const t=[s];v[s]=true;let c=s;while(t.length<N){let b=-1;for(let j=0;j<N;j++)if(!v[j]&&(b<0||D[c][j]<D[c][b]))b=j;t.push(b);v[b]=true;c=b}const l=L(t);if(l<best){best=l;bs=s}}return{best,bs}})();
+const matchCost=TSP.match.reduce((s,[a,b])=>s+D[a][b],0);
+const eulLen=(()=>{let s=0;for(let i=0;i+1<TSP.eul.length;i++)s+=D[TSP.eul[i]][TSP.eul[i+1]];return s})();
+const nnL=L(TSP.nnTour),grL=L(TSP.greedyTour),svL=L(TSP.sv.tour),chL=L(TSP.chrTour),twL=L(TSP.two.tour),saL=L(TSP.saR.tour),acL=L(TSP.ac.tour);
+const nm=t=>t.map(i=>LET[i]).join(' ');
+
+// ================= scenes =================
+const SC=[];
+// 1 intro
+SC.push({title:'The problem',caps:[
+ cap(`Fourteen cities. One salesperson. Visit every city exactly once, return home, and travel the least possible distance.`),
+ cap(`That closed loop is the shortest of ${fmt(toursN)} possible tours. Finding it, and proving it is the shortest, is the Travelling Salesperson Problem.`),
+ cap(`We will build the theory, the graph conditions that decide whether a tour can even exist, and every major way to solve it, from the course heuristics to research-grade solvers.`)],
+ draw(t,S){cities({appear:i=>pr(t,.2+i*.09,.6+i*.09)});tour(TSP.opt,pr(t,1.8,S.at(1)-.3));panelRule();
+  txt('The Travelling',940,190,{s:64,w:800,al:pr(t,.3,1.2)});txt('Salesperson Problem',940,262,{s:64,w:800,al:pr(t,.5,1.4)});
+  wrap('A visual guide for AI: Search Methods for Problem Solving',940,320,600,32,{s:24,c:C.muted,al:pr(t,.8,1.8)});
+  const a=pr(t,S.at(1),S.at(1)+1);txt('Optimal tour length',940,450,{s:22,c:C.muted,al:a});txt(f1(OPT),940,510,{s:56,w:800,c:C.route,al:a});
+  txt('Distinct tours to choose from',940,580,{s:22,c:C.muted,al:a});txt(fmt(Math.round(toursN*pr(t,S.at(1),S.at(1)+3))),940,640,{s:56,w:800,c:C.gold,al:a});
+  wrap('Hamiltonian cycles, graph conditions, variants, exact methods, heuristics, local search, metaheuristics, the state of the art',940,720,600,32,{s:22,al:pr(t,S.at(2),S.at(2)+1)});}});
+// 2 definition
+SC.push({title:'Definition and properties',caps:[
+ cap(`Formally, TSP takes a complete graph whose edges carry costs, and asks for a Hamiltonian cycle of minimum total cost.`),
+ cap(`With 14 cities the complete graph has n times n minus 1 over 2, that is 91 edges. Every tour uses exactly 14 of them, two at each city.`),
+ cap(`Fix the start city and ignore direction: a symmetric instance has n minus 1 factorial over 2 distinct tours. If costs are asymmetric, direction matters and the count doubles.`),
+ cap(`The decision version, is there a tour of cost at most k, is NP-complete. The optimisation version is NP-hard, and even confirming that a given tour is optimal is hard, a point your course notes contrast with SAT.`)],
+ draw(t,S){const pe=pr(t,.3,S.at(1));let k=0;for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){k++;if(k/91<=pe)edge(i,j,C.muted,1.2,1,null,.45)}
+  if(t>S.at(1))tour(TSP.opt,pr(t,S.at(1)+.5,S.at(1)+3),C.route,4.5);cities({col:i=>t>S.at(1)+3?C.gold:null});panelRule();heading('What TSP asks');
+  lines([{s:'Input: a complete graph, cost c(i, j) on every edge',at:.4},{s:'Output: a Hamiltonian cycle of minimum total cost',at:1.4},
+   {s:'Edges n(n−1)/2 = 91. A tour uses n = 14 edges, degree 2 at every city.',at:S.at(1)+.3,c:C.route,w:600},
+   {s:'Distinct tours: (n−1)!/2 symmetric, (n−1)! asymmetric',at:S.at(2)+.3,c:C.gold,w:600},
+   {s:'Decision version: NP-complete',at:S.at(3)+.3},{s:'Optimisation version: NP-hard',at:S.at(3)+1.5},
+   {s:'Trap: a SAT certificate is checked in polynomial time; a claimed optimal tour is not, since you would need to rule out every cheaper tour.',at:S.at(3)+3,c:C.rose}],t,940,160,52);}});
+// 3 explosion
+SC.push({title:'How big the space is',caps:[
+ cap(`How fast does the space grow? On a log scale, gold bars count TSP tours, blue is the 2 to the n of a SAT problem with n variables, and teal is the work of the Held-Karp dynamic program.`),
+ cap(`At thirty cities there are about 4 times 10 to the 30 tours. That is billions of times more than the number of nanoseconds since the Big Bang.`),
+ cap(`So blind enumeration is out. The course moves to heuristics, lower bounds and local search, and we will follow the same path.`)],
+ draw(t,S){const ns=[5,10,15,20,25,30],X0=150,X1=1520,Y0=780,Hh=620,top=32;ln(X0,Y0,X1,Y0,C.ink,2);ln(X0,Y0,X0,Y0-Hh,C.ink,2);
+  for(let e=0;e<=32;e+=8){const y=Y0-e/top*Hh;ln(X0-6,y,X1,y,C.grid,1);txt('10^'+e,X0-12,y+7,{s:18,a:'right',c:C.muted})}
+  const g=pr(t,.5,S.at(1)-.5),gw=(X1-X0)/ns.length;
+  ns.forEach((n,i)=>{const vals=[[Math.log10(Number(fact(n-1)))-Math.log10(2),C.gold],[n*Math.log10(2),C.route],[Math.log10(n*n)+n*Math.log10(2),C.teal]];
+   vals.forEach(([v,c],j)=>{const h=v/top*Hh*g,x=X0+i*gw+30+j*62;rect(x,Y0-h,52,h,c);if(g>.95)txt(v.toFixed(0),x+26,Y0-h-8,{s:16,w:700,a:'center',c:C.ink})});
+   txt('n = '+n,X0+i*gw+30+93,Y0+32,{s:20,w:700,a:'center'})});
+  const ny=Math.log10(13.8e9*3.156e7*1e9),a=pr(t,S.at(1),S.at(1)+1);const yy=Y0-ny/top*Hh;ln(X0,yy,X1,yy,C.rose,3,[10,8],a);txt('nanoseconds since the Big Bang ≈ 4.4 × 10^26',X0+20,yy-12,{s:22,w:700,c:C.rose,al:a});txt('log10 of the count',X0-12,Y0-Hh-20,{s:18,c:C.muted,a:'left'});
+  [['TSP tours (n−1)!/2',C.gold],['SAT 2^n',C.route],['Held-Karp n²·2^n',C.teal]].forEach(([s,c],i)=>{rect(X0+20+i*330,70,22,22,c);txt(s,X0+52+i*330,89,{s:21,w:600})});}});
+// 4 Hamiltonian
+SC.push({title:'Hamiltonian cycles',caps:[
+ cap(`A Hamiltonian cycle visits every vertex exactly once and returns to the start. TSP is the weighted, optimisation version of this yes-or-no question.`),
+ cap(`Left, the walk closes cleanly. Right, a bow-tie. The centre is a cut vertex, so any closed walk covering both triangles must pass through it twice. No Hamiltonian cycle exists.`),
+ cap(`Quick necessary checks: the graph must be 2-connected, meaning no cut vertex, and every vertex needs degree at least 2.`),
+ cap(`Quick sufficient checks: Dirac, every degree at least n over 2. Ore, every non-adjacent pair has degrees summing to at least n. These guarantee a cycle, but failing them proves nothing.`),
+ cap(`Deciding whether a Hamiltonian cycle exists is NP-complete. Do not confuse it with an Euler circuit, which uses every edge once and only needs a connected graph with all degrees even.`)],
+ draw(t,S){const A=[...Array(6)].map((_,i)=>[400+175*Math.cos(i*Math.PI/3-Math.PI/2),330+175*Math.sin(i*Math.PI/3-Math.PI/2)]);
+  const EA=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4]];EA.forEach(([a,b])=>ln(...A[a],...A[b],C.muted,2));
+  const pa=pr(t,.8,S.at(1)+3);for(let i=0;i<6;i++){const q=clamp(pa*6-i);if(q>0)ln(A[i][0],A[i][1],A[i][0]+(A[(i+1)%6][0]-A[i][0])*q,A[i][1]+(A[(i+1)%6][1]-A[i][1])*q,C.route,6)}
+  A.forEach((p,i)=>{dot(...p,15,pa*6>i?C.gold:C.panel,C.ink,2.5);txt(String(i+1),p[0],p[1]+6,{s:16,w:700,a:'center'})});
+  txt(pa>=1?'Hamiltonian cycle found':'Searching…',400,580,{s:24,w:700,a:'center',c:pa>=1?C.route:C.muted});
+  const B={L1:[960,190],L2:[960,470],C:[1160,330],R1:[1360,190],R2:[1360,470]};const EB=[['L1','L2'],['L1','C'],['L2','C'],['R1','R2'],['R1','C'],['R2','C']];
+  EB.forEach(([a,b])=>ln(...B[a],...B[b],C.muted,2));const walk=['C','L1','L2','C'];const pb=pr(t,S.at(1),S.at(1)+4);
+  for(let i=0;i<3;i++){const q=clamp(pb*3-i);if(q>0){const a=B[walk[i]],b=B[walk[i+1]];ln(a[0],a[1],a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q,i===2?C.rose:C.route,6)}}
+  Object.entries(B).forEach(([k,p])=>{const cut=k==='C'&&pb>=1;dot(...p,15,cut?C.rose:C.panel,C.ink,2.5);txt(k==='C'?'c':k.toLowerCase(),p[0],p[1]+6,{s:16,w:700,a:'center',c:cut?C.panel:C.ink})});
+  if(pb>=1){txt('c reached twice, r1 and r2 never: no cycle',1160,580,{s:24,w:700,a:'center',c:C.rose})}
+  lines([{s:'Necessary: 2-connected (no cut vertex), every degree ≥ 2',at:S.at(2)+.2,w:600},
+   {s:'Sufficient: Dirac, deg(v) ≥ n/2 for all v.  Ore, deg(u) + deg(v) ≥ n for every non-adjacent pair',at:S.at(3)+.2,w:600,c:C.teal},
+   {s:'Hamiltonian cycle: NP-complete.  Euler circuit: connected and all degrees even, linear time.',at:S.at(4)+.2,w:600,c:C.gold}],t,140,660,46,1340);}});
+// 5 bipartite
+const g3=[],g34=[];for(let r=0;r<3;r++)for(let c=0;c<3;c++)g3.push([r,c]);for(let r=0;r<3;r++)for(let c=0;c<4;c++)g34.push([r,c]);
+const hc34=[[0,0],[0,1],[0,2],[0,3],[1,3],[2,3],[2,2],[1,2],[1,1],[2,1],[2,0],[1,0]];
+SC.push({title:'Bipartite parity trap',caps:[
+ cap(`Bipartite graphs give a powerful parity trap. Colour the vertices with two colours so every edge joins different colours.`),
+ cap(`Any cycle in a bipartite graph alternates colours, so a Hamiltonian cycle needs exactly as many vertices of each colour.`),
+ cap(`A 3 by 3 grid has 5 gold and 4 blue, so it has no Hamiltonian cycle, and no tour if roads are only grid edges. In general an m by n grid has one only when m times n is even.`),
+ cap(`The 3 by 4 grid is balanced, six and six, and the cycle appears. Likewise K two three has none, while K three three has one. K m n is Hamiltonian only when m equals n.`),
+ cap(`Exam trick: whenever you see a grid, a chessboard, or any two-colourable graph, count the colours before you search.`)],
+ draw(t,S){const sp=120;const P3=([r,c])=>[160+c*sp,170+r*sp],P4=([r,c])=>[880+c*sp,170+r*sp];
+  const col=(r,c)=>(r+c)%2===0?C.gold:C.route;const ca=pr(t,.5,2);
+  const edges=(G,F,R,Cc)=>{for(let r=0;r<R;r++)for(let c=0;c<Cc;c++){if(c+1<Cc)ln(...F([r,c]),...F([r,c+1]),C.muted,2);if(r+1<R)ln(...F([r,c]),...F([r+1,c]),C.muted,2)}};
+  edges(g3,P3,3,3);edges(g34,P4,3,4);
+  const ph=pr(t,S.at(3),S.at(3)+3);for(let i=0;i<12;i++){const q=clamp(ph*12-i);if(q>0){const a=P4(hc34[i]),b=P4(hc34[(i+1)%12]);ln(a[0],a[1],a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q,C.teal,7)}}
+  g3.forEach(([r,c])=>dot(...P3([r,c]),17,ca>0?col(r,c):C.panel,C.ink,2.5));g34.forEach(([r,c])=>dot(...P4([r,c]),17,ca>0?col(r,c):C.panel,C.ink,2.5));
+  txt('3 × 3 grid',280,120,{s:24,w:700,a:'center'});txt('3 × 4 grid',1060,120,{s:24,w:700,a:'center'});
+  const a2=pr(t,S.at(2),S.at(2)+1);txt('5 gold, 4 blue',280,470,{s:26,w:800,a:'center',c:C.rose,al:a2});txt('unbalanced: impossible',280,505,{s:22,a:'center',c:C.rose,al:a2});
+  const a3=pr(t,S.at(3),S.at(3)+1);txt('6 gold, 6 blue',1060,470,{s:26,w:800,a:'center',c:C.teal,al:a3});
+  const a1=pr(t,S.at(1),S.at(1)+1);wrap('A cycle alternates gold, blue, gold, blue … so it needs equal counts.',560,560,520,32,{s:22,w:600,al:a1});
+  // K23 / K33
+  const ak=pr(t,S.at(3)+2,S.at(3)+3);if(ak>0){const kb=(x0,m,n,ok)=>{const T=[...Array(m)].map((_,i)=>[x0+(i-(m-1)/2)*90,640]),B=[...Array(n)].map((_,i)=>[x0+(i-(n-1)/2)*90,780]);
+    T.forEach(a=>B.forEach(b=>ln(...a,...b,C.muted,1.8,null,ak)));T.forEach(p=>dot(...p,13,C.gold,C.ink,2,ak));B.forEach(p=>dot(...p,13,C.route,C.ink,2,ak));
+    txt(`K${m},${n}: ${ok?'Hamiltonian':'not Hamiltonian'}`,x0,835,{s:22,w:700,a:'center',c:ok?C.teal:C.rose,al:ak})};kb(280,2,3,false);kb(1060,3,3,true)}
+  const a4=pr(t,S.at(4),S.at(4)+1);if(a4>0){rect(1270,600,300,200,C.chip,C.ink,2,a4);wrap('Two-colourable? Count colours first. Unequal counts mean no tour, no search needed.',1290,645,260,32,{s:23,w:700,al:a4})}}});
+// 6 graph types -> TSP formulation
+SC.push({title:'Graph types as TSP conditions',caps:[
+ cap(`Which graph you start from decides which TSP you are solving. A complete undirected graph, where c of i j equals c of j i, gives the standard symmetric TSP.`),
+ cap(`Directed costs, like one-way streets or flights with different fares each way, give the asymmetric TSP. Direction now matters, so there are n minus 1 factorial tours.`),
+ cap(`Missing roads? Complete the graph with very expensive edges of cost M. If the optimal tour still uses an M edge, the original graph had no Hamiltonian cycle at all.`),
+ cap(`Turn that around and you get a reduction: give real edges cost 1 and non-edges cost 2. A tour of cost exactly n exists if and only if the graph is Hamiltonian, so TSP is at least as hard as the Hamiltonian cycle problem.`),
+ cap(`Push the non-edge cost up to rho times n, and any rho-approximation would decide Hamiltonicity. That is why general TSP has no constant-factor approximation unless P equals NP.`)],
+ draw(t,S){const pan=[[30,40],[810,40],[30,470],[810,470]];
+  const pent=(x,y,r)=>[...Array(5)].map((_,i)=>[x+r*Math.cos(i*2*Math.PI/5-Math.PI/2),y+r*Math.sin(i*2*Math.PI/5-Math.PI/2)]);
+  pan.forEach(([x,y],k)=>{const a=pr(t,S.at(k),S.at(k)+.8);if(a<=0)return;rect(x,y,760,390,null,C.ink,2,a);
+   const V=pent(x+175,y+205,125);
+   if(k===0){for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)ln(...V[i],...V[j],C.route,2.5,null,a);txt('Complete + undirected',x+340,y+80,{s:26,w:800,al:a});wrap('Symmetric TSP: c(i, j) = c(j, i). Tours = (n−1)!/2.',x+340,y+130,390,32,{s:22,al:a})}
+   if(k===1){const p1=[x+90,y+220],p2=[x+290,y+220];const m1=arrow(p1[0]+16,p1[1]-8,p2[0]-16,p2[1]-8,C.route,3,.35,a),m2=arrow(p2[0]-16,p2[1]+8,p1[0]+16,p1[1]+8,C.rose,3,.35,a);
+     txt('4',m1[0],m1[1]+4,{s:24,w:800,a:'center',c:C.route,al:a});txt('9',m2[0],m2[1]+20,{s:24,w:800,a:'center',c:C.rose,al:a});
+     [p1,p2].forEach((p,i)=>{dot(...p,16,C.panel,C.ink,2.5,a);txt(i?'Y':'X',p[0],p[1]+7,{s:18,w:700,a:'center',al:a})});
+     txt('Directed costs',x+340,y+80,{s:26,w:800,al:a});wrap('Asymmetric TSP (ATSP): c(X, Y) ≠ c(Y, X). Direction matters, tours = (n−1)!.',x+340,y+130,390,32,{s:22,al:a})}
+   if(k===2){const E=[[0,1],[1,2],[2,3],[3,4],[0,2],[1,3]];const all=[];for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)all.push([i,j]);
+     all.forEach(([i,j])=>{const real=E.some(([p,q])=>p===i&&q===j);ln(...V[i],...V[j],real?C.ink:C.rose,real?2.5:2,real?null:[8,7],a);if(!real){txt('M',(V[i][0]+V[j][0])/2+6,(V[i][1]+V[j][1])/2-6,{s:20,w:800,c:C.rose,al:a})}});
+     txt('Incomplete graph',x+340,y+80,{s:26,w:800,al:a});wrap('Add missing edges with huge cost M. Optimal tour uses an M edge ⇒ original graph is not Hamiltonian.',x+340,y+130,390,32,{s:22,al:a})}
+   if(k===3){const E=[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2]];for(let i=0;i<5;i++)for(let j=i+1;j<5;j++){const real=E.some(([p,q])=>(p===i&&q===j)||(p===j&&q===i));ln(...V[i],...V[j],real?C.teal:C.muted,real?3:1.8,real?null:[7,7],a);
+       txt(real?'1':'2',(V[i][0]+V[j][0])/2+(real?10:0),(V[i][1]+V[j][1])/2+(real?-6:16),{s:19,w:800,c:real?C.teal:C.muted,al:a})}
+     txt('Reduction HC → TSP',x+340,y+80,{s:26,w:800,al:a});wrap('Edge = 1, non-edge = 2. Tour of cost n exists ⟺ G is Hamiltonian.',x+340,y+130,390,32,{s:22,al:a});
+     const b=pr(t,S.at(4),S.at(4)+1);wrap('Non-edge = ρ·n ⇒ no ρ-approximation for general TSP unless P = NP.',x+340,y+245,390,32,{s:22,w:700,c:C.rose,al:b})}
+   V.forEach(p=>{if(k!==1)dot(...p,12,C.panel,C.ink,2.5,a)})})}});
+// 7 metric / euclidean variants
+SC.push({title:'Metric, non-metric, Euclidean',caps:[
+ cap(`Variants differ by what the costs obey. In a metric instance, going direct is never longer than a detour: c of a c is at most c of a b plus c of b c.`),
+ cap(`That is what makes shortcutting safe. If a walk goes a, b, c and b was already visited, jumping straight from a to c can only shorten it. Christofides depends on this.`),
+ cap(`Break the inequality, say a b and b c cost 2 but a c costs 10, and a shortcut can make the tour much worse. In this non-metric world no constant-factor guarantee is possible unless P equals NP.`),
+ cap(`Euclidean TSP is metric, with costs given by straight-line distance. It is still NP-hard, yet it admits a 1 plus epsilon approximation scheme, and an optimal Euclidean tour never crosses itself.`)],
+ draw(t,S){const a=[150,640],b=[420,250],c=[720,640];const nonm=t>S.at(2);
+  const lab=(p,q,s,col,off=[0,0])=>txt(s,(p[0]+q[0])/2+off[0],(p[1]+q[1])/2+off[1],{s:26,w:800,c:col,a:'center'});
+  ln(...a,...b,C.ink,3);ln(...b,...c,C.ink,3);const sc=pr(t,S.at(1)+.5,S.at(1)+2.5);
+  ln(...a,a[0]+(c[0]-a[0])*Math.max(sc,t<S.at(1)?1:0),a[1],nonm?C.rose:C.route,5,t>S.at(1)?[14,9]:null);
+  if(!nonm){lab(a,b,'5',C.ink,[-24,0]);lab(b,c,'5',C.ink,[26,0]);lab(a,c,'7',C.route,[0,40]);}else{lab(a,b,'2',C.ink,[-24,0]);lab(b,c,'2',C.ink,[26,0]);lab(a,c,'10',C.rose,[0,40]);}
+  [[a,'a'],[b,'b'],[c,'c']].forEach(([p,s])=>{dot(...p,18,C.panel,C.ink,3);txt(s,p[0],p[1]+7,{s:20,w:800,a:'center'})});
+  txt(nonm?'10 > 2 + 2: triangle inequality broken':'7 ≤ 5 + 5: triangle inequality holds',435,140,{s:26,w:800,a:'center',c:nonm?C.rose:C.route});
+  if(t>S.at(1)&&!nonm)txt('shortcut a → c skips visited b, saves 3',435,760,{s:22,w:600,a:'center',c:C.route,al:sc});
+  if(nonm)txt('shortcut a → c costs 10 instead of 4',435,760,{s:22,w:600,a:'center',c:C.rose});
+  panelRule();heading('Variant, and the best guarantee');
+  const rows=[['General (no constraints)','None: no constant factor unless P = NP',S.at(2)],['Metric (triangle inequality)','1.5 Christofides (1976). Slightly below 1.5 since 2020',S.at(0)+1],
+   ['Asymmetric metric','Constant factor, first shown in 2018',S.at(2)+2],['Euclidean (plane, L2)','1 + ε for any ε: PTAS (Arora; Mitchell, 1998)',S.at(3)+.5]];
+  rows.forEach(([v,g,at],i)=>{const al=pr(t,at,at+.8);const y=170+i*150;rect(940,y-40,620,128,C.chip,C.ink,1.5,al);txt(v,960,y,{s:24,w:800,al});wrap(g,960,y+38,580,30,{s:21,al,c:C.muted})});}});
+// 8 Held-Karp
+SC.push({title:'Exact: brute force and Held–Karp',caps:[
+ cap(`Exact method one is brute force: try all ${fmt(toursN)} tours. Workable for ten cities, hopeless for twenty.`),
+ cap(`Held and Karp's dynamic program, from 1962, stores C of S comma j: the cheapest path that starts at city A, visits exactly the set S, and ends at j.`),
+ cap(`Each state looks back one step: C of S j is the minimum over i in S of C of S minus j, ending at i, plus d of i j. There are about n times 2 to the n states, so order n squared 2 to the n time and n 2 to the n memory.`),
+ cap(`For our 14 cities that is ${fmt(13*8192)} states, solved in milliseconds. This is the true optimum, ${f1(OPT)} units, and every heuristic from here on is measured against it.`)],
+ draw(t,S){if(t<S.at(1)){const r=mulberry32(Math.floor(t*12)+5);const p=[...Array(N).keys()];for(let i=N-1;i>0;i--){const j=Math.floor(r()*(i+1));[p[i],p[j]]=[p[j],p[i]]}tour(p,1,C.muted,2.2,.8);
+    txt('random tour, length '+f1(L(p)),MX+MW/2,MY+MH+30,{s:22,a:'center',c:C.muted})}
+  if(t>S.at(3))tour(TSP.opt,pr(t,S.at(3),S.at(3)+3),C.route,5);cities();panelRule();heading('Held–Karp dynamic program');
+  lines([{s:'C(S, j) = cheapest path A → … → j visiting exactly S',at:S.at(1)+.3,w:600},
+   {s:'C(S, j) = min over i ∈ S∖{j} of  C(S∖{j}, i) + d(i, j)',at:S.at(2)+.2,w:700,c:C.route},
+   {s:'Answer = min over j of  C(all, j) + d(j, A)',at:S.at(2)+1.5,w:600},
+   {s:'Time O(n²·2ⁿ), memory O(n·2ⁿ)',at:S.at(2)+3,w:700,c:C.teal}],t,940,150,52);
+  const bx=950,by=640,bw=40;const pg=pr(t,S.at(2),S.at(3));let mx=0;const cnt=[];const ch=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r};for(let k=1;k<=13;k++){cnt.push(ch(13,k)*k);mx=Math.max(mx,ch(13,k)*k)}
+  if(pg>0){txt('states by subset size |S|',bx,by-150,{s:20,c:C.muted});cnt.forEach((v,i)=>{const h=v/mx*130*clamp(pg*13-i);rect(bx+i*45,by-h,bw,h,C.teal);txt(String(i+1),bx+i*45+bw/2,by+24,{s:16,a:'center',c:C.muted})})}
+  const a=pr(t,S.at(3),S.at(3)+1);txt('Optimal: '+f1(OPT),940,770,{s:40,w:800,c:C.route,al:a});txt(nm(TSP.opt),940,810,{s:20,c:C.muted,al:a})}});
+// 9 Branch & bound
+SC.push({title:'Branch and Bound (course method)',caps:[
+ cap(`Branch and Bound, as in the course: every partial tour stands for a set of complete tours, tagged with a lower bound on their cost. Always refine the set with the cheapest estimate.`),
+ cap(`The bound: each city in a tour uses exactly two edges, so add each row's two smallest entries and halve. Here 4 plus 9 plus 3 plus 7 plus 5 is 28, so no tour can cost less than ${BB.rootLB}.`),
+ cap(`Fixing a prefix forces its edges into the bound, which can only raise it. Best-first refinement reaches the tour ${BB.bestPath.map(i=>BB.names[i]).join(' ')} A, with cost ${BB.best}.`),
+ cap(`Every remaining set now has a bound of at least ${BB.best}, so it is pruned without being opened. ${BB.expanded} expansions instead of the 65 nodes of the full permutation tree, and the answer is provably optimal.`),
+ cap(`A tighter bound prunes more but costs more to compute at each node. That trade-off drives Branch and Bound, A star and Concorde alike.`)],
+ draw(t,S){const x0=110,y0=150,cs=78;const n=5,nmz=BB.names;
+  nmz.forEach((s,i)=>{txt(s,x0+i*cs+cs/2,y0-16,{s:22,w:800,a:'center'});txt(s,x0-24,y0+i*cs+cs/2+8,{s:22,w:800,a:'center'})});
+  const hp=pr(t,S.at(1),S.at(1)+5);
+  for(let i=0;i<n;i++){const two=BB.rows[i].two.slice();const done=hp*5>i;for(let j=0;j<n;j++){const v=BB.M[i][j];let hl=false;if(done&&i!==j){const k=two.indexOf(v);if(k>=0){hl=true;two.splice(k,1)}}
+     rect(x0+j*cs,y0+i*cs,cs-6,cs-6,hl?C.gold:C.chip,C.ink,1.5);txt(i===j?'—':String(v),x0+j*cs+(cs-6)/2,y0+i*cs+cs/2+5,{s:24,w:hl?800:500,a:'center',c:hl?C.panel:C.ink})}
+   if(done)txt(BB.rows[i].two.join(' + ')+' = '+BB.rows[i].sum,x0+5*cs+20,y0+i*cs+cs/2+5,{s:22,w:600})}
+  const a=pr(t,S.at(1)+5,S.at(1)+6);txt(`LB = 28 / 2 = ${BB.rootLB}`,x0,y0+5*cs+46,{s:30,w:800,c:C.gold,al:a});
+  const b=pr(t,S.at(3),S.at(3)+1);txt(`Best tour ${BB.bestPath.map(i=>nmz[i]).join('–')}–A = ${BB.best}`,x0,y0+5*cs+110,{s:26,w:800,c:C.route,al:pr(t,S.at(2)+3,S.at(2)+4)});
+  wrap(`Expanded ${BB.expanded}, generated ${BB.generated}, full tree 65. Provably optimal.`,x0,y0+5*cs+160,600,32,{s:23,w:600,c:C.teal,al:b});
+  ln(760,60,760,860,C.grid,2);txt('Open list, best first',800,92,{s:26,w:800});
+  const k=Math.floor(lin(t,S.at(2),S.at(3)+2)*BB.log.length);
+  BB.log.forEach((e,i)=>{if(i>=k)return;const col=e.act==='expand'?C.ink:e.act==='tour'?C.route:C.rose;const lab=e.act==='expand'?'expand':e.act==='tour'?'complete':'prune';
+   const y=130+i*31;txt(lab,800,y,{s:19,w:700,c:col});txt(e.path.map(q=>nmz[q]).join(' '),920,y,{s:19,w:600,c:col});txt('LB '+e.lb,1150,y,{s:19,c:col});
+   if(e.act==='prune')txt(`≥ ${BB.best}`,1240,y,{s:19,c:C.rose})});}});
+// 10 NN
+const nnSteps=TSP.nnTour;
+SC.push({title:'Nearest neighbour',caps:[
+ cap(`Constructive heuristic one, nearest neighbour. Start at A and keep moving to the closest city you have not visited yet.`),
+ cap(`Each step is a greedy, local decision. The whole construction costs order n squared, and it never looks back.`),
+ cap(`The catch shows at the end. Cities skipped early must be collected later, and the closing edge home is often long. Nearest neighbour finishes at ${f1(nnL)}, which is ${gap(nnL)} above optimal.`),
+ cap(`Trick: run it from every start city and keep the best. Here the best start is ${LET[nnAll.bs]}, giving ${f1(nnAll.best)}. Still fast, and it removes the luck of the starting point.`)],
+ draw(t,S){const pg=lin(t,.8,S.at(2)-.3);const steps=N-1;const k=pg*steps;const cur=Math.min(steps,Math.floor(k));
+  for(let i=0;i<Math.min(cur,steps);i++)edge(nnSteps[i],nnSteps[i+1],C.route,4.5);
+  if(cur<steps){const c=nnSteps[cur];const vis=new Set(nnSteps.slice(0,cur+1));const fr=k-cur;
+    for(let j=0;j<N;j++)if(!vis.has(j))edge(c,j,C.muted,1.5,1,[5,6],.7*(1-fr));edge(c,nnSteps[cur+1],C.gold,5,ease(clamp(fr*1.6-.5)))}
+  const ce=pr(t,S.at(2),S.at(2)+1.5);if(ce>0)edge(nnSteps[N-1],nnSteps[0],C.rose,5,ce);
+  cities({col:i=>{const ix=nnSteps.indexOf(i);return ix<=cur?(i===nnSteps[Math.min(cur,steps)]?C.gold:C.route):null}});panelRule();heading('Nearest neighbour');
+  let run=0;for(let i=0;i<Math.min(cur,steps);i++)run+=D[nnSteps[i]][nnSteps[i+1]];if(ce>=1)run+=D[nnSteps[N-1]][nnSteps[0]];
+  txt('Length so far',940,160,{s:22,c:C.muted});txt(f1(run),940,215,{s:52,w:800,c:ce>=1?C.rose:C.route});
+  const shown=Math.min(cur,steps);for(let i=Math.max(0,shown-8);i<shown;i++){const y=270+(i-Math.max(0,shown-8))*34;txt(`${LET[nnSteps[i]]} → ${LET[nnSteps[i+1]]}   ${f1(D[nnSteps[i]][nnSteps[i+1]])}`,940,y,{s:22,c:C.ink})}
+  if(ce>0)txt(`${LET[nnSteps[N-1]]} → ${LET[nnSteps[0]]}   ${f1(D[nnSteps[N-1]][nnSteps[0]])}  closing edge`,940,560,{s:23,w:800,c:C.rose,al:ce});
+  const a=pr(t,S.at(2)+2,S.at(2)+3);txt(`${gap(nnL)} above optimal`,940,620,{s:30,w:800,c:C.rose,al:a});
+  const b=pr(t,S.at(3),S.at(3)+1);wrap(`Best over all 14 starts: ${f1(nnAll.best)} (from ${LET[nnAll.bs]}), ${gap(nnAll.best)} above optimal`,940,690,600,34,{s:24,w:700,c:C.teal,al:b})}});
+// 11 Greedy edge
+SC.push({title:'Greedy edge heuristic',caps:[
+ cap(`The greedy heuristic from the course: sort all 91 edges by cost, then add the shortest edge that is still allowed.`),
+ cap(`An edge is rejected if it would give a city a third edge, or close a loop before every city is in it. Rejections flash with their reason.`),
+ cap(`Fragments grow all over the map and finally join into one tour of ${f1(grL)}, ${gap(grL)} above optimal. It usually beats nearest neighbour because it never commits to one growing path.`)],
+ draw(t,S){const log=TSP.gr.log;const pg=lin(t,.8,S.at(2)+1);const k=pg*log.length;const cur=Math.floor(k);let acc=0,rd=0,rc=0;
+  for(let i=0;i<Math.min(cur,log.length);i++){const e=log[i];if(e.st==='ok'){edge(e.i,e.j,C.teal,4.5);acc++}else if(e.st==='deg')rd++;else rc++}
+  let msg='';if(cur<log.length){const e=log[cur],fr=k-cur;const col=e.st==='ok'?C.teal:C.rose;edge(e.i,e.j,col,6,1,null,1-fr*.5);
+    msg=`${LET[e.i]}–${LET[e.j]}  ${f1(D[e.i][e.j])}  `+(e.st==='ok'?'accepted':e.st==='deg'?'rejected: third edge at a city':'rejected: closes a loop early');}
+  const deg=new Array(N).fill(0);for(let i=0;i<Math.min(cur,log.length);i++){const e=log[i];if(e.st==='ok'){deg[e.i]++;deg[e.j]++}}
+  cities({col:i=>deg[i]===2?C.teal:deg[i]===1?C.gold:null});panelRule();heading('Greedy edge');
+  txt('Considering',940,160,{s:22,c:C.muted});wrap(msg||'done',940,200,610,34,{s:26,w:700,c:msg.includes('rejected')?C.rose:C.teal});
+  [['Accepted',acc,C.teal],['Rejected, third edge',rd,C.rose],['Rejected, early loop',rc,C.rose]].forEach(([s,v,c],i)=>{txt(s,940,330+i*60,{s:24,c:C.ink});txt(String(v),1500,330+i*60,{s:32,w:800,a:'right',c})});
+  wrap('City colours: gold has one edge, teal has two (full).',940,540,600,32,{s:21,c:C.muted});
+  const a=pr(t,S.at(2)+1,S.at(2)+2);txt(f1(grL),940,640,{s:52,w:800,c:C.teal,al:a});txt(`${gap(grL)} above optimal`,940,690,{s:26,w:700,al:a})}});
+// 12 Savings
+SC.push({title:'Savings heuristic',caps:[
+ cap(`The savings heuristic of Clarke and Wright. Pick a base city, here A, and imagine n minus 1 separate round trips: base to a city and straight back.`),
+ cap(`Joining two trips through a direct edge from a to b saves cost of base to a, plus cost of base to b, minus cost of a to b. Merge in order of largest saving, and only at route ends.`),
+ cap(`After n minus 2 merges a single tour remains, of length ${f1(svL)}, only ${gap(svL)} above optimal. Savings is often the strongest of the simple constructive methods, as experimental studies also report.`)],
+ draw(t,S){const ms=TSP.sv.merges;const pg=lin(t,S.at(1)+.3,S.at(2)+1);const k=Math.floor(pg*(ms.length+.999));
+  let routes=k===0?[...Array(N-1)].map((_,i)=>[i+1]):ms[Math.min(k,ms.length)-1].routes;
+  routes.forEach(r=>{if(r.length===1){edge(0,r[0],C.muted,2.2,pr(t,.5,2.5),[7,6])}else{edge(0,r[0],C.gold,3.5);for(let i=0;i+1<r.length;i++)edge(r[i],r[i+1],C.route,4.5);edge(r[r.length-1],0,C.gold,3.5)}});
+  cities({col:i=>i===0?C.gold:null});panelRule();heading('Savings (Clarke–Wright)');
+  wrap('s(a, b) = c(base, a) + c(base, b) − c(a, b)',940,160,600,34,{s:26,w:700,c:C.route});
+  txt(`Routes: ${routes.length}    Merges done: ${Math.min(k,ms.length)} of ${N-2}`,940,230,{s:23,w:600});
+  if(k>0){for(let q=Math.max(0,k-6);q<Math.min(k,ms.length);q++){const m=ms[q];const y=290+(q-Math.max(0,k-6))*40;
+     txt(`s(${LET[m.i]},${LET[m.j]}) = ${f1(D[0][m.i])} + ${f1(D[0][m.j])} − ${f1(D[m.i][m.j])} = ${f1(m.s)}`,940,y,{s:21,c:q===k-1?C.route:C.muted,w:q===k-1?700:500})}}
+  wrap('Dashed: untouched out-and-back trips. Gold: links to the base. Blue: merged chains.',940,560,600,30,{s:20,c:C.muted});
+  const a=pr(t,S.at(2)+1.5,S.at(2)+2.5);txt(f1(svL),940,660,{s:52,w:800,c:C.route,al:a});txt(`${gap(svL)} above optimal`,940,710,{s:26,w:700,al:a})}});
+// 13 Christofides
+SC.push({title:'Christofides: the 1.5 guarantee',caps:[
+ cap(`Christofides' algorithm, the classic guarantee for metric TSP. Step one: a minimum spanning tree. Delete one edge from the optimal tour and you get a spanning tree, so the MST costs at most OPT. Here it is ${f1(TSP.mstLen)}.`),
+ cap(`Step two: mark the odd-degree vertices of the tree. By the handshake lemma there is always an even number of them. Here there are ${TSP.odd.length}.`),
+ cap(`Step three: add a minimum-weight perfect matching on those vertices, costing at most half of OPT. Now every degree is even.`),
+ cap(`Step four: walk an Euler circuit through the combined graph, then shortcut any repeated city. The triangle inequality guarantees shortcuts never add length.`),
+ cap(`Result: at most 1.5 times optimal, guaranteed. Here it gives ${f1(chL)}, just ${gap(chL)} above. For over four decades nobody beat 1.5; in 2020 Karlin, Klein and Oveis Gharan improved it by a vanishingly small amount.`)],
+ draw(t,S){const pm=lin(t,.6,S.at(1)-.3);const mst=TSP.mst;const fin=t>S.at(4);
+  if(!fin){mst.forEach(([a,b],i)=>{const q=clamp(pm*mst.length-i);if(q>0)edge(a,b,C.teal,4.5,ease(q))});
+   const pmt=pr(t,S.at(2),S.at(2)+2);TSP.match.forEach(([a,b])=>edge(a,b,C.gold,4.5,pmt,[10,7]));
+   const pe=lin(t,S.at(3),S.at(3)+4);const eu=TSP.eul;if(pe>0){const kk=pe*(eu.length-1);const i=Math.min(eu.length-2,Math.floor(kk)),fr=kk-i;const [x1,y1]=M(eu[i]),[x2,y2]=M(eu[i+1]);dot(x1+(x2-x1)*fr,y1+(y2-y1)*fr,10,C.rose,C.ink,2)}
+   const ps=pr(t,S.at(3)+4,S.at(4));if(ps>0)tour(TSP.chrTour,ps,C.route,3,.9)}
+  else tour(TSP.chrTour,1,C.route,5);
+  const ao=t>S.at(1);cities({col:i=>ao&&TSP.odd.includes(i)?C.gold:null});
+  if(ao&&!fin)TSP.odd.forEach(i=>{const [x,y]=M(i);dot(x,y,20,null,C.gold,3,pr(t,S.at(1),S.at(1)+1))});
+  panelRule();heading('Christofides (1976)');
+  const L1=[{s:`1. Minimum spanning tree: ${f1(TSP.mstLen)}  (≤ OPT)`,at:.4,c:C.teal,w:700},{s:`2. Odd-degree vertices: ${TSP.odd.map(i=>LET[i]).join(', ')}`,at:S.at(1)+.3,c:C.gold,w:700},
+   {s:`3. Min perfect matching: ${f1(matchCost)}  (≤ OPT/2)`,at:S.at(2)+.3,c:C.gold,w:700},{s:`4. Euler circuit: ${f1(eulLen)}, shortcut to ${f1(chL)}`,at:S.at(3)+.3,c:C.route,w:700},
+   {s:`Guarantee: ≤ 1.5 × OPT = ${f1(1.5*OPT)}. Actual: ${f1(chL)}, ${gap(chL)} above.`,at:S.at(4)+.3,c:C.ink,w:800}];lines(L1,t,940,160,58);}});
+// 14 2-opt
+SC.push({title:'Local search: 2-opt and friends',caps:[
+ cap(`Now perturbation, or local search. Start from any tour and improve it. The course calls this edge exchange: remove k edges and reconnect the pieces differently.`),
+ cap(`2-opt removes two edges and reconnects by reversing the stretch between them. Red edges leave, green edges enter. Accept the move only if the tour gets shorter, and watch the crossings disappear.`),
+ cap(`In the plane, a crossing can always be removed with a gain, so every 2-opt local optimum is crossing-free. From nearest neighbour's ${f1(nnL)}, ${TSP.two.moves.length} moves reach ${f1(twL)}. Here that happens to be optimal, which is not guaranteed in general.`),
+ cap(`3-opt removes three edges, Or-opt slides a short chain of cities elsewhere, and swapping two cities is a special case of 4-edge exchange. Bigger neighbourhoods mean fewer local optima but more work per step.`)],
+ draw(t,S){const mv=TSP.two.moves;const pg=lin(t,S.at(1)+.3,S.at(2)+.5);const k=pg*mv.length;const i=Math.floor(k),fr=k-i;
+  let base,rem=[],add=[];if(t<S.at(1)+.3){base=TSP.nnTour}else if(i>=mv.length){base=TSP.two.tour}else{const m=mv[i];
+    if(fr<.45){base=m.before;rem=m.rem}else if(fr<.8){base=m.before;rem=m.rem;add=m.add}else base=m.after}
+  const isRem=(a,b)=>rem.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
+  for(let q=0;q<N;q++){const a=base[q],b=base[(q+1)%N];edge(a,b,isRem(a,b)?C.rose:C.route,isRem(a,b)?7:4,1,isRem(a,b)&&fr>=.45?[6,8]:null,isRem(a,b)&&fr>=.45?.6:1)}
+  add.forEach(([a,b])=>edge(a,b,C.teal,7,ease(clamp((fr-.45)/.25))));cities();panelRule();heading('2-opt');
+  const curL=i>=mv.length?twL:t<S.at(1)+.3?nnL:(fr<.8?L(mv[i].before):mv[i].len);
+  txt('Current length',940,160,{s:22,c:C.muted});txt(f1(curL),940,215,{s:52,w:800,c:C.route});
+  const done=Math.min(mv.length,i+(fr>=.8?1:0));for(let q=0;q<done;q++){const m=mv[q];txt(`move ${q+1}: −${f1(m.gain)} → ${f1(m.len)}`,940,280+q*36,{s:22,w:600,c:C.teal})}
+  lines([{s:'3-opt: remove 3 edges, more reconnection options',at:S.at(3)+.3},{s:'Or-opt: move a chain of 1–3 cities elsewhere',at:S.at(3)+1.8},{s:'City swap = special case of 4-edge exchange',at:S.at(3)+3.3,c:C.gold,w:700}],t,940,560,46);}});
+// 15 SA
+SC.push({title:'Simulated annealing',caps:[
+ cap(`Hill climbing stops at the first local optimum. Simulated annealing escapes by sometimes accepting a worse tour, with probability e to the minus delta E over T.`),
+ cap(`While hot, almost anything is accepted: exploration. As T cools it becomes greedy hill climbing: exploitation. The cooling schedule is the main design choice.`),
+ cap(`The tour begins as a random tangle and settles at ${f1(saL)}. On the plot, the current length jitters above the best so far while the temperature falls.`)],
+ draw(t,S){const sn=TSP.saR.snaps;const pg=lin(t,.6,S.at(2)+2);const idx=Math.min(sn.length-1,Math.floor(pg*(sn.length-1)));const s=sn[idx];
+  tour(s.t,1,idx===sn.length-1?C.route:C.muted,idx===sn.length-1?5:3);cities();panelRule();heading('Simulated annealing');
+  wrap('Accept worse move with P = e^(−ΔE / T)',940,150,600,32,{s:25,w:700,c:C.route});
+  const px=950,py=230,pw=590,ph=300;rect(px,py,pw,ph,null,C.ink,1.5);let mx=0,mn=1e9;sn.forEach(q=>{mx=Math.max(mx,q.len);mn=Math.min(mn,q.best)});const Tmax=sn[0].T;
+  const plot=(fn,c,w)=>{ctx.save();ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();for(let q=0;q<=idx;q++){const x=px+q/(sn.length-1)*pw,y=py+ph-(fn(sn[q]))*ph;q?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();ctx.restore()};
+  plot(q=>(q.len-mn)/(mx-mn)*.9+.05,C.muted,1.5);plot(q=>(q.best-mn)/(mx-mn)*.9+.05,C.route,3.5);plot(q=>q.T/Tmax*.9+.05,C.gold,3);
+  [['current',C.muted],['best so far',C.route],['temperature',C.gold]].forEach(([n,c],i)=>{rect(px+i*200,py+ph+20,18,18,c);txt(n,px+26+i*200,py+ph+35,{s:19})});
+  txt(`T = ${s.T.toFixed(2)}`,940,650,{s:28,w:700,c:C.gold});txt(`current ${f1(s.len)}    best ${f1(s.best)}`,940,700,{s:28,w:700})}});
+// 16 GA
+const P1='ABCDEFGH'.split(''),P2='CGEAHBFD'.split('');const naive=P1.slice(0,4).concat(P2.slice(4));
+const ox=(()=>{const c=new Array(8).fill(null);for(let i=2;i<=4;i++)c[i]=P1[i];const rest=P2.filter(x=>!c.includes(x));let k=0;for(let i=0;i<8;i++)if(c[i]===null)c[i]=rest[k++];return c})();
+SC.push({title:'Genetic algorithms for TSP',caps:[
+ cap(`Genetic algorithms evolve a population of tours. With path representation, naive one-point crossover breaks: A B C D followed by H B F D repeats B and D and loses E and G.`),
+ cap(`Order crossover fixes this. Copy a slice from parent one, here C D E, then fill the empty places with the remaining cities in the order they appear in parent two.`),
+ cap(`The child ${ox.join(' ')} is a valid tour. Partially mapped crossover uses a position mapping instead, and cycle crossover keeps every city in a position it held in one of the parents.`),
+ cap(`With adjacency representation, index i stores the city that follows i. Single-point crossover becomes possible, but not every array is one valid tour, so repair is needed. Expect trace questions on all of these.`)],
+ draw(t,S){const cs=78,x0=480;const row=(arr,y,lab,colf,al=1)=>{txt(lab,x0-30,y+cs/2+8,{s:24,w:800,a:'right',al});arr.forEach((v,i)=>{const c=colf?colf(i,v):null;rect(x0+i*cs,y,cs-8,cs-8,c||C.chip,C.ink,2,al);if(v)txt(v,x0+i*cs+(cs-8)/2,y+cs/2+6,{s:28,w:800,a:'center',c:c&&c!==C.chip?C.panel:C.ink,al})})};
+  const sl=t>S.at(1);row(P1,90,'Parent 1',(i)=>sl&&i>=2&&i<=4?C.route:null);row(P2,190,'Parent 2',(i,v)=>sl&&!['C','D','E'].includes(v)?C.teal:null);
+  const a0=pr(t,.6,1.6);if(t<S.at(1)+.2){ln(x0+4*cs-4,70,x0+4*cs-4,290,C.rose,3,[8,6],a0);const dup=new Set(['B','D']);
+    row(naive,330,'Naive child',(i,v)=>dup.has(v)?C.rose:null,a0);txt('B and D twice, E and G missing: invalid tour',x0,460,{s:24,w:700,c:C.rose,al:a0})}
+  else{const p=lin(t,S.at(1)+.5,S.at(2));const filledSlice=p>0;const order=[0,1,5,6,7];const kk=Math.floor(clamp((p-.3)/.7)*5.999);
+    const ch=new Array(8).fill('');if(filledSlice)for(let i=2;i<=4;i++)ch[i]=ox[i];for(let q=0;q<kk&&q<5;q++)ch[order[q]]=ox[order[q]];
+    row(ch,330,'OX child',(i,v)=>v?(i>=2&&i<=4?C.route:C.teal):null);
+    txt('Blue: slice copied from parent 1. Green: filled left to right in parent 2 order (G, A, H, B, F).',x0,460,{s:22,c:C.muted});
+    if(t>S.at(2))txt(`Valid tour: ${ox.join(' ')}`,x0,510,{s:28,w:800,c:C.teal,al:pr(t,S.at(2),S.at(2)+1)})}
+  const a3=pr(t,S.at(3),S.at(3)+1);if(a3>0){const y=600;txt('Adjacency representation of tour A → C → B → D → A',x0-200,y,{s:24,w:800,al:a3});
+   const idx=['A','B','C','D'],val=['C','D','B','A'];idx.forEach((v,i)=>{txt(v,x0-140+i*110+35,y+40,{s:20,w:700,a:'center',c:C.muted,al:a3});rect(x0-140+i*110,y+52,70,62,C.chip,C.ink,2,a3);txt(val[i],x0-140+i*110+35,y+93,{s:26,w:800,a:'center',al:a3})});
+   wrap('index[A] = C means the edge A → C is in the tour.',x0+330,y+80,700,32,{s:22,c:C.muted,al:a3})}}});
+// 17 ACO
+SC.push({title:'Ant colony optimisation',caps:[
+ cap(`Ant colony optimisation. Each ant builds a tour step by step, picking the next city with probability proportional to pheromone to the power alpha times visibility, 1 over distance, to the power beta.`),
+ cap(`After each round, pheromone evaporates by a factor of 1 minus rho, and every ant deposits Q over its tour length on the edges it used, so shorter tours leave stronger trails.`),
+ cap(`Over 30 rounds the trail concentrates on good edges. A larger beta makes ants greedier, a larger rho forgets faster. Here the colony converges to ${f1(acL)}.`)],
+ draw(t,S){const sn=TSP.ac.snaps;const pg=lin(t,.5,S.at(2)+1.5);const idx=Math.min(sn.length-1,Math.floor(pg*(sn.length-1)));const s=sn[idx];
+  for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const v=s.tau[i][j];if(v>.03)edge(i,j,C.gold,1+9*v,1,null,.15+.85*v)}
+  if(idx===sn.length-1)tour(s.best,pr(t,S.at(2)+1.5,S.at(2)+3),C.route,3);cities();panelRule();heading('Ant colony');
+  wrap('p(i → j) ∝ τ(i, j)^α · (1 / d(i, j))^β',940,160,600,34,{s:25,w:700,c:C.route});
+  wrap('τ ← (1 − ρ) τ, then each ant k adds Q / L_k on its edges',940,220,600,34,{s:25,w:700,c:C.gold});
+  txt(`Round ${idx+1} of ${sn.length}`,940,330,{s:28,w:700});txt(`Best so far ${f1(s.bl)}`,940,380,{s:28,w:700,c:C.route});
+  txt('Settings: 14 ants, α = 1, β = 3, ρ = 0.4',940,440,{s:22,c:C.muted});wrap('Edge thickness shows pheromone, scaled to the strongest edge.',940,500,600,30,{s:21,c:C.muted})}});
+// 18 State of the art + results
+const RES=[['Nearest neighbour',nnL],['Greedy edge',grL],['Christofides',chL],['Savings',svL],['2-opt (from NN)',twL],['Simulated annealing',saL],['Ant colony',acL],['Optimal (Held–Karp)',OPT]].sort((a,b)=>b[1]-a[1]);
+SC.push({title:'Research frontier and results',caps:[
+ cap(`Here is every method on our 14-city instance. Large experimental studies by Johnson and McGeoch on random Euclidean instances show the same ladder: nearest neighbour about 25 percent above optimal, greedy 15 to 20, savings about 12, Christofides about 10, 2-opt about 5, 3-opt about 3, and Lin–Kernighan about 2.`),
+ cap(`Lin and Kernighan choose k on the fly: a variable-depth chain of exchanges, stopped when it stops paying. Helsgaun's LKH extends this and is the practical state of the art for near-optimal tours on huge instances.`),
+ cap(`For proven optimality, Concorde uses branch and cut. Solve a linear-programming relaxation, add cutting planes such as subtour-elimination constraints, and branch only when needed. It proved optimal an 85,900-city instance in 2006.`),
+ cap(`The Held–Karp one-tree bound, a smarter version of the course's two-cheapest-edges bound, typically lands within about one percent of optimal. Tight lower bounds are what make exact solving at scale possible.`)],
+ draw(t,S){const x0=300,y0=100,bh=56,mx=Math.max(...RES.map(r=>r[1]));const g=pr(t,.4,3);
+  RES.forEach(([n,v],i)=>{const y=y0+i*(bh+18);const w=(v/mx)*420*g;const isO=n.startsWith('Optimal');txt(n,x0-16,y+bh/2+8,{s:21,w:600,a:'right'});
+   rect(x0,y,w,bh,isO?C.route:v-OPT<.05?C.teal:C.gold);if(g>.95)txt(`${f1(v)}  ${isO?'':'+'+gap(v)}`,x0+w+10,y+bh/2+8,{s:20,w:700})});
+  ln(x0+(OPT/mx)*420*g,y0-10,x0+(OPT/mx)*420*g,y0+RES.length*(bh+18),C.route,2,[6,6]);panelRule();heading('Beyond the course');
+  lines([{s:'Lin–Kernighan (1973): variable-depth k-opt',at:S.at(1)+.2,w:700,c:C.route},{s:'LKH (Helsgaun): best practical heuristic',at:S.at(1)+2,w:600},
+   {s:'Concorde: exact branch and cut with LP relaxations and cutting planes',at:S.at(2)+.2,w:700,c:C.teal},{s:'85,900-city instance proved optimal (2006)',at:S.at(2)+3,w:600},
+   {s:'Held–Karp 1-tree bound: about 1% below optimal on random Euclidean instances',at:S.at(3)+.2,w:700,c:C.gold}],t,940,160,46,600);
+  wrap('Gold bars: above optimal. Teal: reached the optimum on this instance.',60,790,800,30,{s:20,c:C.muted})}});
+// 19 Cheat sheet
+const TR=[['No tour possible?','Grid or bipartite: unequal colour counts. Cut vertex or degree-1 vertex.'],['Counting tours','(n−1)!/2 symmetric, (n−1)! asymmetric. Edges n(n−1)/2.'],
+ ['B&B bound','Sum of two smallest per row, halved. Prune when bound ≥ best found.'],['NN and greedy','Reject a third edge at a city and any loop that closes early.'],
+ ['Savings','s(a,b) = c(base,a) + c(base,b) − c(a,b). Merge at ends, n−2 merges.'],['Christofides','MST ≤ OPT, matching ≤ OPT/2, needs triangle inequality: ≤ 1.5·OPT.'],
+ ['2-opt','Reverse a segment. Plane local optima have no crossings. Swap = 4-edge exchange.'],['SA and ACO','Accept e^(−ΔE/T). Evaporate by (1−ρ), deposit Q/L.']];
+SC.push({title:'Exam cheat sheet',caps:[
+ cap(`To finish, the fast decision guide for exam pressure. First ask whether a tour can exist at all: check colour counts, cut vertices and degrees.`),
+ cap(`Then count and bound: the size of the space, and the two-cheapest-edges bound for pruning. Trace constructive heuristics carefully: most marks are lost on rejected third edges and early loops.`),
+ cap(`Finally, know each guarantee and what it needs. Christofides needs the triangle inequality, 2-opt optima are crossing-free only in the plane, and SA and ACO trade exploration against exploitation through T, rho and beta.`)],
+ draw(t,S){txt('Exam cheat sheet',60,90,{s:40,w:800});TR.forEach(([h,b],i)=>{const col=i%2,r=Math.floor(i/2);const x=60+col*760,y=140+r*180;const at=i<2?.5+i*.8:i<5?S.at(1)+(i-2)*1.2:S.at(2)+(i-5)*1.2;const a=pr(t,at,at+.7);
+   rect(x,y,730,160,C.chip,C.ink,2,a);txt(h,x+22,y+46,{s:30,w:800,c:[C.rose,C.ink,C.gold,C.route,C.route,C.teal,C.route,C.gold][i],al:a});wrap(b,x+22,y+92,690,34,{s:25,al:a})})}});
+// ================= player engine =================
+SC.forEach(s=>{s.starts=[0];s.caps.forEach(c=>s.starts.push(s.starts[s.starts.length-1]+c[0]));s.dur=s.starts[s.starts.length-1]+1.2;s.at=i=>s.starts[Math.min(i,s.caps.length)]});
+const offs=[0];SC.forEach(s=>offs.push(offs[offs.length-1]+s.dur));const TOTAL=offs[offs.length-1];
+let si=0,t=0,playing=false,started=false,rate=1,narr=false,speaking=false,lastCap=-1,last=performance.now();
+const $=id=>document.getElementById(id);
+const mmss=x=>{x=Math.max(0,Math.floor(x));return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')};
+const chaps=$('chaps');SC.forEach((s,i)=>{const li=document.createElement('li');const b=document.createElement('button');b.innerHTML=`${s.title}<span>${mmss(offs[i])}</span>`;b.onclick=()=>{go(i,0);if(!playing)play()};li.appendChild(b);chaps.appendChild(li)});
+const bar=$('bar');offs.slice(1,-1).forEach(o=>{const d=document.createElement('div');d.className='tick';d.style.left=(o/TOTAL*100)+'%';bar.appendChild(d)});
+function capIdx(){const s=SC[si];for(let i=s.caps.length-1;i>=0;i--)if(t>=s.starts[i])return i;return 0}
+function speak(text){if(!narr||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text.replace(/ − /g,' minus ').replace(/–/g,' to '));u.rate=Math.min(1.6,0.95*rate);speaking=true;u.onend=u.onerror=()=>{speaking=false};speechSynthesis.speak(u)}
+function stopSpeech(){speaking=false;if('speechSynthesis' in window)speechSynthesis.cancel()}
+function updateUI(){const ci=capIdx();const s=SC[si];if(ci!==lastCap||$('capt').textContent!==`${si+1}. ${s.title}`){$('capt').textContent=`${si+1}. ${s.title}`;$('capx').textContent=s.caps[ci][1];if(playing&&ci!==lastCap)speak(s.caps[ci][1]);lastCap=ci}
+  const g=offs[si]+t;$('fill').style.width=(g/TOTAL*100)+'%';$('time').textContent=`${mmss(g)} / ${mmss(TOTAL)}`;bar.setAttribute('aria-valuenow',Math.round(g));
+  [...chaps.querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('on',i===si));$('play').textContent=playing?'Pause':'Play'}
+function render(){if(!cv.width)return;ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);bg();const s=SC[si];try{s.draw(started?t:s.dur-1.3,s)}catch(e){console.error(e)}}
+function go(i,tt){stopSpeech();si=clamp(i,0,SC.length-1);t=tt;lastCap=-1;started=true;$('bigplay').classList.add('hide');updateUI();render()}
+function play(){started=true;$('bigplay').classList.add('hide');if(si===SC.length-1&&t>=SC[si].dur-.01){si=0;t=0}playing=true;lastCap=-1;updateUI()}
+function pause(){playing=false;stopSpeech();updateUI()}
+function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(playing){const s=SC[si];let nt=t+dt*rate;const ci=capIdx();const end=s.starts[ci+1];
+    if(narr&&speaking&&nt>=end-.05)nt=Math.max(t,end-.05);t=nt;
+    if(t>=s.dur){if(si<SC.length-1){si++;t=0;lastCap=-1}else{t=s.dur;playing=false}}
+    updateUI();render()}
+  requestAnimationFrame(frame)}
+$('play').onclick=()=>playing?pause():play();$('bigplay').onclick=play;
+$('prev').onclick=()=>go(t>2?si:si-1,0);$('next').onclick=()=>go(si+1,0);
+$('rate').onchange=e=>{rate=+e.target.value};
+$('narr').onclick=e=>{narr=!narr;e.target.setAttribute('aria-pressed',narr);if(!narr)stopSpeech();else if(playing){speak(SC[si].caps[capIdx()][1])}};
+$('fs').onclick=()=>{const el=$('stage');if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen()};
+function seekG(g){g=clamp(g,0,TOTAL-.01);let i=0;while(i<SC.length-1&&g>=offs[i+1])i++;const was=playing;go(i,g-offs[i]);if(was){playing=true;lastCap=-1;updateUI()}}
+bar.onclick=e=>{const r=bar.getBoundingClientRect();seekG((e.clientX-r.left)/r.width*TOTAL)};
+bar.onkeydown=e=>{if(e.key==='ArrowRight'){seekG(offs[si]+t+5);e.preventDefault();e.stopPropagation()}if(e.key==='ArrowLeft'){seekG(offs[si]+t-5);e.preventDefault();e.stopPropagation()}};
+document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();playing?pause():play()}
+  if(e.key==='ArrowRight'&&e.target!==bar)go(si+1,0);if(e.key==='ArrowLeft'&&e.target!==bar)go(t>2?si:si-1,0)});
+new ResizeObserver(resize).observe(cv);
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{resize();updateUI()});
+updateUI();requestAnimationFrame(frame);
+</script></body></html>

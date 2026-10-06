@@ -14,7 +14,6 @@ const state = {
   loaded: false,
   error: null,
   tag: null,
-  expanded: new Set(), // folders expanded via "+N more"
   homeScroll: 0,
   reader: null          // live reader instance, if one is open
 };
@@ -55,6 +54,12 @@ function navigate(id, h) {
 }
 
 function parseHash() {
+  const f = /^#\/f\/([^?]+?)\/?$/.exec(location.hash);
+  if (f) {
+    let folder = f[1];
+    try { folder = decodeURIComponent(folder); } catch { /* keep raw */ }
+    return { view: 'folder', folder };
+  }
   const m = /^#\/n\/([^?]+)(?:\?h=(.*))?$/.exec(location.hash);
   if (m) {
     let id = m[1], h = m[2] || null;
@@ -96,10 +101,17 @@ async function loadManifest() {
     const e = typeof raw === 'string' ? { file: raw } : raw;
     if (!e || !e.file) return;
     const id = e.id || MD.idFromFile(e.file);
+    const hasMeta = e.title !== undefined;
+    if (e.external) {
+      // standalone pages (HTML, PDFs, …): served as-is, opened in a new tab, never parsed as notes
+      const url = new URL(String(e.file).split('/').map(encodeURIComponent).join('/') + (e.v ? `?v=${e.v}` : ''), document.baseURI).href;
+      state.entries.push({ id, file: e.file, url, external: true });
+      state.notes.set(id, Object.assign({ id, file: e.file, url, external: true, title: e.file, pending: !hasMeta, tags: [], color: 'blue', outline: [], words: 0, minutes: 0, sections: 0 }, hasMeta ? e : {}, { id, url }));
+      return;
+    }
     // absolute, because the search worker lives in another folder and would resolve a relative path against itself
     const url = new URL(dir + e.file.split('/').map(encodeURIComponent).join('/') + (e.v ? `?v=${e.v}` : ''), document.baseURI).href;
     state.entries.push({ id, file: e.file, url });
-    const hasMeta = e.title !== undefined;
     state.notes.set(id, Object.assign({ id, file: e.file, url, title: e.file.replace(/\.md$/i, ''), pending: !hasMeta, tags: [], color: 'blue', outline: [] }, hasMeta ? e : {}, { id, url }));
   });
 }
@@ -144,6 +156,14 @@ function cardHtml(n) {
   if (n.pending) {
     return `<div class="card skel" aria-hidden="true"><div class="card-head"><div class="tile sk"></div><div class="sk" style="flex:1"></div></div><div class="sk"></div><div class="sk" style="width:70%"></div></div>`;
   }
+  if (n.external) {
+    return `<a class="card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer" data-c="${esc(n.color)}" data-id="${esc(n.id)}">
+    <div class="card-head"><span class="tile">${icon('enter')}</span><span class="card-title">${esc(n.title)}</span></div>
+    ${n.summary ? `<p class="card-sum">${esc(n.summary)}</p>` : ''}
+    ${n.tags && n.tags.length ? `<div class="card-tags">${n.tags.slice(0, 4).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+    <div class="card-foot"><span>Standalone page</span><span>Opens in new tab ↗</span></div>
+  </a>`;
+  }
   const upd = parseDate(n.updated);
   return `<a class="card" href="#/n/${encodeURIComponent(n.id)}" data-c="${esc(n.color)}" data-id="${esc(n.id)}">
     <div class="card-head"><span class="tile">${icon('file')}</span><span class="card-title">${esc(displayFileName(n.file))}</span></div>
@@ -154,25 +174,38 @@ function cardHtml(n) {
   </a>`;
 }
 
-const FOLDER_VISIBLE = 2; // rows shown on a folder card before "+N more"
+const FOLDER_PREVIEW = 3; // static title rows previewed on a folder card (full list lives on the folder page)
+
+function folderUrl(folder) {
+  return '#/f/' + encodeURIComponent(folder);
+}
 
 function folderCardHtml(folder, notes) {
   const meta = collectionMeta(folder, notes);
-  const expanded = state.expanded && state.expanded.has(folder);
-  const visible = expanded ? notes : notes.slice(0, FOLDER_VISIBLE);
-  const hidden = notes.length - visible.length;
-  const items = visible.map((n) => {
-    if (n.pending) return `<li><span class="f-link is-pending">${esc(displayFileName(n.file))}</span></li>`;
-    return `<li><a class="f-link" href="#/n/${encodeURIComponent(n.id)}"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(n.title || displayFileName(n.file))}</span><span class="f-min">${n.minutes || 1} min</span></a></li>`;
+  const preview = notes.slice(0, FOLDER_PREVIEW);
+  const hidden = notes.length - preview.length;
+  const items = preview.map((n) => {
+    const label = n.pending ? displayFileName(n.file) : (n.title || displayFileName(n.file));
+    return `<li><span class="f-link is-static"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(label)}</span></span></li>`;
   }).join('');
+  const allExt = notes.length > 0 && notes.every((n) => n.external);
   const totalMin = notes.reduce((a, n) => a + (n.minutes || 1), 0);
+  const countLabel = allExt ? (notes.length === 1 ? 'resource' : 'resources') : (notes.length === 1 ? 'note' : 'notes');
+  const footHtml = allExt
+    ? `<div class="card-foot"><span>${notes.length} external ${notes.length === 1 ? 'link' : 'links'}</span><span>opens in new tab</span></div>`
+    : `<div class="card-foot"><span>${totalMin} min total</span><span>${notes.reduce((a, n) => a + (n.words || 0), 0).toLocaleString()} words</span></div>`;
   return `<div class="card card-folder" data-c="${esc(meta.color)}" data-folder="${esc(folder)}">
-    <div class="card-head"><span class="tile tile-folder">${icon('folder')}</span><span class="card-title">${esc(meta.title)}</span><span class="folder-count">${notes.length} ${notes.length === 1 ? 'note' : 'notes'}</span></div>
+    <a class="folder-hit" href="${folderUrl(folder)}" aria-label="Open ${esc(meta.title)}"></a>
+    <div class="card-head"><span class="tile tile-folder">${icon('folder')}</span><span class="card-title">${esc(meta.title)}</span><span class="folder-count">${notes.length} ${countLabel}</span></div>
     ${meta.summary ? `<p class="card-sum">${esc(meta.summary)}</p>` : ''}
-    <ul class="folder-list">${items}${hidden > 0 ? `<li><button class="f-more" type="button" data-expand="${esc(folder)}">+${hidden} more</button></li>` : ''}${expanded && notes.length > FOLDER_VISIBLE ? `<li><button class="f-more" type="button" data-collapse="${esc(folder)}">Show less</button></li>` : ''}</ul>
+    <ul class="folder-list">${items}${hidden > 0 ? `<li><span class="f-more">+${hidden} more</span></li>` : ''}</ul>
     ${meta.tags.length ? `<div class="card-tags">${meta.tags.slice(0, 4).map((t) => `<button class="tag tag-btn" type="button" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>` : ''}
-    <div class="card-foot"><span>${totalMin} min total</span><span>${notes.reduce((a, n) => a + (n.words || 0), 0).toLocaleString()} words</span></div>
+    ${footHtml}
   </div>`;
+}
+
+function toolbarHtml(tags) {
+  return `<div class="toolbar" role="group" aria-label="Filter by tag">${tags.length ? `<button class="chip-btn" type="button" data-tag="" aria-pressed="${!state.tag}">All</button>` + tags.map((t) => `<button class="chip-btn" type="button" data-tag="${esc(t)}" aria-pressed="${state.tag === t}">${esc(t)}</button>`).join('') : ''}</div>`;
 }
 
 function homeHtml() {
@@ -205,10 +238,30 @@ function homeHtml() {
       ${CFG.heroText ? `<p>${esc(CFG.heroText)}</p>` : ''}
       <div class="hero-stats"><span>${notes.length} ${notes.length === 1 ? 'note' : 'notes'}${folders ? ` · ${folders} ${folders === 1 ? 'collection' : 'collections'}` : ''}</span>${pending ? '' : `<span>${formatCount(words)} words</span>`}</div>
     </section>
-    <div class="toolbar" role="group" aria-label="Filter by tag">${tags.length ? `<button class="chip-btn" type="button" data-tag="" aria-pressed="${!state.tag}">All</button>` + tags.map((t) => `<button class="chip-btn" type="button" data-tag="${esc(t)}" aria-pressed="${state.tag === t}">${esc(t)}</button>`).join('') : ''}</div>
+    ${toolbarHtml(tags)}
     ${blocks.length ? `<div class="grid" id="grid">${blocks.map((b) => b.html).join('')}</div>`
       : `<div class="notice"><h2>No notes with this tag</h2><p>Try “All”, or pick another tag.</p></div>`}
     ${booksStrip}
+  </div>`;
+}
+
+function folderHtml(folder) {
+  const notes = sortedNotes();
+  const all = notes.filter((n) => folderOf(n) === folder);
+  const meta = collectionMeta(folder, all.length ? all : undefined);
+  const tags = Array.from(new Set(notes.flatMap((n) => n.tags || []))).sort((a, b) => a.localeCompare(b));
+  const shown = state.tag ? all.filter((n) => (n.tags || []).includes(state.tag)) : all;
+  const words = all.reduce((a, n) => a + (n.words || 0), 0);
+  return `<div class="home"><div class="home-bg" aria-hidden="true"></div>
+    <nav class="crumbs"><a class="back" href="#/" aria-label="Back to library">${icon('back')}<span>Library</span></a></nav>
+    <section class="hero hero-folder">
+      <div class="folder-hero-head"><span class="tile tile-folder" data-c="${esc(meta.color)}">${icon('folder')}</span>
+        <div><h1>${esc(meta.title)}</h1>${meta.summary ? `<p>${esc(meta.summary)}</p>` : ''}</div></div>
+      <div class="hero-stats"><span>${all.length} ${all.length === 1 ? 'item' : 'items'}</span>${words ? `<span>${formatCount(words)} words</span>` : `<span>opens in new tab</span>`}</div>
+    </section>
+    ${toolbarHtml(tags)}
+    ${shown.length ? `<div class="grid" id="grid">${shown.map(cardHtml).join('')}</div>`
+      : `<div class="notice"><h2>Nothing here with this tag</h2><p>Try “All”, or pick another tag.</p></div>`}
   </div>`;
 }
 
@@ -233,22 +286,36 @@ function showHome() {
   requestAnimationFrame(() => window.scrollTo(0, state.homeScroll || 0));
 }
 
+function showFolder(folder) {
+  closeReader();
+  document.body.dataset.view = 'folder';
+  if (state.error) { showHome(); return; }
+  if (!state.loaded) { app.innerHTML = `<div class="home"><div class="home-bg" aria-hidden="true"></div><section class="hero"><h1>${esc(CFG.heroTitle || '')}</h1></section><div class="grid"><div class="card skel"><div class="sk"></div><div class="sk"></div></div></div></div>`; return; }
+  const found = sortedNotes().some((n) => folderOf(n) === folder);
+  if (!state.notes.size || !found) {
+    setTitle('');
+    notice('Collection not found', `<p>There is no collection called <code>${esc(folder)}</code>.</p><p><a href="#/">Back to the library</a></p>`);
+    return;
+  }
+  const meta = collectionMeta(folder, sortedNotes().filter((n) => folderOf(n) === folder));
+  setTitle(meta.title);
+  app.innerHTML = folderHtml(folder);
+  window.scrollTo(0, 0);
+}
+
 let homeRefresh = 0;
 function refreshHome() {
-  if (parseHash().view !== 'home' || !state.loaded || state.error) return;
+  const v = parseHash().view;
+  if ((v !== 'home' && v !== 'folder') || !state.loaded || state.error) return;
   cancelAnimationFrame(homeRefresh);
   homeRefresh = requestAnimationFrame(() => {
     const y = window.scrollY;
-    app.innerHTML = homeHtml();
+    app.innerHTML = v === 'home' ? homeHtml() : folderHtml(parseHash().folder);
     window.scrollTo(0, y);
   });
 }
 
 app.addEventListener('click', (e) => {
-  const ex = e.target.closest('[data-expand]');
-  if (ex) { state.expanded.add(ex.dataset.expand); refreshHome(); return; }
-  const cx = e.target.closest('[data-collapse]');
-  if (cx) { state.expanded.delete(cx.dataset.collapse); refreshHome(); return; }
   const t = e.target.closest('[data-tag]');
   if (t) { state.tag = t.dataset.tag || null; refreshHome(); }
 });
@@ -257,7 +324,7 @@ app.addEventListener('pointerover', (e) => {
   if (c && !c.dataset.warm) { c.dataset.warm = '1'; const n = state.notes.get(c.dataset.id); if (n && n.url) fetch(n.url).catch(() => {}); warm(); }
 });
 window.addEventListener('scroll', rafThrottle(() => {
-  if (document.body.dataset.view === 'home') $('#siteHeader').classList.toggle('scrolled', window.scrollY > 8);
+  if (document.body.dataset.view !== 'note') $('#siteHeader').classList.toggle('scrolled', window.scrollY > 8);
 }), { passive: true });
 
 /* ===================================================================== reader */
@@ -279,6 +346,13 @@ async function openNote(id, headingId) {
     return;
   }
   const meta = state.notes.get(id);
+  if (meta && meta.external) {
+    // standalone page: open in a new tab instead of the reader
+    window.open(meta.url, '_blank', 'noopener');
+    try { history.replaceState(null, '', '#/'); } catch { /* keep hash */ }
+    showHome();
+    return;
+  }
   setTitle(meta && !meta.pending ? meta.title : '');
   const reader = new Reader(id, entry, meta);
   state.reader = reader;
@@ -639,6 +713,11 @@ async function route() {
     if (!state.loaded && !state.error) { await bootPromise; }
     if (state.error) { showHome(); return; }
     openNote(r.id, r.h);
+  } else if (r.view === 'folder') {
+    if (!state.loaded && !state.error) { await bootPromise; }
+    if (state.error) { showHome(); return; }
+    if (document.body.dataset.view === 'home') state.homeScroll = window.scrollY;
+    showFolder(r.folder);
   } else {
     if (document.body.dataset.view === 'note') window.scrollTo(0, 0);
     showHome();
@@ -658,7 +737,9 @@ const bootPromise = (async () => {
     await loadManifest();
     state.loaded = true;
     // background indexing: card metadata for bare manifests + full-text search
-    idle(() => search.start(state.entries, {
+    // (external new-tab pages are skipped: nothing markdown to index, but they
+    // stay discoverable through title/tag search via getNotes)
+    idle(() => search.start(state.entries.filter((e) => !e.external), {
       onMeta: (id, meta) => {
         const prev = state.notes.get(id) || {};
         state.notes.set(id, mergeMeta(prev, meta));
