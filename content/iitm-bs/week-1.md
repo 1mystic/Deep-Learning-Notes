@@ -352,7 +352,7 @@ Compact formula: $y=\mathbb 1\!\left[\sum_{\text{exc}}x_i\ge\theta\right]\cdot\p
   <line x1="100" y1="140" x2="272" y2="130" style="stroke:var(--blue-ink);stroke-width:2.5"/>
   <path d="M100,220 H442 Q450,220 450,212 V164" fill="none" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
   <line x1="442" y1="178" x2="458" y2="178" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
-  <line x1="360" y1="130" x2="392" y2="130" style="stroke:var(--fg);stroke-width:2"/>
+  <line x1="330" y1="130" x2="420" y2="130" style="stroke:var(--fg);stroke-width:2"/>
   <line x1="480" y1="130" x2="520" y2="130" style="stroke:var(--fg);stroke-width:2"/>
   <circle cx="80" cy="60" r="20" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
   <text x="80" y="66" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">x₁</text>
