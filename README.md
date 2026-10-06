@@ -126,7 +126,6 @@ updated: 2026-10-02 # shown as "Changed …"
 ### 4.3 Diagrams
 
 Use a ```` ```mermaid ```` fence. Supported: flowchart, sequence, class, state, ER, gantt, mindmap and more, drawn with thick pastel borders and bold labels.
-
 Flowchart shapes pick a colour automatically:
 
 | Shape | Colour |
@@ -137,6 +136,24 @@ Flowchart shapes pick a colour automatically:
 | Circle | Red |
 
 To choose a colour yourself, use `A[Input]:::green` (`green`, `blue`, `yellow`, `red`). Subgraphs get dashed, tinted frames.
+
+For plots, geometry and animations the site has no chart libraries (no D2, Plotly, D3 — dependency-free by design).
+Write hand-made inline SVG inside a `.fig` wrapper instead; lightweight animation via SMIL
+(`<animate>`, `<animateMotion>`) needs no JavaScript:
+
+```html
+<div class="fig" role="img" aria-label="What the figure shows">
+<svg viewBox="0 0 640 280" width="640" style="font-family:var(--font)" aria-hidden="true">
+  ...
+</svg>
+<p class="fig-cap">One-line caption.</p>
+</div>
+```
+
+Rules: only global theme variables inside SVG (`--fg`, `--fg-2`, `--muted`, `--panel`,
+`--line`, `--line-strong`, `--blue-ink`, `--green-ink`, `--red-ink`, `--yellow-ink` —
+never `--ink`, which exists only under `[data-c]` accents), escape `<` as `&lt;` in SVG
+text, keep every `id`-free (no scripts), and verify with `node tools/build-manifest.mjs`.
 
 ### 4.4 Callouts and chips
 

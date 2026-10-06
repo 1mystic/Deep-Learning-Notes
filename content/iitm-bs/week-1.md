@@ -167,7 +167,31 @@ flowchart TD
 4. **CNF (AND of OR-clauses):** for each row with output 0, write the clause that is *false exactly there*, AND them: rows 00 and 11 → $(x_1\vee x_2)\wedge(\neg x_1\vee\neg x_2)$.
 
 **[Ex]** **Solved: sentence → truth table → formula.** "Open the valve if the soil is dry ($x_1$) and it is not raining ($x_2$), or if a manual override ($x_3$) is pressed."
-Formula: $(x_1\wedge\neg x_2)\vee x_3$. Truth table (rows $x_1x_2x_3$ = 000…111): output 1 for 001, 011, 100, 101, 111 → **0 1 0 1 1 1 0 1**. (We implement it with one perceptron in §1.6.)
+Formula: $(x_1\wedge\neg x_2)\vee x_3$. Truth table (rows $x_1x_2x_3$ = 000…111):
+
+| $x_1$ (dry) | $x_2$ (rain) | $x_3$ (override) | $x_1\wedge\neg x_2$ | output |
+|---|---|---|---|---|
+| 0 | 0 | 0 | 0 | **0** |
+| 0 | 0 | 1 | 0 | **1** |
+| 0 | 1 | 0 | 0 | **0** |
+| 0 | 1 | 1 | 0 | **1** |
+| 1 | 0 | 0 | 1 | **1** |
+| 1 | 0 | 1 | 1 | **1** |
+| 1 | 1 | 0 | 0 | **0** |
+| 1 | 1 | 1 | 0 | **1** |
+
+Truth vector **01011101** (rows 001, 011, 100, 101, 111 fire). (We implement it with one perceptron in §1.6.)
+
+```mermaid
+flowchart LR
+  X1["x₁: soil dry"]:::base --> A["x₁ ∧ ¬x₂"]:::core
+  X2["x₂: raining"]:::base -- "negated" --> A
+  A -- "or" --> O["valve open"]:::good
+  X3["x₃: override"]:::base -- "or" --> O
+  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
+  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
+  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
+```
 
 ### 1.3.5 Geometry: a Boolean function colours the corners of a cube
 
@@ -175,17 +199,57 @@ Inputs $\{0,1\}^n$ are the **corners of an $n$-dimensional cube** (square for $n
 
 A single neuron draws **one hyperplane** (a line for $n=2$); it represents $f$ iff the line separates ● from ○.
 
-```
-   AND (0001)          OR (0111)           XOR (0110)
- x2                  x2                  x2
- 1  ○ ------ ●       1  ● ------ ●       1  ● ------ ○
-    |   \    |          | \      |          |        |
-    |    \   |          |  \     |          |   ??   |
- 0  ○ ------ ○       0  ○ ------ ●       0  ○ ------ ●
-    0        1 x1       0        1 x1       0        1 x1
- line x1+x2=1.5      line x1+x2=0.5      no single line works
+A single neuron draws **one hyperplane** (a line for $n=2$); it represents $f$ iff the line separates ● from ○.
 
-```
+<div class="fig" role="img" aria-label="Separating lines for AND and OR, and why XOR has none">
+<svg viewBox="0 0 660 240" width="660" style="font-family:var(--font)" aria-hidden="true">
+  <g>
+    <text x="110" y="22" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">AND · 0001</text>
+    <line x1="30" y1="170" x2="190" y2="170" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <line x1="60" y1="40" x2="60" y2="200" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <text x="60" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="160" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <text x="44" y="174" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="44" y="74" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <line x1="190" y1="150" x2="80" y2="40" style="stroke:var(--red-ink);stroke-width:2.5;stroke-linecap:round"/>
+    <circle cx="60" cy="170" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <circle cx="160" cy="170" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <circle cx="60" cy="70" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <circle cx="160" cy="70" r="9" style="fill:var(--blue-ink)"/>
+    <text x="110" y="224" text-anchor="middle" style="fill:var(--muted);font-size:12px">fires above x₁+x₂=1.5</text>
+  </g>
+  <g transform="translate(220,0)">
+    <text x="110" y="22" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">OR · 0111</text>
+    <line x1="30" y1="170" x2="190" y2="170" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <line x1="60" y1="40" x2="60" y2="200" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <text x="60" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="160" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <text x="44" y="174" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="44" y="74" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <line x1="140" y1="200" x2="30" y2="90" style="stroke:var(--red-ink);stroke-width:2.5;stroke-linecap:round"/>
+    <circle cx="60" cy="170" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <circle cx="160" cy="170" r="9" style="fill:var(--blue-ink)"/>
+    <circle cx="60" cy="70" r="9" style="fill:var(--blue-ink)"/>
+    <circle cx="160" cy="70" r="9" style="fill:var(--blue-ink)"/>
+    <text x="110" y="224" text-anchor="middle" style="fill:var(--muted);font-size:12px">fires above x₁+x₂=0.5</text>
+  </g>
+  <g transform="translate(440,0)">
+    <text x="110" y="22" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">XOR · 0110</text>
+    <line x1="30" y1="170" x2="190" y2="170" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <line x1="60" y1="40" x2="60" y2="200" style="stroke:var(--line-strong);stroke-width:1.5"/>
+    <text x="60" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="160" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <text x="44" y="174" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+    <text x="44" y="74" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+    <circle cx="60" cy="170" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <circle cx="160" cy="170" r="9" style="fill:var(--blue-ink)"/>
+    <circle cx="60" cy="70" r="9" style="fill:var(--blue-ink)"/>
+    <circle cx="160" cy="70" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+    <text x="110" y="224" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:600">no single line separates ● from ○</text>
+  </g>
+</svg>
+<p class="fig-cap">Corners of the unit square: filled ● = output 1, hollow ○ = output 0. Axes run 0 → 1.</p>
+</div>
 
 **[Intuition]** XOR's ● corners are on one diagonal and ○ on the other → any line cutting one diagonal pair apart also cuts the other.
 
@@ -195,6 +259,76 @@ A single neuron draws **one hyperplane** (a line for $n=2$); it represents $f$ i
 - **Symmetric:** output depends only on **how many** inputs are 1, not which (AND, OR, majority, XOR are symmetric; $x_1\wedge\neg x_2$ is not).
 
 A plain MP neuron (no inhibition) computes exactly the **symmetric + monotone** threshold functions "at least θ inputs on". Keep this in mind for §1.4.
+
+<div class="fig" role="img" aria-label="Monotone versus non-monotone outputs on the input lattice, and symmetric count curves">
+<svg viewBox="0 0 680 290" width="680" style="font-family:var(--font)" aria-hidden="true">
+  <text x="90" y="22" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">AND · monotone ✓</text>
+  <line x1="90" y1="220" x2="35" y2="150" style="stroke:var(--line-strong);stroke-width:2"/>
+  <line x1="90" y1="220" x2="145" y2="150" style="stroke:var(--line-strong);stroke-width:2"/>
+  <line x1="35" y1="150" x2="90" y2="80" style="stroke:var(--line-strong);stroke-width:2"/>
+  <line x1="145" y1="150" x2="90" y2="80" style="stroke:var(--line-strong);stroke-width:2"/>
+  <circle cx="90" cy="80" r="16" style="fill:var(--blue-ink)"/>
+  <text x="90" y="85" text-anchor="middle" style="fill:var(--panel);font-size:14px;font-weight:700">1</text>
+  <circle cx="35" cy="150" r="16" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <text x="35" y="155" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">0</text>
+  <circle cx="145" cy="150" r="16" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <text x="145" y="155" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">0</text>
+  <circle cx="90" cy="220" r="16" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <text x="90" y="225" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">0</text>
+  <text x="90" y="54" text-anchor="middle" style="fill:var(--muted);font-size:11px">11</text>
+  <text x="35" y="182" text-anchor="middle" style="fill:var(--muted);font-size:11px">01</text>
+  <text x="145" y="182" text-anchor="middle" style="fill:var(--muted);font-size:11px">10</text>
+  <text x="90" y="252" text-anchor="middle" style="fill:var(--muted);font-size:11px">00</text>
+  <text x="250" y="22" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">NAND · not monotone ✗</text>
+  <line x1="250" y1="220" x2="195" y2="150" style="stroke:var(--line-strong);stroke-width:2"/>
+  <line x1="250" y1="220" x2="305" y2="150" style="stroke:var(--line-strong);stroke-width:2"/>
+  <line x1="195" y1="150" x2="250" y2="80" style="stroke:var(--red-ink);stroke-width:4;stroke-linecap:round"/>
+  <line x1="305" y1="150" x2="250" y2="80" style="stroke:var(--line-strong);stroke-width:2"/>
+  <text x="204" y="106" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:700">1 → 0</text>
+  <circle cx="250" cy="80" r="16" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <text x="250" y="85" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">0</text>
+  <circle cx="195" cy="150" r="16" style="fill:var(--blue-ink)"/>
+  <text x="195" y="155" text-anchor="middle" style="fill:var(--panel);font-size:14px;font-weight:700">1</text>
+  <circle cx="305" cy="150" r="16" style="fill:var(--blue-ink)"/>
+  <text x="305" y="155" text-anchor="middle" style="fill:var(--panel);font-size:14px;font-weight:700">1</text>
+  <circle cx="250" cy="220" r="16" style="fill:var(--blue-ink)"/>
+  <text x="250" y="225" text-anchor="middle" style="fill:var(--panel);font-size:14px;font-weight:700">1</text>
+  <text x="250" y="54" text-anchor="middle" style="fill:var(--muted);font-size:11px">11</text>
+  <text x="195" y="182" text-anchor="middle" style="fill:var(--muted);font-size:11px">01</text>
+  <text x="305" y="182" text-anchor="middle" style="fill:var(--muted);font-size:11px">10</text>
+  <text x="250" y="252" text-anchor="middle" style="fill:var(--muted);font-size:11px">00</text>
+  <text x="515" y="22" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">Symmetric = decided by count k</text>
+  <line x1="400" y1="100" x2="645" y2="100" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="400" y1="200" x2="645" y2="200" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="400" y1="220" x2="645" y2="220" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="400" y1="220" x2="400" y2="60" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <text x="386" y="104" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="386" y="204" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="420" y="240" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="520" y="240" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="620" y="240" text-anchor="middle" style="fill:var(--muted);font-size:11px">2</text>
+  <text x="530" y="262" text-anchor="middle" style="fill:var(--muted);font-size:11px">k = number of ones</text>
+  <polyline points="420,200 520,200 520,100 620,100" fill="none" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <circle cx="420" cy="200" r="5" style="fill:var(--blue-ink)"/>
+  <circle cx="520" cy="200" r="5" style="fill:var(--blue-ink)"/>
+  <circle cx="620" cy="100" r="5" style="fill:var(--blue-ink)"/>
+  <polyline points="420,200 420,100 520,100 620,100" fill="none" style="stroke:var(--green-ink);stroke-width:2.5"/>
+  <circle cx="420" cy="200" r="5" style="fill:var(--green-ink)"/>
+  <circle cx="520" cy="100" r="5" style="fill:var(--green-ink)"/>
+  <circle cx="620" cy="100" r="5" style="fill:var(--green-ink)"/>
+  <polyline points="420,200 420,100 520,100 520,200 620,200" fill="none" style="stroke:var(--yellow-ink);stroke-width:2.5"/>
+  <circle cx="420" cy="200" r="5" style="fill:var(--yellow-ink)"/>
+  <circle cx="520" cy="100" r="5" style="fill:var(--yellow-ink)"/>
+  <circle cx="620" cy="200" r="5" style="fill:var(--yellow-ink)"/>
+  <line x1="440" y1="52" x2="464" y2="52" style="stroke:var(--blue-ink);stroke-width:3;stroke-linecap:round"/>
+  <text x="470" y="56" style="fill:var(--fg-2);font-size:12px">AND</text>
+  <line x1="516" y1="52" x2="540" y2="52" style="stroke:var(--green-ink);stroke-width:3;stroke-linecap:round"/>
+  <text x="546" y="56" style="fill:var(--fg-2);font-size:12px">OR</text>
+  <line x1="584" y1="52" x2="608" y2="52" style="stroke:var(--yellow-ink);stroke-width:3;stroke-linecap:round"/>
+  <text x="614" y="56" style="fill:var(--fg-2);font-size:12px">XOR</text>
+</svg>
+<p class="fig-cap">Left: follow any upward edge — flipping one input 0→1. AND never drops 1→0, so it is monotone; NAND's highlighted edge drops 1→0. Right: a symmetric function is fully described by its count curve. x₁∧¬x₂ cares <em>which</em> input is on, so it has no count curve at all.</p>
+</div>
 
 **[?]** *Think:* how many symmetric Boolean functions of $n$ inputs exist? (Output depends on the count $k\in\{0,\dots,n\}$ → $2^{n+1}$.) How many of them are "count ≥ θ"? ($n+2$, including always-0/always-1.)
 
@@ -211,6 +345,35 @@ $$g(\mathbf x)=\sum_{i\in\text{exc}}x_i,\qquad y=\begin{cases}1 & g(\mathbf x)\g
 - **Absolute inhibition:** any active inhibitory input forces $y=0$ regardless of the sum.
 
 Compact formula: $y=\mathbb 1\!\left[\sum_{\text{exc}}x_i\ge\theta\right]\cdot\prod_{j\in\text{inh}}(1-x_j)$.
+
+<div class="fig" role="img" aria-label="Anatomy of an MP neuron: excitatory inputs sum, inhibitory input vetoes, threshold decides">
+<svg viewBox="0 0 640 280" width="640" style="font-family:var(--font)" aria-hidden="true">
+  <line x1="100" y1="60" x2="272" y2="130" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="100" y1="140" x2="272" y2="130" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="100" y1="220" x2="420" y2="130" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
+  <line x1="412" y1="122" x2="428" y2="138" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
+  <line x1="360" y1="130" x2="392" y2="130" style="stroke:var(--fg);stroke-width:2"/>
+  <line x1="480" y1="130" x2="520" y2="130" style="stroke:var(--fg);stroke-width:2"/>
+  <circle cx="80" cy="60" r="20" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="80" y="66" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">x₁</text>
+  <circle cx="80" cy="140" r="20" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="80" y="146" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">x₂</text>
+  <circle cx="80" cy="220" r="20" style="fill:var(--panel);stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:5 4"/>
+  <text x="80" y="226" text-anchor="middle" style="fill:var(--fg);font-size:14px;font-weight:700">x₃</text>
+  <text x="8" y="64" style="fill:var(--muted);font-size:11px">1 · exc</text>
+  <text x="8" y="144" style="fill:var(--muted);font-size:11px">1 · exc</text>
+  <text x="8" y="224" style="fill:var(--muted);font-size:11px">0 · inh</text>
+  <circle cx="300" cy="130" r="30" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="300" y="139" text-anchor="middle" style="fill:var(--blue-ink);font-size:22px;font-weight:700">Σ</text>
+  <text x="376" y="116" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">g = 2</text>
+  <polygon points="450,100 480,130 450,160 420,130" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
+  <text x="450" y="135" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">≥ θ</text>
+  <text x="450" y="180" text-anchor="middle" style="fill:var(--muted);font-size:11px">θ = 2</text>
+  <rect x="520" y="102" width="72" height="56" rx="12" style="fill:var(--green);stroke:var(--green-ink);stroke-width:2"/>
+  <text x="556" y="136" text-anchor="middle" style="fill:var(--green-ink);font-size:16px;font-weight:700">y = 1</text>
+</svg>
+<p class="fig-cap">An MP neuron at work (θ = 2): excitatory 1s add up (g = 1 + 1 = 2 ≥ 2 → fires); the inhibitory x₃ is 0, so no veto. Any x₃ = 1 would force y = 0 via the dashed veto line.</p>
+</div>
 
 **Diagram — how an MP neuron decides**
 
@@ -278,6 +441,54 @@ Decision boundary: $x_1+x_2+\cdots+x_k=\theta$ — a hyperplane whose normal is 
 
 **[Intuition]** This one picture explains every MP limitation: you can **slide** the line but never **rotate** it, and you can only ever fire on the "more ones" side.
 
+<div class="fig" role="img" aria-label="Animation: the MP decision line slides but never rotates">
+<svg viewBox="0 0 560 370" width="560" style="font-family:var(--font)" aria-hidden="true">
+  <text x="230" y="20" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">MP boundary: x₁ + x₂ = θ</text>
+  <line x1="130" y1="30" x2="130" y2="330" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="80" y1="280" x2="380" y2="280" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="130" y1="30" x2="130" y2="330" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="230" y1="30" x2="230" y2="330" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="330" y1="30" x2="330" y2="330" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="80" y1="280" x2="380" y2="280" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="80" y1="180" x2="380" y2="180" style="stroke:var(--line);stroke-width:1"/>
+  <line x1="80" y1="80" x2="380" y2="80" style="stroke:var(--line);stroke-width:1"/>
+  <rect x="130" y="180" width="100" height="100" style="fill:var(--blue-ink);fill-opacity:.15"/>
+  <text x="130" y="298" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="230" y="298" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="330" y="298" text-anchor="middle" style="fill:var(--muted);font-size:11px">2</text>
+  <text x="392" y="284" style="fill:var(--muted);font-size:11px">x₁</text>
+  <text x="120" y="284" text-anchor="end" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="120" y="184" text-anchor="end" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="120" y="84" text-anchor="end" style="fill:var(--muted);font-size:11px">2</text>
+  <text x="130" y="18" text-anchor="middle" style="fill:var(--muted);font-size:11px">x₂</text>
+  <circle cx="130" cy="280" r="8" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <circle cx="230" cy="280" r="8" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <circle cx="130" cy="180" r="8" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <circle cx="230" cy="180" r="8" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <circle cx="330" cy="280" r="4" style="fill:var(--panel);stroke:var(--muted);stroke-width:2"/>
+  <circle cx="330" cy="180" r="4" style="fill:var(--panel);stroke:var(--muted);stroke-width:2"/>
+  <circle cx="330" cy="80" r="4" style="fill:var(--panel);stroke:var(--muted);stroke-width:2"/>
+  <circle cx="230" cy="80" r="4" style="fill:var(--panel);stroke:var(--muted);stroke-width:2"/>
+  <circle cx="130" cy="80" r="4" style="fill:var(--panel);stroke:var(--muted);stroke-width:2"/>
+  <line x1="180" y1="280" x2="130" y2="230" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round">
+    <animate attributeName="x1" values="180;380;180" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="230;30;230" dur="5s" repeatCount="indefinite"/>
+  </line>
+  <text x="167" y="245" text-anchor="middle" style="fill:var(--red-ink);font-size:14px;font-weight:700">θ
+    <animate attributeName="x" values="167;267;167" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="245;145;245" dur="5s" repeatCount="indefinite"/>
+  </text>
+  <line x1="400" y1="100" x2="444" y2="100" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
+  <text x="452" y="104" style="fill:var(--fg-2);font-size:12px">θ slides</text>
+  <line x1="404" y1="152" x2="444" y2="112" style="stroke:var(--fg);stroke-width:2.5;stroke-linecap:round"/>
+  <line x1="444" y1="112" x2="440" y2="123" style="stroke:var(--fg);stroke-width:2.5;stroke-linecap:round"/>
+  <line x1="444" y1="112" x2="433" y2="116" style="stroke:var(--fg);stroke-width:2.5;stroke-linecap:round"/>
+  <text x="452" y="140" style="fill:var(--fg-2);font-size:12px">(1,1) normal · fixed</text>
+  <text x="400" y="180" style="fill:var(--fg-2);font-size:12px">slope −1 · fixed</text>
+</svg>
+<p class="fig-cap">Watch the red line: θ slides it across the grid, but its slope (−1) and normal (1,1) never change. A perceptron's real weights rotate this line too — that rotation is exactly what §1.4.6's impossibilities need.</p>
+</div>
+
 ### 1.4.6 What a single MP neuron *cannot* do (with proofs)
 
 **(a) XOR.** Neither input can be inhibitory (each alone gives output 1). Both excitatory: 10 → 1 needs $1\ge\theta$; 11 → 0 needs $2<\theta$. Contradiction. ∎
@@ -323,23 +534,57 @@ $w_0$ is the **bias** — the neuron's prior tendency ("prejudice") to fire.
 
 **±1 form:** labels $y\in\{-1,+1\}$, predict $+1$ iff $\mathbf w^\top\mathbf x+b\ge0$. Same model, different bookkeeping.
 
-**Diagram — the perceptron as a computation**
+**Animated — the perceptron firing** (loop illustrative, not to scale; shown for $n=2$)
 
-```mermaid
-flowchart LR
-  X0["x₀ = 1"]:::base -- "w₀ = −θ" --> S
-  X1["x₁"]:::base -- "w₁" --> S
-  X2["x₂"]:::base -- "w₂" --> S
-  XN["xₙ"]:::base -- "wₙ" --> S
-  S["Σ wᵢxᵢ<br/>score"]:::core --> T{"score ≥ 0 ?"}:::q
-  T -- yes --> Y1["ŷ = 1"]:::good
-  T -- no --> Y0["ŷ = 0"]:::warn
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef q fill:#EEE8F5,stroke:#5A3C82,stroke-width:3px,color:#5A3C82,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef warn fill:#F6E6E6,stroke:#962828,stroke-width:3px,color:#962828,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Animation: weighted signals flow into the sum, cross the threshold, and the output fires">
+<svg viewBox="0 0 640 280" width="640" style="font-family:var(--font)" aria-hidden="true">
+  <line x1="100" y1="60" x2="302" y2="140" style="stroke:var(--blue-ink);stroke-width:2"/>
+  <line x1="100" y1="140" x2="302" y2="140" style="stroke:var(--blue-ink);stroke-width:2"/>
+  <line x1="100" y1="220" x2="302" y2="140" style="stroke:var(--blue-ink);stroke-width:2"/>
+  <line x1="360" y1="140" x2="442" y2="140" style="stroke:var(--fg);stroke-width:2"/>
+  <line x1="498" y1="140" x2="546" y2="140" style="stroke:var(--fg);stroke-width:2"/>
+  <circle cx="80" cy="60" r="20" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
+  <text x="80" y="66" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">x₀</text>
+  <circle cx="80" cy="140" r="20" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
+  <text x="80" y="146" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">x₁</text>
+  <circle cx="80" cy="220" r="20" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
+  <text x="80" y="226" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">x₂</text>
+  <text x="8" y="64" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="8" y="144" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="8" y="224" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="201" y="88" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">−0.5</text>
+  <text x="201" y="126" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">1</text>
+  <text x="201" y="198" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">0.5</text>
+  <circle cx="330" cy="140" r="30" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <circle cx="330" cy="140" r="30" fill="none" style="stroke:var(--blue-ink);stroke-width:2;opacity:0">
+    <animate attributeName="opacity" values="0;.7;0" keyTimes="0;.5;1" dur="3.6s" begin="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="330" y="149" text-anchor="middle" style="fill:var(--blue-ink);font-size:20px;font-weight:700">Σ</text>
+  <circle cx="470" cy="140" r="26" style="fill:var(--panel);stroke:var(--yellow-ink);stroke-width:2.5;stroke-dasharray:6 5"/>
+  <text x="470" y="145" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">≥ 0?</text>
+  <rect x="546" y="110" width="76" height="60" rx="12" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
+  <text x="584" y="100" text-anchor="middle" style="fill:var(--muted);font-size:12px">ŷ</text>
+  <text x="584" y="150" text-anchor="middle" style="fill:var(--green-ink);font-size:22px;font-weight:700;opacity:1">1
+    <animate attributeName="opacity" values="1;1;0;1" keyTimes="0;.6;.75;1" dur="3.6s" repeatCount="indefinite"/>
+  </text>
+  <text x="584" y="150" text-anchor="middle" style="fill:var(--red-ink);font-size:22px;font-weight:700;opacity:0">0
+    <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.6;.75;1" dur="3.6s" repeatCount="indefinite"/>
+  </text>
+  <circle r="6" style="fill:var(--blue-ink)">
+    <animateMotion dur="1.2s" repeatCount="indefinite" path="M100,60 L302,140"/>
+  </circle>
+  <circle r="6" style="fill:var(--blue-ink)">
+    <animateMotion dur="1.2s" begin="0.4s" repeatCount="indefinite" path="M100,140 L302,140"/>
+  </circle>
+  <circle r="6" style="fill:var(--blue-ink)">
+    <animateMotion dur="1.2s" begin="0.8s" repeatCount="indefinite" path="M100,220 L302,140"/>
+  </circle>
+  <circle r="5" style="fill:var(--green-ink)">
+    <animateMotion dur="0.6s" begin="1.2s" repeatCount="indefinite" path="M360,140 L442,140"/>
+  </circle>
+</svg>
+<p class="fig-cap">Weighted signals (here w = (−0.5, 1, 0.5), score = 1.0 ≥ 0) stream into Σ, cross the ≥ 0 threshold, and the lamp fires. Same computation as the diagram it replaces, now in motion.</p>
+</div>
 
 ### 1.5.2 Geometry (the key to everything in PLA)
 
@@ -465,15 +710,32 @@ Plot $E$ over the $(w_1,w_2)$ plane (with $w_0=-1$): each data point $\mathbf x$
 The plane is cut into regions; inside a region the error is **constant**.
 For OR: error 0 exactly when $w_1\ge1$ and $w_2\ge1$ (rows 10, 01 need it; then 11 is automatic).
 
-```
- w2
-  ^   error 1     |   error 0
-  |  (01 ok,10 x) |  (all ok)
- 1+---------------+----------->
-  |  error 2 or 3 |   error 1
-  |  (both wrong) |  (10 ok,01 x)
-  +---------------1-----------> w1
-```
+<div class="fig" role="img" aria-label="Weight space for OR: lines per training row cut the plane into constant-error regions">
+<svg viewBox="0 0 440 330" width="440" style="font-family:var(--font)" aria-hidden="true">
+  <rect x="215" y="20" width="135" height="135" style="fill:var(--blue-ink);fill-opacity:.18"/>
+  <line x1="80" y1="290" x2="350" y2="290" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="80" y1="290" x2="80" y2="20" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="215" y1="20" x2="215" y2="290" style="stroke:var(--red-ink);stroke-width:2"/>
+  <line x1="80" y1="155" x2="350" y2="155" style="stroke:var(--red-ink);stroke-width:2"/>
+  <line x1="80" y1="110" x2="260" y2="290" style="stroke:var(--red-ink);stroke-width:2;stroke-dasharray:7 5"/>
+  <text x="125" y="306" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="215" y="306" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="305" y="306" text-anchor="middle" style="fill:var(--muted);font-size:11px">2</text>
+  <text x="362" y="294" style="fill:var(--muted);font-size:11px">w₁</text>
+  <text x="64" y="249" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="64" y="159" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="64" y="69" text-anchor="middle" style="fill:var(--muted);font-size:11px">2</text>
+  <text x="76" y="16" text-anchor="middle" style="fill:var(--muted);font-size:11px">w₂</text>
+  <text x="221" y="36" style="fill:var(--muted);font-size:11px">w₁ = 1</text>
+  <text x="330" y="147" text-anchor="middle" style="fill:var(--muted);font-size:11px">w₂ = 1</text>
+  <text x="272" y="284" style="fill:var(--muted);font-size:11px">w₁+w₂ = 1</text>
+  <text x="282" y="90" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">error 0 · all ok</text>
+  <text x="282" y="222" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">error 1</text>
+  <text x="147" y="90" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">error 1</text>
+  <text x="147" y="222" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">error 2–3</text>
+</svg>
+<p class="fig-cap">Weight space for OR (w₀ = −1). Each training row is a red line; crossing one flips that row's prediction. The shaded quadrant (w₁ ≥ 1, w₂ ≥ 1) is the zero-error region — every point in it is a valid separator.</p>
+</div>
 (The region boundaries are $w_1=1$, $w_2=1$, and $w_1+w_2=1$ for row 11; the sketch shows the main quadrant structure.)
 
 **[Intuition] Implications**
@@ -514,29 +776,64 @@ until a full epoch makes no update
 
 Starting from $\mathbf w=\mathbf 0$, the first negative point visited is always updated.
 
-**Diagram — the PLA loop**
+**Diagram — the PLA loop** (animated; one full cycle ≈ 8 s)
 
-```mermaid
-flowchart TD
-  A["Initialise w (0 or random)"]:::base --> B["Pick next point x"]:::core
-  B --> C{"x ∈ P and w·x < 0 ?"}:::q
-  C -- yes --> D["w ← w + x"]:::warn
-  C -- no --> E{"x ∈ N and w·x ≥ 0 ?"}:::q
-  E -- yes --> F["w ← w − x"]:::warn
-  E -- no --> G["No change"]:::good
-  D --> H{"End of epoch ?"}:::q
-  F --> H
-  G --> H
-  H -- no --> B
-  H -- yes --> I{"Any update this epoch ?"}:::q
-  I -- yes --> B
-  I -- no --> J["Stop: separator found"]:::good
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef q fill:#EEE8F5,stroke:#5A3C82,stroke-width:3px,color:#5A3C82,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef warn fill:#F6E6E6,stroke:#962828,stroke-width:3px,color:#962828,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Animated four-stage PLA loop: pick, test, correct, epoch check">
+<svg viewBox="0 0 640 300" width="640" style="font-family:var(--font)" aria-hidden="true">
+  <polyline points="244,80 392,80" fill="none" style="stroke:var(--fg);stroke-width:2"/>
+  <polyline points="382,75 392,80 382,85" fill="none" style="stroke:var(--fg);stroke-width:2;stroke-linecap:round"/>
+  <polyline points="500,120 500,170" fill="none" style="stroke:var(--fg);stroke-width:2"/>
+  <polyline points="495,160 500,170 505,160" fill="none" style="stroke:var(--fg);stroke-width:2;stroke-linecap:round"/>
+  <polyline points="396,210 248,210" fill="none" style="stroke:var(--fg);stroke-width:2"/>
+  <polyline points="258,205 248,210 258,215" fill="none" style="stroke:var(--fg);stroke-width:2;stroke-linecap:round"/>
+  <polyline points="40,210 28,210 28,80 40,80" fill="none" style="stroke:var(--fg);stroke-width:2"/>
+  <polyline points="30,74 40,80 30,86" fill="none" style="stroke:var(--fg);stroke-width:2;stroke-linecap:round"/>
+  <rect x="40" y="48" width="200" height="64" rx="12" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:1.5"/>
+  <rect x="40" y="48" width="200" height="64" rx="12" style="fill:var(--blue-ink);fill-opacity:0;stroke:var(--blue-ink);stroke-opacity:0;stroke-width:2.5">
+    <animate attributeName="fill-opacity" values="0;.2;.2;0" keyTimes="0;.04;.21;.27" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;.9;.9;0" keyTimes="0;.04;.21;.27" dur="8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="140" y="76" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">1 · Pick next x</text>
+  <text x="140" y="96" text-anchor="middle" style="fill:var(--muted);font-size:11px">in fixed order</text>
+  <rect x="400" y="48" width="200" height="64" rx="12" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:1.5"/>
+  <rect x="400" y="48" width="200" height="64" rx="12" style="fill:var(--blue-ink);fill-opacity:0;stroke:var(--blue-ink);stroke-opacity:0;stroke-width:2.5">
+    <animate attributeName="fill-opacity" values="0;.2;.2;0" keyTimes="0;.04;.21;.27" dur="8s" begin="2s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;.9;.9;0" keyTimes="0;.04;.21;.27" dur="8s" begin="2s" repeatCount="indefinite"/>
+  </rect>
+  <text x="500" y="76" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">2 · Test for mistake</text>
+  <text x="500" y="96" text-anchor="middle" style="fill:var(--muted);font-size:11px">P: w·x&lt;0? N: w·x≥0?</text>
+  <rect x="400" y="178" width="200" height="64" rx="12" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:1.5"/>
+  <rect x="400" y="178" width="200" height="64" rx="12" style="fill:var(--blue-ink);fill-opacity:0;stroke:var(--blue-ink);stroke-opacity:0;stroke-width:2.5">
+    <animate attributeName="fill-opacity" values="0;.2;.2;0" keyTimes="0;.04;.21;.27" dur="8s" begin="4s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;.9;.9;0" keyTimes="0;.04;.21;.27" dur="8s" begin="4s" repeatCount="indefinite"/>
+  </rect>
+  <text x="500" y="206" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">3 · Correct or keep</text>
+  <text x="500" y="226" text-anchor="middle" style="fill:var(--muted);font-size:11px">w ← w+x / w−x / —</text>
+  <rect x="40" y="178" width="200" height="64" rx="12" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:1.5"/>
+  <rect x="40" y="178" width="200" height="64" rx="12" style="fill:var(--blue-ink);fill-opacity:0;stroke:var(--blue-ink);stroke-opacity:0;stroke-width:2.5">
+    <animate attributeName="fill-opacity" values="0;.2;.2;0" keyTimes="0;.04;.21;.27" dur="8s" begin="6s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0;.9;.9;0" keyTimes="0;.04;.21;.27" dur="8s" begin="6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="140" y="206" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">4 · Epoch over?</text>
+  <text x="140" y="226" text-anchor="middle" style="fill:var(--muted);font-size:11px">clean → stop ✓ else loop</text>
+  <circle r="7" style="fill:var(--red-ink)">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;.299;.407;.706;.799;.907;1" keyTimes="0;.25;.5;.75;.83;.92;1" path="M140,80 L500,80 L500,210 L140,210 L28,210 L28,80 L140,80"/>
+  </circle>
+  <text x="320" y="282" text-anchor="middle" style="fill:var(--fg);font-size:13px;opacity:0">Pick the next point in order.
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.21;.27" dur="8s" repeatCount="indefinite"/>
+  </text>
+  <text x="320" y="282" text-anchor="middle" style="fill:var(--fg);font-size:13px;opacity:0">P needs w·x ≥ 0 · N needs w·x &lt; 0 — mistake?
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.21;.27" dur="8s" begin="2s" repeatCount="indefinite"/>
+  </text>
+  <text x="320" y="282" text-anchor="middle" style="fill:var(--fg);font-size:13px;opacity:0">Mistake → w ← w ± x · otherwise unchanged.
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.21;.27" dur="8s" begin="4s" repeatCount="indefinite"/>
+  </text>
+  <text x="320" y="282" text-anchor="middle" style="fill:var(--fg);font-size:13px;opacity:0">Clean epoch → stop ✓ · else next epoch.
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.21;.27" dur="8s" begin="6s" repeatCount="indefinite"/>
+  </text>
+</svg>
+<p class="fig-cap">Follow the dot: pick → test → correct → epoch check, looping until one full epoch makes no update. The exact update rules are in the code block below.</p>
+</div>
 
 ### 1.8.3 Hand run 1 — learning AND from $\mathbf w=\mathbf 0$ (order 00, 01, 10, 11)
 

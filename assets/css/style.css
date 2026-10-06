@@ -423,6 +423,11 @@ a.f-link:hover { border-color: var(--c, var(--blue)); box-shadow: 0 0 0 2px var(
 .mm-error { text-align: left; color: var(--red-ink); font-size: 14px; }
 .mm-error pre { margin: 8px 0 0; white-space: pre-wrap; font: 500 12.5px var(--mono); color: var(--fg-2); }
 
+/* ---------- static figures (hand-written inline SVG) ---------- */
+.fig { margin: 1.5em 0; padding: 16px 12px 6px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow-x: auto; text-align: center; }
+.fig svg { display: inline-block; max-width: 100%; height: auto; }
+.fig-cap { font-size: 13px; color: var(--muted); margin: 8px 4px 6px; line-height: 1.5; }
+
 .lb { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: var(--bg); }
 .lb-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
 .lb-bar .sp { flex: 1; } .lb-zoom { min-width: 52px; text-align: center; font-size: 13px; color: var(--muted); }
@@ -521,9 +526,10 @@ mark.ann.flash { animation: flash 1.6s ease; }
   .doc h1 { font-size: 22pt; } .doc h2 { font-size: 16pt; } .doc h3 { font-size: 13pt; }
   .chunk { content-visibility: visible !important; contain: none !important; }
   .doc :is(h1, h2, h3, h4, h5) { break-after: avoid; page-break-after: avoid; }
-  .code-block, .table-wrap, .mermaid-box, .m.md, blockquote, img, tr, .callout { break-inside: avoid; page-break-inside: avoid; }
+  .code-block, .table-wrap, .mermaid-box, .fig, .m.md, blockquote, img, tr, .callout { break-inside: avoid; page-break-inside: avoid; }
   .code-block pre { white-space: pre-wrap; overflow: visible; }
-  .table-wrap, .mermaid-box, .m.md { overflow: visible; }
+  .table-wrap, .mermaid-box, .fig, .m.md { overflow: visible; }
   .mm-svg svg { max-width: 100% !important; height: auto !important; }
+  .fig svg { max-width: 100% !important; height: auto !important; }
   .doc a { color: inherit; text-decoration: none; }
 }
