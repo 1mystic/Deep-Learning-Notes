@@ -755,7 +755,7 @@ Example: $\neg x_1\vee x_2\vee\neg x_3$ → $\mathbf w=(-1,1,-1)$, $\theta=-1$. 
 ### 1.6.3 Proving impossibility algebraically (XOR)
 
 Rows give: $w_0<0$ (00), $w_0+w_2\ge0$ (01), $w_0+w_1\ge0$ (10), $w_0+w_1+w_2<0$ (11).
-Add the middle two: $2w_0+w_1+w_2\ge0\Rightarrow w_0+w_1+w_2\ge-w_0>0$ (since $w_0<0$). Contradicts the last. ∎
+Add the middle two: $2w_0+w_1+w_2\ge0\Rightarrow w_0+w_1+w_2\ge-w_0>0$ (since $w_0<0$). Contradicts the last.
 
 **[Exam]** *Template:* to prove non-separability, **add the "1" inequalities and the "0" inequalities so the same weight combination appears on both sides** and get a contradiction.
 
@@ -819,6 +819,7 @@ For OR: error 0 exactly when $w_1\ge1$ and $w_2\ge1$ (rows 10, 01 need it; then 
 </svg>
 <p class="fig-cap">Weight space for OR (w₀ = −1). Each training row is a red line; crossing one flips that row's prediction. The shaded quadrant (w₁ ≥ 1, w₂ ≥ 1) is the zero-error region — every point in it is a valid separator.</p>
 </div>
+
 (The region boundaries are $w_1=1$, $w_2=1$, and $w_1+w_2=1$ for row 11; the sketch shows the main quadrant structure.)
 
 **[Intuition] Implications**

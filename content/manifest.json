@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-06T09:34:13.275Z",
+  "generated": "2026-10-06T09:40:54.187Z",
   "notes": [
     {
       "id": "how-this-site-works",
@@ -84,8 +84,8 @@
       "color": "blue",
       "order": 1,
       "folder": "iitm-bs",
-      "updated": "2026-10-06T09:34:04.458Z",
-      "words": 7452,
+      "updated": "2026-10-06T09:40:37.446Z",
+      "words": 7451,
       "minutes": 34,
       "sections": 58,
       "outline": [
@@ -95,7 +95,7 @@
         "1.2 From biological to artificial neuron",
         "1.3 Boolean functions from first principles"
       ],
-      "v": "72eff097"
+      "v": "987d564f"
     },
     {
       "id": "week-2",
