@@ -350,8 +350,8 @@ Compact formula: $y=\mathbb 1\!\left[\sum_{\text{exc}}x_i\ge\theta\right]\cdot\p
 <svg viewBox="0 0 640 280" width="640" style="font-family:var(--font)" aria-hidden="true">
   <line x1="100" y1="60" x2="272" y2="130" style="stroke:var(--blue-ink);stroke-width:2.5"/>
   <line x1="100" y1="140" x2="272" y2="130" style="stroke:var(--blue-ink);stroke-width:2.5"/>
-  <line x1="100" y1="220" x2="420" y2="130" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
-  <line x1="412" y1="122" x2="428" y2="138" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
+  <path d="M100,220 H442 Q450,220 450,212 V164" fill="none" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
+  <line x1="442" y1="178" x2="458" y2="178" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
   <line x1="360" y1="130" x2="392" y2="130" style="stroke:var(--fg);stroke-width:2"/>
   <line x1="480" y1="130" x2="520" y2="130" style="stroke:var(--fg);stroke-width:2"/>
   <circle cx="80" cy="60" r="20" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
@@ -368,7 +368,7 @@ Compact formula: $y=\mathbb 1\!\left[\sum_{\text{exc}}x_i\ge\theta\right]\cdot\p
   <text x="376" y="116" text-anchor="middle" style="fill:var(--fg-2);font-size:12px">g = 2</text>
   <polygon points="450,100 480,130 450,160 420,130" style="fill:var(--panel);stroke:var(--line-strong);stroke-width:2"/>
   <text x="450" y="135" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">≥ θ</text>
-  <text x="450" y="180" text-anchor="middle" style="fill:var(--muted);font-size:11px">θ = 2</text>
+  <text x="450" y="82" text-anchor="middle" style="fill:var(--muted);font-size:11px">θ = 2</text>
   <rect x="520" y="102" width="72" height="56" rx="12" style="fill:var(--green);stroke:var(--green-ink);stroke-width:2"/>
   <text x="556" y="136" text-anchor="middle" style="fill:var(--green-ink);font-size:16px;font-weight:700">y = 1</text>
 </svg>
@@ -492,6 +492,51 @@ Decision boundary: $x_1+x_2+\cdots+x_k=\theta$ — a hyperplane whose normal is 
 ### 1.4.6 What a single MP neuron *cannot* do (with proofs)
 
 **(a) XOR.** Neither input can be inhibitory (each alone gives output 1). Both excitatory: 10 → 1 needs $1\ge\theta$; 11 → 0 needs $2<\theta$. Contradiction. ∎
+
+But **several** MP neurons can: let $h_1=\text{OR}$ (θ = 1), $h_2=\text{AND}$ (θ = 2), $h_3=\text{NOT }h_2$ ($h_2$ inhibitory, θ = 0), $y=\text{AND}(h_1,h_3)$ (θ = 2). Every unit is a legal MP neuron:
+
+| row | $h_1$ = OR | $h_2$ = AND | $h_3$ = NOT $h_2$ | $y$ = AND($h_1,h_3$) | XOR? |
+|---|---|---|---|---|---|
+| 00 | 0 | 0 | 1 | 0 | ✓ |
+| 01 | 1 | 0 | 1 | 1 | ✓ |
+| 10 | 1 | 0 | 1 | 1 | ✓ |
+| 11 | 1 | 1 | 0 | 0 | ✓ |
+
+```mermaid
+flowchart LR
+  X1["x₁"]:::base --> H1["h₁ = OR<br/>θ = 1"]:::core
+  X1 --> H2["h₂ = AND<br/>θ = 2"]:::core
+  X2["x₂"]:::base --> H1
+  X2 --> H2
+  H2 -- "NOT" --> H3["h₃ = NOT h₂<br/>h₂ inhibits, θ = 0"]:::core
+  H1 --> Y["y = AND(h₁,h₃)<br/>θ = 2 = XOR"]:::good
+  H3 --> Y
+  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
+  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
+  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
+```
+
+<div class="fig" role="img" aria-label="XOR as the stripe between two MP decision lines">
+<svg viewBox="0 0 260 250" width="300" style="font-family:var(--font)" aria-hidden="true">
+  <polygon points="30,90 80,40 190,150 140,200" style="fill:var(--blue-ink);fill-opacity:.22"/>
+  <line x1="30" y1="170" x2="190" y2="170" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <line x1="60" y1="40" x2="60" y2="200" style="stroke:var(--line-strong);stroke-width:1.5"/>
+  <text x="60" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="160" y="188" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <text x="44" y="174" text-anchor="middle" style="fill:var(--muted);font-size:11px">0</text>
+  <text x="44" y="74" text-anchor="middle" style="fill:var(--muted);font-size:11px">1</text>
+  <line x1="140" y1="200" x2="30" y2="90" style="stroke:var(--red-ink);stroke-width:2.5;stroke-linecap:round"/>
+  <line x1="190" y1="150" x2="80" y2="40" style="stroke:var(--red-ink);stroke-width:2.5;stroke-linecap:round"/>
+  <text x="150" y="214" style="fill:var(--red-ink);font-size:12px;font-weight:600">h₁</text>
+  <text x="198" y="140" style="fill:var(--red-ink);font-size:12px;font-weight:600">h₂</text>
+  <circle cx="60" cy="170" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <circle cx="160" cy="170" r="9" style="fill:var(--blue-ink)"/>
+  <circle cx="60" cy="70" r="9" style="fill:var(--blue-ink)"/>
+  <circle cx="160" cy="70" r="9" style="fill:var(--panel);stroke:var(--fg);stroke-width:2.5"/>
+  <text x="130" y="240" text-anchor="middle" style="fill:var(--muted);font-size:12px">XOR = the shaded stripe</text>
+</svg>
+<p class="fig-cap">h₁ draws x₁+x₂ = 0.5, h₂ draws x₁+x₂ = 1.5; h₃ flips the second line's side, and y keeps the stripe — exactly the XOR corners. One unit keeps one side; two units keep a stripe.</p>
+</div>
 
 **(b) NAND — a surprise, since NAND *is* linearly separable.** Row 00 must fire ⇒ no inhibitor is needed there and $0\ge\theta$, so $\theta\le0$.
 
