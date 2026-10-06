@@ -538,6 +538,44 @@ flowchart LR
 <p class="fig-cap">h₁ draws x₁+x₂ = 0.5, h₂ draws x₁+x₂ = 1.5; h₃ flips the second line's side, and y keeps the stripe — exactly the XOR corners. One unit keeps one side; two units keep a stripe.</p>
 </div>
 
+Equivalently, in **3 MP neurons with no NOT stage**: detect each mixed pattern directly ($h_1=x_1\wedge\neg x_2$, $h_2=\neg x_1\wedge x_2$ — both E5-style MP units) and OR them:
+
+<div class="fig" role="img" aria-label="Layered network of three MP neurons computing XOR">
+<svg viewBox="0 0 680 380" width="640" style="font-family:var(--font)" aria-hidden="true">
+  <text x="110" y="40" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">Input layer</text>
+  <text x="360" y="40" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">Hidden layer</text>
+  <text x="560" y="40" text-anchor="middle" style="fill:var(--fg);font-size:13px;font-weight:700">Output layer</text>
+  <line x1="110" y1="140" x2="360" y2="110" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="110" y1="140" x2="360" y2="270" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
+  <line x1="110" y1="280" x2="360" y2="110" style="stroke:var(--red-ink);stroke-width:2.5;stroke-dasharray:7 6"/>
+  <line x1="110" y1="280" x2="360" y2="270" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="360" y1="110" x2="560" y2="190" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="360" y1="270" x2="560" y2="190" style="stroke:var(--blue-ink);stroke-width:2.5"/>
+  <line x1="326" y1="122" x2="337" y2="137" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
+  <line x1="326" y1="262" x2="334" y2="246" style="stroke:var(--red-ink);stroke-width:3;stroke-linecap:round"/>
+  <circle cx="110" cy="140" r="26" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="110" y="146" text-anchor="middle" style="fill:var(--fg);font-size:15px;font-weight:700">x₁</text>
+  <circle cx="110" cy="280" r="26" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="110" y="286" text-anchor="middle" style="fill:var(--fg);font-size:15px;font-weight:700">x₂</text>
+  <circle cx="360" cy="110" r="34" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="360" y="116" text-anchor="middle" style="fill:var(--fg);font-size:15px;font-weight:700">H₁</text>
+  <circle cx="360" cy="270" r="34" style="fill:var(--panel);stroke:var(--blue-ink);stroke-width:2.5"/>
+  <text x="360" y="276" text-anchor="middle" style="fill:var(--fg);font-size:15px;font-weight:700">H₂</text>
+  <circle cx="560" cy="190" r="30" style="fill:var(--green);stroke:var(--green-ink);stroke-width:2.5"/>
+  <text x="560" y="196" text-anchor="middle" style="fill:var(--green-ink);font-size:15px;font-weight:700">Y</text>
+  <text x="170" y="124" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px">exc</text>
+  <text x="170" y="296" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px">exc</text>
+  <text x="300" y="256" text-anchor="middle" style="fill:var(--red-ink);font-size:11px">inh</text>
+  <text x="300" y="136" text-anchor="middle" style="fill:var(--red-ink);font-size:11px">inh</text>
+  <text x="460" y="138" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px">exc</text>
+  <text x="460" y="248" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px">exc</text>
+  <text x="360" y="162" text-anchor="middle" style="fill:var(--muted);font-size:11px">x₁∧¬x₂ · θ = 1</text>
+  <text x="360" y="322" text-anchor="middle" style="fill:var(--muted);font-size:11px">¬x₁∧x₂ · θ = 1</text>
+  <text x="560" y="244" text-anchor="middle" style="fill:var(--muted);font-size:11px">OR · θ = 1</text>
+</svg>
+<p class="fig-cap">Three MP neurons suffice: H₁ and H₂ detect the two mixed patterns (inhibition supplies each ¬), and Y ORs them. Check 01: H₁ = 0∧¬1 → 0, H₂ = ¬0∧1 → 1, Y = 1 ✓. A common wrong turn is making H₂ "NAND with θ = 0 and veto inputs" — but veto fires on 01 and 10 as well, so that unit is NOR (1000), and AND(OR, NOR) is 0 everywhere.</p>
+</div>
+
 **(b) NAND — a surprise, since NAND *is* linearly separable.** Row 00 must fire ⇒ no inhibitor is needed there and $0\ge\theta$, so $\theta\le0$.
 
 Then with all inputs excitatory the neuron fires on *every* row — but 11 must give 0. So some input must be inhibitory, say $x_1$; then row 10 gives 0, but NAND(1,0)=1. Contradiction. ∎
