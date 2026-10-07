@@ -19,11 +19,12 @@ window.SITE_CONFIG = {
   collections: [
     { folder: "iitm-bs", title: "Deep Learning IITM BS", summary: "IITM BS course notes: full Weeks 1–4 file plus the exam-traps cheat-sheet.", color: "blue", order: 1 },
     { folder: "granular-dl-concepts", title: "Granular DL Concepts", summary: "Single-topic deep dives: backpropagation, optimisers and derivations.", color: "green", order: 2 },
-    { folder: "algorithmic-search", title: "Algorithmic and Search Problems", summary: "Interactive, research-grade visual essays on algorithms and search — each opens in a new tab.", color: "red", order: 3 }
+    { folder: "algorithmic-search", title: "Algorithmic and Search Problems", summary: "Algorithms and search: interactive visual essays plus the AI SMPS course collection.", color: "red", order: 3 },
+    { folder: "algorithmic-search/ai-smps-iitm", title: "AI: SMPS IITM", summary: "IITM BS AI course — Search Methods for Problem Solving: week-wise notes, guidebook, workbook and mock quiz.", color: "blue", order: 1 }
   ],
 
   /* ---- look & feel ---- */
-  defaultTheme: "system",                 // "system" | "light" | "dark"
+  defaultTheme: "light",                  // "system" | "light" | "dark"
   chips: true,                            // turn **[Ex]**, **[!]**, **[Exam]** … into small coloured chips
   badgeColors: {                          // chip label (lower case) → green | blue | red | yellow
     "intuition": "blue", "derivation": "green", "ex": "yellow", "!": "red", "exam": "red", "?": "blue"

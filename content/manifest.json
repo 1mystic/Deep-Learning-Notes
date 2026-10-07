@@ -1,6 +1,32 @@
 {
-  "generated": "2026-10-06T09:40:54.187Z",
+  "generated": "2026-10-07T05:53:54.914Z",
   "notes": [
+    {
+      "id": "smps-week-0-prep-guide",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-0-prep-guide.md",
+      "title": "Week 0 (Prep Guide: Big-O, DSA, Algorithm Map)",
+      "summary": "Zero-to-hero prerequisites: Big-O, stacks, queues, heaps, recursion, graphs, plus the full algorithm tree and LeetCode map.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "green",
+      "order": -1,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:38:55.718Z",
+      "words": 3435,
+      "minutes": 16,
+      "sections": 51,
+      "outline": [
+        "PART 0 — Prerequisites You MUST Have Before Week 1",
+        "0.1 What even is \"an algorithm\"?",
+        "0.2 Time Complexity (Big-O) — the language every algorithm's speed is described in",
+        "0.3 Basic Data Structures You Need Fluent, Not Just \"Heard Of\"",
+        "0.4 Recursion — you need to be comfortable with functions calling themselves"
+      ],
+      "v": "08aaed02"
+    },
     {
       "id": "how-this-site-works",
       "file": "how-this-site-works.md",
@@ -24,6 +50,33 @@
         "Using the reader"
       ],
       "v": "d5f6651f"
+    },
+    {
+      "id": "smps-weeks-1-4-guidebook",
+      "file": "algorithmic-search/ai-smps-iitm/smps-weeks-1-4-guidebook.md",
+      "title": "Weeks 1-4 Guidebook (Beginner to Exam)",
+      "summary": "Start-here companion: foundations to exam-ready patterns for weeks 1-4.",
+      "tags": [
+        "ai",
+        "smps",
+        "search",
+        "revision"
+      ],
+      "color": "green",
+      "order": 0,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:43:29.393Z",
+      "words": 8064,
+      "minutes": 37,
+      "sections": 64,
+      "outline": [
+        "PART A — FOUNDATIONS (Start Here)",
+        "A1 · How to Think Algorithmically (the 6-step habit)",
+        "A2 · Graphs in 5 Minutes",
+        "A3 · Three Waiting Lines: Stack, Queue, Priority Queue",
+        "A4 · Reading the Course Pseudocode"
+      ],
+      "v": "2208c7b0"
     },
     {
       "id": "backpropagation-and-optimisation",
@@ -72,6 +125,32 @@
       "v": "de806d87"
     },
     {
+      "id": "smps-week-1",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-1.md",
+      "title": "Week 1 (Classical AI, State Spaces)",
+      "summary": "Course setup: what AI is, the classical view, and problems framed as state spaces.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 1,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:43:04.014Z",
+      "words": 13072,
+      "minutes": 59,
+      "sections": 226,
+      "outline": [
+        "Week 1 — Foundations of AI",
+        "Lecture 1 — Basics of AI and Classical AI",
+        "1. Intelligent Agents",
+        "2. The Agent Has a Model of the World",
+        "3. Information Processing View of AI"
+      ],
+      "v": "6bd46618"
+    },
+    {
       "id": "week-1",
       "file": "iitm-bs/week-1.md",
       "title": "Week 1 (Neurons, Perceptron, PLA)",
@@ -96,6 +175,32 @@
         "1.3 Boolean functions from first principles"
       ],
       "v": "987d564f"
+    },
+    {
+      "id": "smps-week-2",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-2.md",
+      "title": "Week 2 (General Search Algorithms)",
+      "summary": "MoveGen, GoalTest and the general search architecture: which state to inspect next.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 2,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:53:17.496Z",
+      "words": 10334,
+      "minutes": 47,
+      "sections": 105,
+      "outline": [
+        "Lecture 2 — General Search Algorithms",
+        "Lecture 3 — Planning, Configuration, NodePairs & Deterministic Search",
+        "Lecture 4 — Deterministic State-Space Search",
+        "Lecture 5 — Search Trees, Duplicate Handling, and Termination",
+        "Lecture 6 — DFS vs BFS: Complexity, Quality, and Completeness"
+      ],
+      "v": "351c0317"
     },
     {
       "id": "week-2",
@@ -150,6 +255,32 @@
       "v": "c43e2ba2"
     },
     {
+      "id": "smps-week-3",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-3.md",
+      "title": "Week 3 (Heuristic Search, Hill Climbing)",
+      "summary": "Heuristic search from first principles: landscapes, gravity intuition, hill climbing.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 3,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:52:21.190Z",
+      "words": 10709,
+      "minutes": 49,
+      "sections": 187,
+      "outline": [
+        "Heuristic Search + Hill Climbing",
+        "Week 3 Overview",
+        "Lecture 1 --- Heuristic Search",
+        "4. Heuristic Function h(N)",
+        "5. Best First Search"
+      ],
+      "v": "77321311"
+    },
+    {
       "id": "week-4",
       "file": "iitm-bs/week-4.md",
       "title": "Week 4 (GD Variants, Momentum, Adam, Schedules)",
@@ -176,6 +307,32 @@
       "v": "7581f8af"
     },
     {
+      "id": "smps-week-4",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-4.md",
+      "title": "Week 4 (Iterated Hill Climbing)",
+      "summary": "Escaping local optima: iterated hill climbing, algorithm and why restarts help.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 4,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:50:45.735Z",
+      "words": 6659,
+      "minutes": 30,
+      "sections": 132,
+      "outline": [
+        "Week 4 Overview",
+        "Lecture 1 --- Iterated Hill Climbing",
+        "Core Idea",
+        "Algorithm",
+        "Hand-Solved Example"
+      ],
+      "v": "f63b0389"
+    },
+    {
       "id": "exam-traps-cheatsheet",
       "file": "iitm-bs/exam-traps-cheatsheet.md",
       "title": "Exam traps cheat-sheet",
@@ -199,6 +356,242 @@
         "Learning"
       ],
       "v": "5a12c176"
+    },
+    {
+      "id": "smps-week-5",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-5.md",
+      "title": "Week 5 (A*, Branch & Bound, Admissibility)",
+      "summary": "Optimal paths: A* search, branch and bound, and what admissibility guarantees.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 5,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:41:34.119Z",
+      "words": 5208,
+      "minutes": 24,
+      "sections": 115,
+      "outline": [
+        "A\\ Search, Optimal Paths, Branch & Bound, Admissibility",
+        "1. Week 5: The Core Problem",
+        "2. Finding Optimal TSP Tours with Branch & Bound",
+        "2.1 Why BFS Is Not Enough",
+        "2.2 Brute Force / British Museum Procedure"
+      ],
+      "v": "532bb349"
+    },
+    {
+      "id": "smps-week-6",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-6.md",
+      "title": "Week 6 (Advanced A* Variants)",
+      "summary": "Weighted A*, space-saving variants, monotone condition, alignment and OPEN/CLOSED pruning.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 6,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:42:45.966Z",
+      "words": 9556,
+      "minutes": 43,
+      "sections": 164,
+      "outline": [
+        "Advanced A Variants: Weighted A, Space-Saving A, Monotone Condition, Sequence Alignment, and OPEN/CLOSED Pruning",
+        "1. Week 6 at a Glance",
+        "2. Weighted A",
+        "2.1 Why modify A?",
+        "2.2 Weighted A evaluation function"
+      ],
+      "v": "2473f7fe"
+    },
+    {
+      "id": "smps-week-8",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-8.md",
+      "title": "Week 8 (Automated Planning, STRIPS)",
+      "summary": "Planning vs configuration problems: STRIPS, state-space, goal-stack and plan-space planning.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 8,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:38:49.325Z",
+      "words": 10056,
+      "minutes": 46,
+      "sections": 264,
+      "outline": [
+        "Automated Planning: STRIPS, State-Space Planning, Goal Stack Planning & Plan-Space Planning",
+        "1. Week 8: The Big Picture",
+        "2. Configuration Problems vs. Planning Problems",
+        "2.1 Configuration problem",
+        "2.2 Planning problem"
+      ],
+      "v": "3173bcd0"
+    },
+    {
+      "id": "smps-week-9",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-9.md",
+      "title": "Week 9 (Decomposition, Graphplan, AO*)",
+      "summary": "Problem decomposition: Graphplan, AO* algorithm, goal trees and logical deduction.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 9,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:41:51.269Z",
+      "words": 9358,
+      "minutes": 43,
+      "sections": 231,
+      "outline": [
+        "Problem Decomposition, Graphplan, AO\\, Goal Trees & Deduction in Logic",
+        "1. Week 9 --- The Big Picture",
+        "2. Multi-Armed Robots",
+        "2.1 Motivation",
+        "2.2 Connection to Partial-Order Planning"
+      ],
+      "v": "76a771e1"
+    },
+    {
+      "id": "smps-week-10",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-10.md",
+      "title": "Week 10 (Rule-Based Systems, Rete)",
+      "summary": "Rule-based expert systems: match-resolve-execute, conflict resolution and Rete.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 10,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:46:25.628Z",
+      "words": 6991,
+      "minutes": 32,
+      "sections": 141,
+      "outline": [
+        "Rule-Based Expert Systems, Match–Resolve–Execute, Conflict Resolution & Rete",
+        "1. Where Week 10 Fits in the Course",
+        "2. Rule-Based Systems: First Principles",
+        "3. Production Systems",
+        "4. Rule / Production"
+      ],
+      "v": "c49f54e5"
+    },
+    {
+      "id": "smps-week-11",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-11.md",
+      "title": "Week 11 (CSPs, Arc Consistency)",
+      "summary": "Constraint satisfaction: constraint processing, arc consistency, propagation and lookahead.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 11,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:48:54.461Z",
+      "words": 10380,
+      "minutes": 47,
+      "sections": 226,
+      "outline": [
+        "Constraint Satisfaction Problems (CSPs), Model-Based Diagnosis, Constraint Processing, Arc Consistency, Constraint Propagation & Lookahead",
+        "1. Why CSPs Matter",
+        "2. Search vs Reasoning vs CSP",
+        "3. Mathematical Foundation: Relations",
+        "4. Relations and Predicate Logic"
+      ],
+      "v": "8797e31c"
+    },
+    {
+      "id": "smps-week-12",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-12.md",
+      "title": "Week 12 (Lookahead Search, Synthesis)",
+      "summary": "Final synthesis: lookahead search and the advanced problem-solving view of the course.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 12,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:50:25.465Z",
+      "words": 7517,
+      "minutes": 34,
+      "sections": 164,
+      "outline": [
+        "Final Course Synthesis + Lookahead Search + Advanced Problem-Solving View",
+        "1. Week 12 in One Picture",
+        "2. Lookahead Search",
+        "3. Forward Checking",
+        "4. Hand-Solved Forward-Checking Example"
+      ],
+      "v": "76348f98"
+    },
+    {
+      "id": "smps-weeks-1-4-mock-quiz",
+      "file": "algorithmic-search/ai-smps-iitm/smps-weeks-1-4-mock-quiz.md",
+      "title": "Weeks 1-4 Mock Quiz + Toy-Problem Reference",
+      "summary": "Fresh practice problems plus a toy-problem reference for weeks 1-4.",
+      "tags": [
+        "ai",
+        "smps",
+        "search",
+        "revision"
+      ],
+      "color": "red",
+      "order": 13,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:43:29.393Z",
+      "words": 4637,
+      "minutes": 21,
+      "sections": 41,
+      "outline": [
+        "1 · Syllabus: Weeks 1-4 (quick reference)",
+        "2 · Toy-Problem Reference (the classic worlds, explained once)",
+        "3 · MOCK QUIZ 1 — Question Paper",
+        "4 · ANSWER KEY WITH WORKED SOLUTIONS",
+        "5 · Patterns these questions train (Weeks 2–3 depth)"
+      ],
+      "v": "b00fe1f9"
+    },
+    {
+      "id": "smps-weeks-1-4-workbook",
+      "file": "algorithmic-search/ai-smps-iitm/smps-weeks-1-4-workbook.md",
+      "title": "Weeks 1-4 Problem-Solving Workbook",
+      "summary": "Mastery and creative problem-solving drills for weeks 1-4.",
+      "tags": [
+        "ai",
+        "smps",
+        "search",
+        "revision"
+      ],
+      "color": "yellow",
+      "order": 14,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-07T05:46:04.388Z",
+      "words": 7559,
+      "minutes": 34,
+      "sections": 206,
+      "outline": [
+        "0. How to Use This Workbook",
+        "1. The Big Picture: Weeks 1-4 as One Progression",
+        "PART I — WEEK 1 FOUNDATIONS",
+        "2. Intelligent Agents",
+        "Exam trap"
+      ],
+      "v": "ed60d520"
     }
   ]
 }

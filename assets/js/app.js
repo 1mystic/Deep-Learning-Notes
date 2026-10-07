@@ -166,7 +166,7 @@ function cardHtml(n) {
   }
   const upd = parseDate(n.updated);
   return `<a class="card" href="#/n/${encodeURIComponent(n.id)}" data-c="${esc(n.color)}" data-id="${esc(n.id)}">
-    <div class="card-head"><span class="tile">${icon('file')}</span><span class="card-title">${esc(displayFileName(n.file))}</span></div>
+    <div class="card-head"><span class="tile">${icon('file')}</span><span class="card-title">${esc(n.title || displayFileName(n.file))}</span></div>
     ${n.summary ? `<p class="card-sum">${esc(n.summary)}</p>` : ''}
     ${n.outline && n.outline.length ? `<ul class="card-outline">${n.outline.slice(0, 4).map((o) => `<li><span>${esc(o)}</span></li>`).join('')}</ul>` : ''}
     ${n.tags && n.tags.length ? `<div class="card-tags">${n.tags.slice(0, 4).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
@@ -180,14 +180,60 @@ function folderUrl(folder) {
   return '#/f/' + encodeURIComponent(folder);
 }
 
+function folderTitle(folder) {
+  const c = (CFG.collections || []).find((x) => x.folder === folder);
+  return (c && c.title) || prettyFolder(folder);
+}
+
+// Library / ancestor folders for a note's folder path
+function noteCrumbs(folder) {
+  const parts = String(folder || '').split('/').filter(Boolean);
+  const out = [];
+  for (let i = 0; i < parts.length; i++) {
+    const path = parts.slice(0, i + 1).join('/');
+    out.push({ path, title: folderTitle(path) });
+  }
+  return out;
+}
+
+function topFolderOf(n) {
+  const f = folderOf(n);
+  return f ? f.split('/')[0] : '';
+}
+
+// immediate children of `folder`: direct files + one level of subfolders
+function childrenOf(folder, notes) {
+  const prefix = folder + '/';
+  const files = [];
+  const subs = new Map();
+  notes.forEach((n) => {
+    const f = folderOf(n);
+    if (f === folder) { files.push(n); return; }
+    if (f.startsWith(prefix)) {
+      const key = prefix + f.slice(prefix.length).split('/')[0];
+      if (!subs.has(key)) subs.set(key, []);
+      subs.get(key).push(n);
+    }
+  });
+  return { files, subs };
+}
+
 function folderCardHtml(folder, notes) {
   const meta = collectionMeta(folder, notes);
-  const preview = notes.slice(0, FOLDER_PREVIEW);
-  const hidden = notes.length - preview.length;
-  const items = preview.map((n) => {
-    const label = n.pending ? displayFileName(n.file) : (n.title || displayFileName(n.file));
-    return `<li><span class="f-link is-static"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(label)}</span></span></li>`;
-  }).join('');
+  const { files, subs } = childrenOf(folder, notes);
+  const rows = [
+    ...Array.from(subs.entries()).map(([sub, ns]) => {
+      const sm = collectionMeta(sub, ns);
+      return { order: folderOrder(sub), title: sm.title, html: `<li><span class="f-link is-static"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(sm.title)}</span><span class="f-min">${ns.length}</span></span></li>` };
+    }),
+    ...files.map((n) => {
+      const label = n.pending ? displayFileName(n.file) : (n.title || displayFileName(n.file));
+      return { order: n.order ?? 1e9, title: label, html: `<li><span class="f-link is-static"><span class="f-dot" aria-hidden="true"></span><span class="f-name">${esc(label)}</span></span></li>` };
+    })
+  ].sort((a, b) => (a.order - b.order) || String(a.title).localeCompare(String(b.title)));
+  const preview = rows.slice(0, FOLDER_PREVIEW);
+  const hidden = rows.length - preview.length;
+  const items = preview.map((r) => r.html).join('');
   const allExt = notes.length > 0 && notes.every((n) => n.external);
   const totalMin = notes.reduce((a, n) => a + (n.minutes || 1), 0);
   const countLabel = allExt ? (notes.length === 1 ? 'resource' : 'resources') : (notes.length === 1 ? 'note' : 'notes');
@@ -216,7 +262,7 @@ function homeHtml() {
   const rootNotes = notes.filter((n) => !folderOf(n) && match(n));
   const byFolder = new Map();
   notes.filter((n) => folderOf(n) && match(n)).forEach((n) => {
-    const f = folderOf(n);
+    const f = topFolderOf(n);
     if (!byFolder.has(f)) byFolder.set(f, []);
     byFolder.get(f).push(n);
   });
@@ -247,20 +293,27 @@ function homeHtml() {
 
 function folderHtml(folder) {
   const notes = sortedNotes();
-  const all = notes.filter((n) => folderOf(n) === folder);
-  const meta = collectionMeta(folder, all.length ? all : undefined);
+  const under = notes.filter((n) => { const f = folderOf(n); return f === folder || f.startsWith(folder + '/'); });
+  const meta = collectionMeta(folder, under.length ? under : undefined);
   const tags = Array.from(new Set(notes.flatMap((n) => n.tags || []))).sort((a, b) => a.localeCompare(b));
-  const shown = state.tag ? all.filter((n) => (n.tags || []).includes(state.tag)) : all;
-  const words = all.reduce((a, n) => a + (n.words || 0), 0);
+  const match = (n) => !state.tag || (n.tags || []).includes(state.tag);
+  const { files, subs } = childrenOf(folder, under.filter(match));
+  const blocks = [
+    ...Array.from(subs.entries()).map(([sub, ns]) => ({ kind: 0, order: folderOrder(sub), title: sub, html: folderCardHtml(sub, ns) })),
+    ...files.map((n) => ({ kind: 1, order: n.order ?? 1e9, title: n.title, html: cardHtml(n) }))
+  ].sort((a, b) => (a.kind - b.kind) || (a.order - b.order) || String(a.title).localeCompare(String(b.title)));
+  const words = under.reduce((a, n) => a + (n.words || 0), 0);
+  const parent = folder.includes('/') ? folder.split('/').slice(0, -1).join('/') : null;
+  const parentMeta = parent ? collectionMeta(parent, notes.filter((n) => { const f = folderOf(n); return f === parent || f.startsWith(parent + '/'); })) : null;
   return `<div class="home"><div class="home-bg" aria-hidden="true"></div>
-    <nav class="crumbs"><a class="back" href="#/" aria-label="Back to library">${icon('back')}<span>Library</span></a></nav>
+    <nav class="crumbs"><a class="back" href="#/" aria-label="Back to library">${icon('back')}<span>Library</span></a>${parentMeta ? `<span class="crumb-sep" aria-hidden="true">/</span><a class="back" href="${folderUrl(parent)}"><span>${esc(parentMeta.title)}</span></a>` : ''}</nav>
     <section class="hero hero-folder">
       <div class="folder-hero-head"><span class="tile tile-folder" data-c="${esc(meta.color)}">${icon('folder')}</span>
         <div><h1>${esc(meta.title)}</h1>${meta.summary ? `<p>${esc(meta.summary)}</p>` : ''}</div></div>
-      <div class="hero-stats"><span>${all.length} ${all.length === 1 ? 'item' : 'items'}</span>${words ? `<span>${formatCount(words)} words</span>` : `<span>opens in new tab</span>`}</div>
+      <div class="hero-stats"><span>${under.length} ${under.length === 1 ? 'item' : 'items'}</span>${words ? `<span>${formatCount(words)} words</span>` : `<span>opens in new tab</span>`}</div>
     </section>
     ${toolbarHtml(tags)}
-    ${shown.length ? `<div class="grid" id="grid">${shown.map(cardHtml).join('')}</div>`
+    ${blocks.length ? `<div class="grid" id="grid">${blocks.map((b) => b.html).join('')}</div>`
       : `<div class="notice"><h2>Nothing here with this tag</h2><p>Try “All”, or pick another tag.</p></div>`}
   </div>`;
 }
@@ -291,13 +344,14 @@ function showFolder(folder) {
   document.body.dataset.view = 'folder';
   if (state.error) { showHome(); return; }
   if (!state.loaded) { app.innerHTML = `<div class="home"><div class="home-bg" aria-hidden="true"></div><section class="hero"><h1>${esc(CFG.heroTitle || '')}</h1></section><div class="grid"><div class="card skel"><div class="sk"></div><div class="sk"></div></div></div></div>`; return; }
-  const found = sortedNotes().some((n) => folderOf(n) === folder);
+  const under = (n) => { const f = folderOf(n); return f === folder || f.startsWith(folder + '/'); };
+  const found = sortedNotes().some(under);
   if (!state.notes.size || !found) {
     setTitle('');
     notice('Collection not found', `<p>There is no collection called <code>${esc(folder)}</code>.</p><p><a href="#/">Back to the library</a></p>`);
     return;
   }
-  const meta = collectionMeta(folder, sortedNotes().filter((n) => folderOf(n) === folder));
+  const meta = collectionMeta(folder, sortedNotes().filter((n) => { const f = folderOf(n); return f === folder || f.startsWith(folder + '/'); }));
   setTitle(meta.title);
   app.innerHTML = folderHtml(folder);
   window.scrollTo(0, 0);
@@ -375,6 +429,7 @@ class Reader {
 
   shell() {
     const updated = parseDate(this.meta.updated);
+    const crumbs = noteCrumbs(this.meta.folder || folderOf(this.meta));
     app.innerHTML = `
     <div class="reader ${this.pinned ? 'pinned' : ''}" id="reader">
       <div class="rail" id="rail" aria-hidden="true"></div>
@@ -388,8 +443,10 @@ class Reader {
       <div class="scrim" id="scrim"></div>
       <div class="doc-wrap">
         <header class="topbar">
-          <a class="back" href="#/" aria-label="Back to library">${icon('back')}<span>Library</span></a>
-          <div class="status"><svg aria-hidden="true"><use href="#logo"/></svg><span>${updated ? 'Changed ' + esc(relTime(updated)) : esc(this.meta.title || '')}</span></div>
+          <nav class="crumbs-bar" aria-label="Breadcrumb">
+            <a class="back" href="#/" aria-label="Back to library">${icon('back')}<span>Library</span></a>${crumbs.map((c) => `<span class="crumb-sep" aria-hidden="true">/</span><a class="crumb-link" href="${folderUrl(c.path)}">${esc(c.title)}</a>`).join('')}<span class="crumb-sep" aria-hidden="true">/</span><span class="crumb-current" aria-current="page">${esc(this.meta.title || '')}</span>
+          </nav>
+          <div class="status"><svg aria-hidden="true"><use href="#logo"/></svg><span>${updated ? 'Changed ' + esc(relTime(updated)) : ''}</span></div>
           <span class="sp"></span>
           <button class="icon-btn" id="btnSearch" type="button" aria-label="Search" title="Search (/)">${icon('search')}</button>
           <button class="icon-btn" id="btnAnn" type="button" aria-pressed="false" aria-label="Annotate" title="Annotate: highlight and add notes">${icon('highlighter')}</button>

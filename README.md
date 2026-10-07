@@ -61,6 +61,9 @@ python3 -m http.server 8000
 - Clicking a folder card's title, count pill or “view all” opens a **folder page**
   (`#/f/<folder>`) listing every file inside as full cards; the reader's Library link
   returns home. Tag filtering works on both views.
+- Folders nest one level: a subfolder (e.g. `content/a/b/`) rolls up under its
+  top-level card on the home page, appears as its own card inside the parent folder
+  page, and gets its own `#/f/a/b` page with a Library / parent breadcrumb.
 - To add a collection, move/create `.md` files under `content/my-folder/` and add an entry
   in `config.js`:
   ```js
