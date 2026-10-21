@@ -104,7 +104,7 @@ async function loadManifest() {
     const hasMeta = e.title !== undefined;
     if (e.external) {
       // standalone pages (HTML, PDFs, …): served as-is, opened in a new tab, never parsed as notes
-      const url = new URL(String(e.file).split('/').map(encodeURIComponent).join('/') + (e.v ? `?v=${e.v}` : ''), document.baseURI).href;
+      const url = /^https?:\/\//i.test(e.file) ? e.file : new URL(String(e.file).split('/').map(encodeURIComponent).join('/') + (e.v ? `?v=${e.v}` : ''), document.baseURI).href;
       state.entries.push({ id, file: e.file, url, external: true });
       state.notes.set(id, Object.assign({ id, file: e.file, url, external: true, title: e.file, pending: !hasMeta, tags: [], color: 'blue', outline: [], words: 0, minutes: 0, sections: 0 }, hasMeta ? e : {}, { id, url }));
       return;

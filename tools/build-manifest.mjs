@@ -63,22 +63,24 @@ function build() {
     catch (e) { console.warn(`! could not parse content/links.json — ${e.message}`); }
     if (!Array.isArray(links)) { console.warn('! content/links.json must be an array — ignoring.'); links = []; }
     for (const link of links) {
-      if (!link || !link.id || !link.file) { console.warn('! a content/links.json entry needs at least "id" and "file" — skipping one.'); continue; }
-      const target = path.join(root, link.file);
-      if (!fs.existsSync(target)) { console.warn(`! "${link.file}" (links.json → "${link.id}") does not exist — skipping.`); continue; }
+      if (!link || !link.id || !(link.file || link.url)) { console.warn('! a content/links.json entry needs "id" and either "file" or "url" — skipping one.'); continue; }
+      const remote = typeof link.url === 'string' && /^https?:\/\//i.test(link.url);
+      const ref = remote ? link.url : link.file;
+      const target = remote ? null : path.join(root, link.file);
+      if (!remote && !fs.existsSync(target)) { console.warn(`! "${link.file}" (links.json → "${link.id}") does not exist — skipping.`); continue; }
       if (seen.has(link.id)) { console.warn(`! links.json id "${link.id}" collides with another note — rename one of them.`); continue; }
-      seen.set(link.id, link.file);
-      const bytes = fs.readFileSync(target);
+      seen.set(link.id, ref);
+      const bytes = remote ? Buffer.from(link.url) : fs.readFileSync(target);
       notes.push({
         id: link.id,
-        file: link.file,
+        file: ref,
         title: link.title || link.id,
         summary: link.summary || '',
         tags: Array.isArray(link.tags) ? link.tags : [],
         color: link.color || 'blue',
         order: link.order !== undefined ? Number(link.order) : null,
-        folder: link.folder || (link.file.includes('/') ? link.file.split('/').slice(0, -1).join('/') : ''),
-        updated: link.updated || fs.statSync(target).mtime.toISOString(),
+        folder: link.folder || (ref.includes('/') && !remote ? ref.split('/').slice(0, -1).join('/') : ''),
+        updated: link.updated || (remote ? '' : fs.statSync(target).mtime.toISOString()),
         words: 0, minutes: 0, sections: 0, outline: [],
         external: true,
         v: crypto.createHash('sha1').update(bytes).digest('hex').slice(0, 8)

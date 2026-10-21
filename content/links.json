@@ -3,11 +3,31 @@
     "id": "tsp-hamiltonian-cycles",
     "title": "TSP, Animated: Hamiltonian Cycles to Research-Grade Solvers",
     "summary": "Interactive visual walkthrough from Hamiltonian cycles to modern TSP solvers. Opens as a standalone page in a new tab.",
-    "tags": ["algorithms", "search", "tsp"],
+    "tags": [
+      "algorithms",
+      "search",
+      "tsp"
+    ],
     "color": "red",
     "order": 1,
     "folder": "algorithmic-search",
     "file": "algorithmic-search/tsp-hamiltonian-cycles.html",
+    "external": true
+  },
+  {
+    "id": "ai-search-studio",
+    "title": "AI Search Studio: Visualise Every Algorithm",
+    "summary": "Interactive studio to run every search algorithm on your own custom graphs and questions. Opens in a new tab.",
+    "tags": [
+      "ai",
+      "smps",
+      "search",
+      "visualisation"
+    ],
+    "color": "blue",
+    "order": 0,
+    "folder": "algorithmic-search/ai-smps-iitm",
+    "url": "https://aisearchstudio.pages.dev/",
     "external": true
   }
 ]

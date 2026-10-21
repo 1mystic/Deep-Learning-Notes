@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-07T05:53:54.914Z",
+  "generated": "2026-10-21T04:49:14.232Z",
   "notes": [
     {
       "id": "smps-week-0-prep-guide",
@@ -26,6 +26,28 @@
         "0.4 Recursion — you need to be comfortable with functions calling themselves"
       ],
       "v": "08aaed02"
+    },
+    {
+      "id": "ai-search-studio",
+      "file": "https://aisearchstudio.pages.dev/",
+      "title": "AI Search Studio: Visualise Every Algorithm",
+      "summary": "Interactive studio to run every search algorithm on your own custom graphs and questions. Opens in a new tab.",
+      "tags": [
+        "ai",
+        "smps",
+        "search",
+        "visualisation"
+      ],
+      "color": "blue",
+      "order": 0,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "",
+      "words": 0,
+      "minutes": 0,
+      "sections": 0,
+      "outline": [],
+      "external": true,
+      "v": "01e67e8e"
     },
     {
       "id": "how-this-site-works",
@@ -116,13 +138,13 @@
       "color": "red",
       "order": 1,
       "folder": "algorithmic-search",
-      "updated": "2026-10-06T07:34:46.648Z",
+      "updated": "2026-10-08T04:01:40.733Z",
       "words": 0,
       "minutes": 0,
       "sections": 0,
       "outline": [],
       "external": true,
-      "v": "de806d87"
+      "v": "7823440a"
     },
     {
       "id": "smps-week-1",
