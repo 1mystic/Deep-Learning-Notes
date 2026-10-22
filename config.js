@@ -17,7 +17,7 @@ window.SITE_CONFIG = {
   // `folder` matches a sub-folder inside content/, or the `folder` of a
   // content/links.json entry (external pages that open in a new tab).
   collections: [
-    { folder: "iitm-bs", title: "Deep Learning IITM BS", summary: "IITM BS course notes: full Weeks 1–4 file plus the exam-traps cheat-sheet.", color: "blue", order: 1 },
+    { folder: "iitm-bs", title: "Deep Learning IITM BS", summary: "IITM BS course notes: full Weeks 1–8 files plus the exam-traps cheat-sheet.", color: "blue", order: 1 },
     { folder: "granular-dl-concepts", title: "Granular DL Concepts", summary: "Single-topic deep dives: backpropagation, optimisers and derivations.", color: "green", order: 2 },
     { folder: "algorithmic-search", title: "Algorithmic and Search Problems", summary: "Algorithms and search: interactive visual essays plus the AI SMPS course collection.", color: "red", order: 3 },
     { folder: "algorithmic-search/ai-smps-iitm", title: "AI: SMPS IITM", summary: "IITM BS AI course — Search Methods for Problem Solving: week-wise notes, guidebook, workbook and mock quiz.", color: "blue", order: 1 }
