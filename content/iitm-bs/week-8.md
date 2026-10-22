@@ -39,21 +39,47 @@ order: 8
 - **Words:** a network cannot use the string "cat". Turn every word into a vector whose geometry carries meaning (similar words, nearby vectors).
 - **Images:** a fully connected layer on a $224\times224\times3$ image would need tens of millions of weights per neuron layer and ignores the fact that nearby pixels belong together. Convolutions reuse one small detector everywhere.
 
-```mermaid
-flowchart LR
-  W(("Words")):::base --> OH(("One-hot:<br/>no similarity")):::warn
-  OH --> CNT(("Count-based:<br/>co-occurrence, PPMI, SVD")):::core
-  OH --> PRED(("Prediction-based:<br/>CBOW, skip-gram")):::core
-  CNT --> GL(("GloVe:<br/>both ideas")):::good
-  PRED --> GL
-  I(("Images")):::base --> FC(("Fully connected:<br/>too many weights")):::warn
-  FC --> CONV(("Convolution:<br/>local + shared filters")):::core
-  CONV --> ARCH(("LeNet → AlexNet → ZF<br/>→ VGG → GoogLeNet → ResNet")):::good
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef warn fill:#F6E6E6,stroke:#962828,stroke-width:3px,color:#962828,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Week 8 map">
+<svg viewBox="0 0 700 128" width="700" style="font-family:var(--font)" aria-hidden="true">
+<rect x="0" y="6" width="150" height="48" rx="8" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="75" y="26.8" text-anchor="middle" style="fill:var(--fg-2);font-size:11.5px;font-weight:700">Words</text>
+<text x="75" y="41.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">strings, not numbers</text>
+<rect x="183" y="6" width="150" height="48" rx="8" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="258" y="26.8" text-anchor="middle" style="fill:var(--red-ink);font-size:11.5px;font-weight:700">One-hot</text>
+<text x="258" y="41.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">no similarity</text>
+<rect x="366" y="6" width="150" height="48" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="441" y="26.8" text-anchor="middle" style="fill:var(--blue-ink);font-size:11.5px;font-weight:700">PPMI + SVD</text>
+<text x="441" y="41.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">CBOW · skip-gram</text>
+<rect x="549" y="6" width="150" height="48" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="624" y="26.8" text-anchor="middle" style="fill:var(--green-ink);font-size:11.5px;font-weight:700">GloVe</text>
+<text x="624" y="41.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">counts + prediction</text>
+<rect x="0" y="74" width="150" height="48" rx="8" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="75" y="94.8" text-anchor="middle" style="fill:var(--fg-2);font-size:11.5px;font-weight:700">Images</text>
+<text x="75" y="109.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">224 × 224 × 3</text>
+<rect x="183" y="74" width="150" height="48" rx="8" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="258" y="94.8" text-anchor="middle" style="fill:var(--red-ink);font-size:11.5px;font-weight:700">Fully connected</text>
+<text x="258" y="109.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">far too many weights</text>
+<rect x="366" y="74" width="150" height="48" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="441" y="94.8" text-anchor="middle" style="fill:var(--blue-ink);font-size:11.5px;font-weight:700">Convolution</text>
+<text x="441" y="109.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">local + shared filters</text>
+<rect x="549" y="74" width="150" height="48" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="624" y="94.8" text-anchor="middle" style="fill:var(--green-ink);font-size:11.5px;font-weight:700">Architectures</text>
+<text x="624" y="109.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">LeNet … ResNet</text>
+<line x1="150" y1="30" x2="178.8" y2="30" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="183,30 177,32.9 177,27.1" style="fill:var(--line-strong)"/>
+<line x1="150" y1="98" x2="178.8" y2="98" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="183,98 177,100.9 177,95.1" style="fill:var(--line-strong)"/>
+<line x1="333" y1="30" x2="361.8" y2="30" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="366,30 360,32.9 360,27.1" style="fill:var(--line-strong)"/>
+<line x1="333" y1="98" x2="361.8" y2="98" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="366,98 360,100.9 360,95.1" style="fill:var(--line-strong)"/>
+<line x1="516" y1="30" x2="544.8" y2="30" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="549,30 543,32.9 543,27.1" style="fill:var(--line-strong)"/>
+<line x1="516" y1="98" x2="544.8" y2="98" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="549,98 543,100.9 543,95.1" style="fill:var(--line-strong)"/>
+</svg>
+<p class="fig-cap">Two halves, one idea: the right representation makes learning easy. Top: from one-hot words to dense vectors. Bottom: from fully connected layers to convolutions.</p>
+</div>
 
 > [!TIP]
 > **Everyday pictures for the whole week.**
@@ -138,6 +164,71 @@ Counts (rows: words, columns: contexts):
 
 **[Intuition]** Rare pairs that co-occur a lot (cheese–pizza) get the highest PPMI; PMI corrects for "network" being common.
 
+<div class="fig" role="img" aria-label="PMI to PPMI">
+<svg viewBox="0 0 700 172" width="700" style="font-family:var(--font)" aria-hidden="true">
+<text x="180" y="18" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">co-occurrence counts</text>
+<text x="127" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">learning</text>
+<text x="181" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">network</text>
+<text x="235" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">pizza</text>
+<text x="92" y="85" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">deep</text>
+<text x="92" y="117" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">neural</text>
+<text x="92" y="149" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">cheese</text>
+<rect x="100" y="56" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="125.5" y="75" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">10</text>
+<rect x="154" y="56" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.74"/>
+<text x="179.5" y="75" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">6</text>
+<rect x="208" y="56" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="233.5" y="75" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="100" y="88" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.74"/>
+<text x="125.5" y="107" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">6</text>
+<rect x="154" y="88" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="179.5" y="107" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">10</text>
+<rect x="208" y="88" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.415"/>
+<text x="233.5" y="107" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="100" y="120" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="125.5" y="139" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="154" y="120" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.415"/>
+<text x="179.5" y="139" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="208" y="120" width="51" height="29" rx="4" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.87"/>
+<text x="233.5" y="139" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">8</text>
+<line x1="272" y1="106" x2="337.8" y2="106" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="342,106 336,108.9 336,103.1" style="fill:var(--line-strong)"/>
+<text x="307" y="98" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">PMI, then</text>
+<text x="307" y="123" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">max(·, 0)</text>
+<text x="460" y="18" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">PPMI</text>
+<text x="407" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">learning</text>
+<text x="461" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">network</text>
+<text x="515" y="42" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">pizza</text>
+<text x="372" y="85" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">deep</text>
+<text x="372" y="117" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">neural</text>
+<text x="372" y="149" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">cheese</text>
+<rect x="380" y="56" width="51" height="29" rx="4" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1;opacity:0.564533482279069"/>
+<text x="405.5" y="75" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">0.50</text>
+<rect x="434" y="56" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="459.5" y="75" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="488" y="56" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="513.5" y="75" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="380" y="88" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="405.5" y="107" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="434" y="88" width="51" height="29" rx="4" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1;opacity:0.5119921433714921"/>
+<text x="459.5" y="107" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">0.37</text>
+<rect x="488" y="88" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="513.5" y="107" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="380" y="120" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="405.5" y="139" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="434" y="120" width="51" height="29" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="459.5" y="139" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:400">0</text>
+<rect x="488" y="120" width="51" height="29" rx="4" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1;opacity:0.9664868689593318"/>
+<text x="513.5" y="139" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">1.42</text>
+<text x="560" y="70" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:400">cheese–pizza: rare but</text>
+<text x="560" y="83" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:400">tightly linked, so the</text>
+<text x="560" y="96" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:400">highest PPMI (1.42)</text>
+<text x="560" y="118" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">negative PMI and unseen</text>
+<text x="560" y="131" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">pairs (−∞) clip to 0</text>
+</svg>
+<p class="fig-cap">The worked example matrix, N = 42. Each cell is ln[count(w,c)·N / (count(w)·count(c))], kept only when positive.</p>
+</div>
+
 ---
 
 ## 8.3 SVD for word representations
@@ -203,6 +294,66 @@ $|V|=3$, $k=2$, context vector $\mathbf v_c=(1,0)$, word vectors $\mathbf u_1=(1
 
 **[!] The bottleneck.** Line 2 sums over the **whole vocabulary**. With $|V|=50{,}000$, every training pair needs 50,000 dot products. §8.5 fixes this.
 
+<div class="fig" role="img" aria-label="One CBOW update">
+<svg viewBox="0 0 700 208" width="700" style="font-family:var(--font)" aria-hidden="true">
+<line x1="46" y1="141.1" x2="316" y2="141.1" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="50.3" x2="316" y2="50.3" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="88.2" y1="14" x2="88.2" y2="182" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="172.6" y1="14" x2="172.6" y2="182" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="256.9" y1="14" x2="256.9" y2="182" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="14" x2="46" y2="182" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<line x1="46" y1="182" x2="316" y2="182" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<text x="88.2" y="195" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">-1</text>
+<text x="172.6" y="195" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">0</text>
+<text x="256.9" y="195" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">1</text>
+<text x="40" y="144.6" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">0</text>
+<text x="40" y="53.8" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">1</text>
+<circle cx="256.9" cy="50.3" r="5" style="fill:var(--surface);stroke:var(--green-ink);stroke-width:1.6;opacity:0.8"/>
+<line x1="256.9" y1="50.3" x2="267.6" y2="50.3" style="stroke:var(--green-ink);stroke-width:1.8;stroke-linecap:round"/>
+<polygon points="271.1,50.3 266.1,52.7 266.1,47.9" style="fill:var(--green-ink)"/>
+<circle cx="271.1" cy="50.3" r="4" style="fill:var(--green-ink);stroke:var(--green-ink);stroke-width:1"/>
+<circle cx="172.6" cy="50.3" r="5" style="fill:var(--surface);stroke:var(--red-ink);stroke-width:1.6;opacity:0.8"/>
+<line x1="172.6" y1="50.3" x2="165.8" y2="50.3" style="stroke:var(--red-ink);stroke-width:1.8;stroke-linecap:round"/>
+<polygon points="162.3,50.3 167.3,47.9 167.3,52.7" style="fill:var(--red-ink)"/>
+<circle cx="162.3" cy="50.3" r="4" style="fill:var(--red-ink);stroke:var(--red-ink);stroke-width:1"/>
+<circle cx="88.2" cy="141.1" r="5" style="fill:var(--surface);stroke:var(--red-ink);stroke-width:1.6;opacity:0.8"/>
+<line x1="88.2" y1="141.1" x2="87.9" y2="141.1" style="stroke:var(--red-ink);stroke-width:1.8;stroke-linecap:round"/>
+<polygon points="84.4,141.1 89.4,138.7 89.4,143.5" style="fill:var(--red-ink)"/>
+<circle cx="84.4" cy="141.1" r="4" style="fill:var(--red-ink);stroke:var(--red-ink);stroke-width:1"/>
+<circle cx="256.9" cy="141.1" r="5" style="fill:var(--surface);stroke:var(--blue-ink);stroke-width:1.6;opacity:0.8"/>
+<line x1="256.9" y1="141.1" x2="271.4" y2="137.8" style="stroke:var(--blue-ink);stroke-width:1.8;stroke-linecap:round"/>
+<polygon points="274.8,137 270.5,140.5 269.4,135.8" style="fill:var(--blue-ink)"/>
+<circle cx="274.8" cy="137" r="4" style="fill:var(--blue-ink);stroke:var(--blue-ink);stroke-width:1"/>
+<text x="265.9" y="42.3" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">u₁ (true word) → toward v_c</text>
+<text x="165.6" y="41.3" text-anchor="end" style="fill:var(--red-ink);font-size:10.5px;font-weight:700">u₂ ← away</text>
+<text x="88.2" y="158.1" text-anchor="middle" style="fill:var(--red-ink);font-size:10.5px;font-weight:700">u₃ ← away</text>
+<text x="256.9" y="159.1" text-anchor="middle" style="fill:var(--blue-ink);font-size:10.5px;font-weight:700">v_c</text>
+<text x="181" y="14" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700"></text>
+<text x="550" y="20" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">softmax over the vocabulary</text>
+<text x="452" y="61" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">word 1 (true)</text>
+<rect x="460" y="40" width="139.7" height="16" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.2"/>
+<rect x="460" y="58" width="164.7" height="16" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="604.7" y="52" text-anchor="start" style="fill:var(--muted);font-size:10px;font-weight:400">0.665</text>
+<text x="629.7" y="70" text-anchor="start" style="fill:var(--green-ink);font-size:10px;font-weight:700">0.784</text>
+<text x="452" y="105" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">word 2</text>
+<rect x="460" y="84" width="51.4" height="16" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.2"/>
+<rect x="460" y="102" width="34.5" height="16" rx="3" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="516.4" y="96" text-anchor="start" style="fill:var(--muted);font-size:10px;font-weight:400">0.245</text>
+<text x="499.5" y="114" text-anchor="start" style="fill:var(--red-ink);font-size:10px;font-weight:700">0.164</text>
+<text x="452" y="149" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">word 3</text>
+<rect x="460" y="128" width="18.9" height="16" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.2"/>
+<rect x="460" y="146" width="10.8" height="16" rx="3" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="483.9" y="140" text-anchor="start" style="fill:var(--muted);font-size:10px;font-weight:400">0.090</text>
+<text x="475.8" y="158" text-anchor="start" style="fill:var(--red-ink);font-size:10px;font-weight:700">0.051</text>
+<text x="550" y="178" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">loss  0.408  →  0.243  after one step</text>
+<rect x="460" y="193" width="10" height="8" rx="0" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1"/>
+<text x="474" y="201" text-anchor="start" style="fill:var(--muted);font-size:10px;font-weight:400">before</text>
+<rect x="530" y="193" width="10" height="8" rx="0" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1"/>
+<text x="544" y="201" text-anchor="start" style="fill:var(--muted);font-size:10px;font-weight:400">after the update</text>
+</svg>
+<p class="fig-cap">The worked CBOW step with η = 0.5. Hollow points are before the update, filled after: the true word vector moves toward the context vector and the others move away, so the true word's probability rises from 0.665 to 0.784.</p>
+</div>
+
 ---
 
 ## 8.5 Skip-gram, negative sampling, hierarchical softmax
@@ -211,23 +362,61 @@ $|V|=3$, $k=2$, context vector $\mathbf v_c=(1,0)$, word vectors $\mathbf u_1=(1
 
 The reverse of CBOW: given the word $w$, predict each context word $c$ in its window: $p(c\mid w)=\mathrm{softmax}(\mathbf u_c^\top\mathbf v_w)$. Same softmax cost over $|V|$, so it needs a cheaper objective.
 
-```mermaid
-flowchart LR
-  subgraph CB [" CBOW "]
-    C1(("context words")):::base --> P1(("predict<br/>centre word")):::core
-  end
-  subgraph SG [" Skip-gram "]
-    W2(("centre word")):::base --> P2(("predict each<br/>context word")):::core
-  end
-  P1 --> COST(("softmax over |V|:<br/>expensive")):::warn
-  P2 --> COST
-  COST --> NS(("negative sampling<br/>O(k)")):::good
-  COST --> HS(("hierarchical softmax<br/>O(log₂|V|)")):::good
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef warn fill:#F6E6E6,stroke:#962828,stroke-width:3px,color:#962828,font-weight:bold
-```
+<div class="fig" role="img" aria-label="CBOW and skip-gram">
+<svg viewBox="0 0 700 174" width="700" style="font-family:var(--font)" aria-hidden="true">
+<rect x="0" y="4" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="32" y="17.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t−2)</text>
+<line x1="64" y1="14" x2="146.8" y2="47.7" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="150,49 144.5,49.3 146.3,44.9" style="fill:var(--line-strong)"/>
+<rect x="0" y="30" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="32" y="43.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t−1)</text>
+<line x1="64" y1="40" x2="146.5" y2="48.6" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="150,49 144.8,50.9 145.3,46.1" style="fill:var(--line-strong)"/>
+<rect x="0" y="56" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="32" y="69.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t+1)</text>
+<line x1="64" y1="66" x2="146.6" y2="49.7" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="150,49 145.6,52.3 144.6,47.6" style="fill:var(--line-strong)"/>
+<rect x="0" y="82" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="32" y="95.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t+2)</text>
+<line x1="64" y1="92" x2="146.9" y2="50.6" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="150,49 146.6,53.4 144.5,49.1" style="fill:var(--line-strong)"/>
+<rect x="152" y="34" width="96" height="30" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="200" y="52.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">centre w(t)</text>
+<rect x="380" y="34" width="96" height="30" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="428" y="52.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">centre w(t)</text>
+<line x1="476" y1="49" x2="556.8" y2="15.3" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="560,14 556.3,18.1 554.5,13.7" style="fill:var(--line-strong)"/>
+<rect x="562" y="4" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="594" y="17.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t−2)</text>
+<line x1="476" y1="49" x2="556.5" y2="40.4" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="560,40 555.3,42.9 554.8,38.1" style="fill:var(--line-strong)"/>
+<rect x="562" y="30" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="594" y="43.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t−1)</text>
+<line x1="476" y1="49" x2="556.6" y2="65.3" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="560,66 554.6,67.4 555.6,62.7" style="fill:var(--line-strong)"/>
+<rect x="562" y="56" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="594" y="69.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t+1)</text>
+<line x1="476" y1="49" x2="556.9" y2="90.4" style="stroke:var(--line-strong);stroke-width:1.2;stroke-linecap:round"/>
+<polygon points="560,92 554.5,91.9 556.6,87.6" style="fill:var(--line-strong)"/>
+<rect x="562" y="82" width="64" height="20" rx="5" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="594" y="95.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:700">w(t+2)</text>
+<text x="124" y="122" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">CBOW: context words predict the centre</text>
+<text x="500" y="122" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">Skip-gram: centre predicts each context word</text>
+<rect x="0" y="134" width="215" height="34" rx="8" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="107.5" y="147.9" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:700">full softmax</text>
+<text x="107.5" y="161.9" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:500">|V| exponentials per pair</text>
+<line x1="215" y1="151" x2="257.8" y2="151" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="262,151 256,153.9 256,148.1" style="fill:var(--line-strong)"/>
+<rect x="262" y="134" width="215" height="34" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="369.5" y="147.9" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">negative sampling</text>
+<text x="369.5" y="161.9" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:500">k + 1 sigmoids per pair</text>
+<text x="496" y="155" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:700">or</text>
+<rect x="515" y="134" width="175" height="34" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="602.5" y="147.9" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">hierarchical softmax</text>
+<text x="602.5" y="161.9" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:500">log₂|V| sigmoids</text>
+</svg>
+<p class="fig-cap">Both models need a softmax over the whole vocabulary; negative sampling or a binary-tree softmax makes each training pair cheap.</p>
+</div>
 
 ### 8.5.2 Negative sampling
 
@@ -242,6 +431,52 @@ $$\sum_{(w,c)\in D}\log\sigma(\mathbf u_c^\top\mathbf v_w)+\sum_{(w,r)\in D'}\lo
 | 100 | 0.901 | 0.827 |
 | 10 | 0.090 | 0.147 |
 | 1 | 0.009 | 0.026 |
+
+<div class="fig" role="img" aria-label="Negative sampling and hierarchical softmax">
+<svg viewBox="0 0 700 188" width="700" style="font-family:var(--font)" aria-hidden="true">
+<line x1="46" y1="142" x2="296" y2="142" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="86" x2="296" y2="86" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="30" x2="296" y2="30" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="30" x2="46" y2="142" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<line x1="46" y1="142" x2="296" y2="142" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<text x="40" y="145.5" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">0</text>
+<text x="40" y="89.5" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">0.5</text>
+<text x="40" y="33.5" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">1</text>
+<text x="12" y="86" text-anchor="middle" transform="rotate(-90 12 86)" style="fill:var(--muted);font-size:10.5px;font-weight:400">sampling share</text>
+<text x="171" y="16" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">negative sampling: counts vs counts^¾</text>
+<rect x="54.3" y="41.1" width="31.7" height="100.9" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.4"/>
+<rect x="89" y="49.4" width="31.7" height="92.6" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.4"/>
+<text x="87.5" y="155" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">count 100</text>
+<text x="70.2" y="37.1" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:700">0.901</text>
+<text x="104.8" y="45.4" text-anchor="middle" style="fill:var(--green-ink);font-size:9.5px;font-weight:700">0.827</text>
+<rect x="137.7" y="131.9" width="31.7" height="10.1" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.4"/>
+<rect x="172.3" y="125.5" width="31.7" height="16.5" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.4"/>
+<text x="170.8" y="155" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">count 10</text>
+<text x="153.5" y="127.9" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:700">0.090</text>
+<text x="188.2" y="121.5" text-anchor="middle" style="fill:var(--green-ink);font-size:9.5px;font-weight:700">0.147</text>
+<rect x="221" y="141" width="31.7" height="1" rx="3" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.4"/>
+<rect x="255.7" y="139.1" width="31.7" height="2.9" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.4"/>
+<text x="254.2" y="155" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">count 1</text>
+<text x="236.8" y="137" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:700">0.009</text>
+<text x="271.5" y="135.1" text-anchor="middle" style="fill:var(--green-ink);font-size:9.5px;font-weight:700">0.026</text>
+<rect x="160" y="170" width="10" height="10" rx="0" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.2"/>
+<text x="174" y="179" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">raw share</text>
+<rect x="240" y="170" width="10" height="10" rx="0" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.2"/>
+<text x="254" y="179" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">share with ^¾</text>
+<text x="560" y="16" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">evaluations per prediction, |V| = 65,536</text>
+<text x="462" y="57" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">full softmax</text>
+<rect x="470" y="40" width="149" height="24" rx="4" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="625" y="57" text-anchor="start" style="fill:var(--red-ink);font-size:10.5px;font-weight:700">65,536</text>
+<text x="462" y="95" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">neg. sampling, k = 5</text>
+<rect x="470" y="78" width="27.8" height="24" rx="4" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="503.8" y="95" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">6</text>
+<text x="462" y="133" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">hier. softmax</text>
+<rect x="470" y="116" width="40.6" height="24" rx="4" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="516.6" y="133" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">16</text>
+<text x="560" y="162" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">log scale: ≈ 4,000× fewer exponentials</text>
+</svg>
+<p class="fig-cap">Left: the ¾ power flattens the sampling distribution so rare words are drawn as negatives more often than their raw share. Right: cost of one prediction under each scheme.</p>
+</div>
 
 ### 8.5.3 [Exam] End-term: one negative-sampling step
 
@@ -317,26 +552,131 @@ Slide the $F\times F$ kernel over the image; at each position multiply element-w
 
 $S=\begin{bmatrix}0&0\\-1&-4\end{bmatrix}$: strongest response where the right side is much brighter than the left.
 
+<div class="fig" role="img" aria-label="Sliding a convolution kernel">
+<svg viewBox="0 0 700 190" width="700" style="font-family:var(--font)" aria-hidden="true">
+<text x="94" y="28" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">image 4 × 4</text>
+<rect x="30" y="40" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="45" y="60" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="62" y="40" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.7100000000000001"/>
+<text x="77" y="60" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">2</text>
+<rect x="94" y="40" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.15"/>
+<text x="109" y="60" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">0</text>
+<rect x="126" y="40" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="141" y="60" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="30" y="72" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.15"/>
+<text x="45" y="92" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">0</text>
+<rect x="62" y="72" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="77" y="92" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="94" y="72" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.9900000000000001"/>
+<text x="109" y="92" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">3</text>
+<rect x="126" y="72" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="141" y="92" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="30" y="104" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.7100000000000001"/>
+<text x="45" y="124" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">2</text>
+<rect x="62" y="104" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="77" y="124" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="94" y="104" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.15"/>
+<text x="109" y="124" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">0</text>
+<rect x="126" y="104" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.7100000000000001"/>
+<text x="141" y="124" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">2</text>
+<rect x="30" y="136" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="45" y="156" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="62" y="136" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.15"/>
+<text x="77" y="156" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">0</text>
+<rect x="94" y="136" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.43000000000000005"/>
+<text x="109" y="156" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1</text>
+<rect x="126" y="136" width="30" height="30" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1;opacity:0.9900000000000001"/>
+<text x="141" y="156" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">3</text>
+<rect x="30" y="40" width="94" height="94" rx="4" style="fill:none;stroke:var(--blue-ink);stroke-width:1;opacity:0.25;stroke-dasharray:3 3"/>
+<rect x="62" y="40" width="94" height="94" rx="4" style="fill:none;stroke:var(--blue-ink);stroke-width:1;opacity:0.25;stroke-dasharray:3 3"/>
+<rect x="30" y="72" width="94" height="94" rx="4" style="fill:none;stroke:var(--blue-ink);stroke-width:1;opacity:0.25;stroke-dasharray:3 3"/>
+<rect x="62" y="72" width="94" height="94" rx="4" style="fill:none;stroke:var(--blue-ink);stroke-width:1;opacity:0.25;stroke-dasharray:3 3"/>
+<rect x="30" y="40" width="94" height="94" rx="4" style="fill:var(--blue);fill-opacity:0.12;stroke:var(--blue-ink);stroke-width:3"><animate attributeName="x" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="30;62;30;62"/><animate attributeName="y" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="40;40;72;72"/></rect>
+<text x="172" y="112" text-anchor="middle" style="fill:var(--muted);font-size:20px;font-weight:700">⊛</text>
+<text x="238" y="50" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">kernel 3 × 3</text>
+<rect x="196" y="62" width="26" height="26" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="209" y="80" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">1</text>
+<rect x="224" y="62" width="26" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1"/>
+<text x="237" y="80" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:700">0</text>
+<rect x="252" y="62" width="26" height="26" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="265" y="80" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:700">-1</text>
+<rect x="196" y="90" width="26" height="26" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="209" y="108" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">1</text>
+<rect x="224" y="90" width="26" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1"/>
+<text x="237" y="108" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:700">0</text>
+<rect x="252" y="90" width="26" height="26" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="265" y="108" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:700">-1</text>
+<rect x="196" y="118" width="26" height="26" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="209" y="136" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">1</text>
+<rect x="224" y="118" width="26" height="26" rx="3" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1"/>
+<text x="237" y="136" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-weight:700">0</text>
+<rect x="252" y="118" width="26" height="26" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="265" y="136" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:700">-1</text>
+<text x="302" y="112" text-anchor="middle" style="fill:var(--muted);font-size:20px;font-weight:700">=</text>
+<text x="370" y="50" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">output 2 × 2</text>
+<rect x="330" y="66" width="37" height="37" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="348.5" y="90" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-weight:700">0</text>
+<rect x="370" y="66" width="37" height="37" rx="4" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1;opacity:1"/>
+<text x="388.5" y="90" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-weight:700">0</text>
+<rect x="330" y="106" width="37" height="37" rx="4" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1;opacity:0.47"/>
+<text x="348.5" y="130" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:700">-1</text>
+<rect x="370" y="106" width="37" height="37" rx="4" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1;opacity:0.98"/>
+<text x="388.5" y="130" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:700">-4</text>
+<rect x="330" y="66" width="37" height="37" rx="4" style="fill:none;stroke:var(--blue-ink);stroke-width:3"><animate attributeName="x" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="330;370;330;370"/><animate attributeName="y" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="66;66;106;106"/></rect>
+<text x="450" y="96" text-anchor="start" opacity="1" style="fill:var(--fg);font-size:11.5px;font-weight:700">top-left: left column 3, right column 3 → 0<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="1;0;0;0"/></text>
+<text x="450" y="96" text-anchor="start" opacity="0" style="fill:var(--fg);font-size:11.5px;font-weight:700">top-right: 4 − 4 → 0<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="0;1;0;0"/></text>
+<text x="450" y="96" text-anchor="start" opacity="0" style="fill:var(--fg);font-size:11.5px;font-weight:700">bottom-left: 3 − 4 → −1<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="0;0;1;0"/></text>
+<text x="450" y="96" text-anchor="start" opacity="0" style="fill:var(--fg);font-size:11.5px;font-weight:700">bottom-right: 2 − 6 → −4<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="0;0;0;1"/></text>
+<text x="450" y="72" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">window sum, left column minus right column:</text>
+<text x="450" y="124" text-anchor="start" style="fill:var(--fg-2);font-size:11px;font-weight:400">output size = (4 − 3 + 0) / 1 + 1 = 2</text>
+<text x="450" y="140" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">the same 9 weights are used at every position</text>
+</svg>
+<p class="fig-cap">The vertical-edge example: a 3 × 3 window slides over the 4 × 4 image with stride 1 and no padding; each position gives one output number. The window cycles through the four positions.</p>
+</div>
+
 ### 8.7.3 Depth
 
 For an input of depth $D_1$ (e.g. 3 for RGB), every filter is $F\times F\times D_1$: it always spans the **full depth**. One filter produces **one** 2-D feature map. $K$ filters stacked give an output of depth $K$.
 
-```mermaid
-flowchart LR
-  IN(("input<br/>W₁ × H₁ × D₁")):::base --> F1(("filter 1<br/>F × F × D₁")):::core
-  IN --> F2(("filter 2")):::core
-  IN --> FK(("filter K")):::core
-  F1 --> M1(("map 1")):::q
-  F2 --> M2(("map 2")):::q
-  FK --> MK(("map K")):::q
-  M1 --> OUT(("output<br/>W₂ × H₂ × K")):::good
-  M2 --> OUT
-  MK --> OUT
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef q fill:#EEE8F5,stroke:#5A3C82,stroke-width:3px,color:#5A3C82,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Convolution depth">
+<svg viewBox="0 0 700 164" width="700" style="font-family:var(--font)" aria-hidden="true">
+<polygon points="20,38 50,20 120,20 90,38" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.3;opacity:1"/>
+<polygon points="90,38 120,20 120,90 90,108" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.3;opacity:0.8"/>
+<rect x="20" y="38" width="70" height="70" rx="0" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="65" y="144" text-anchor="middle" style="fill:var(--blue-ink);font-size:10.5px;font-weight:700">input  W₁ × H₁ × D₁</text>
+<text x="122" y="26" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">D₁</text>
+<line x1="150" y1="76" x2="201.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="206,76 200,78.9 200,73.1" style="fill:var(--line-strong)"/>
+<text x="178" y="66" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:700">K filters</text>
+<polygon points="220,24 250,6 274,6 244,24" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.3;opacity:1"/>
+<polygon points="244,24 274,6 274,30 244,48" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.3;opacity:0.8"/>
+<rect x="220" y="24" width="24" height="24" rx="0" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<polygon points="220,62 250,44 274,44 244,62" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.3;opacity:1"/>
+<polygon points="244,62 274,44 274,68 244,86" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.3;opacity:0.8"/>
+<rect x="220" y="62" width="24" height="24" rx="0" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<polygon points="220,100 250,82 274,82 244,100" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.3;opacity:1"/>
+<polygon points="244,100 274,82 274,106 244,124" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.3;opacity:0.8"/>
+<rect x="220" y="100" width="24" height="24" rx="0" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="250" y="144" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:700">each F × F × D₁</text>
+<text x="250" y="157" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">(full input depth)</text>
+<line x1="312" y1="76" x2="383.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="388,76 382,78.9 382,73.1" style="fill:var(--line-strong)"/>
+<text x="350" y="66" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:700">one map each</text>
+<polygon points="442,38 450,33 506,33 498,38" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.3;opacity:0.95"/>
+<polygon points="498,38 506,33 506,89 498,94" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.3;opacity:0.76"/>
+<rect x="442" y="38" width="56" height="56" rx="0" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<polygon points="426,46 434,41 490,41 482,46" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.3;opacity:0.95"/>
+<polygon points="482,46 490,41 490,97 482,102" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.3;opacity:0.76"/>
+<rect x="426" y="46" width="56" height="56" rx="0" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<polygon points="410,54 418,49 474,49 466,54" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.3;opacity:0.95"/>
+<polygon points="466,54 474,49 474,105 466,110" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.3;opacity:0.76"/>
+<rect x="410" y="54" width="56" height="56" rx="0" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="458" y="144" text-anchor="middle" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">output  W₂ × H₂ × K</text>
+<text x="630" y="76" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">depth = number of filters,</text>
+<text x="630" y="90" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">never the input depth</text>
+</svg>
+<p class="fig-cap">Every filter spans the full input depth and produces one 2-D feature map; K filters stacked give an output of depth K.</p>
+</div>
 
 ---
 
@@ -387,6 +727,95 @@ $$\boxed{\#\text{params}=K\,(F\cdot F\cdot D_1+1)}$$
 - **Weight sharing:** the same filter is applied everywhere (a feature useful in one corner is useful in another).
 - **Receptive field grows with depth:** a unit in layer 2 sees $3\times3$ units of layer 1, each of which sees $3\times3$ pixels, so it sees a $5\times5$ patch of the image. Deep layers see large regions while every layer stays local.
 
+<div class="fig" role="img" aria-label="Receptive field and weight sharing">
+<svg viewBox="0 0 700 172" width="700" style="font-family:var(--font)" aria-hidden="true">
+<line x1="144" y1="24" x2="106" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="144" y1="24" x2="144" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="144" y1="24" x2="182" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="182" y1="24" x2="144" y2="66" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="24" x2="182" y2="66" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="24" x2="220" y2="66" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="24" x2="182" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="220" y1="24" x2="220" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="220" y1="24" x2="258" y2="66" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="106" y1="66" x2="68" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="106" y1="66" x2="106" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="106" y1="66" x2="144" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="144" y1="66" x2="106" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="144" y1="66" x2="144" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="144" y1="66" x2="182" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="66" x2="144" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="66" x2="182" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="66" x2="220" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="66" x2="182" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="66" x2="220" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="66" x2="258" y2="108" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="258" y1="66" x2="220" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="258" y1="66" x2="258" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="258" y1="66" x2="296" y2="108" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="68" y1="108" x2="30" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="68" y1="108" x2="68" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="68" y1="108" x2="106" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="106" y1="108" x2="68" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="106" y1="108" x2="106" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="106" y1="108" x2="144" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="144" y1="108" x2="106" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="144" y1="108" x2="144" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="144" y1="108" x2="182" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="108" x2="144" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="108" x2="182" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="182" y1="108" x2="220" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="108" x2="182" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="108" x2="220" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="220" y1="108" x2="258" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="258" y1="108" x2="220" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="258" y1="108" x2="258" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="258" y1="108" x2="296" y2="150" style="stroke:var(--green-ink);stroke-width:1.6;stroke-linecap:round"/>
+<line x1="296" y1="108" x2="258" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="296" y1="108" x2="296" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="296" y1="108" x2="334" y2="150" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<circle cx="144" cy="24" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="182" cy="24" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="220" cy="24" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="106" cy="66" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="144" cy="66" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="182" cy="66" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="220" cy="66" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="258" cy="66" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="68" cy="108" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="106" cy="108" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="144" cy="108" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="182" cy="108" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="220" cy="108" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="258" cy="108" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="296" cy="108" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="30" cy="150" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<circle cx="68" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="106" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="144" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="182" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="220" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="258" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="296" cy="150" r="7" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<circle cx="334" cy="150" r="7" style="fill:var(--surface-2);stroke:var(--line-strong);stroke-width:1.2"/>
+<text x="350" y="28" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">conv 3</text>
+<text x="350" y="70" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">conv 2</text>
+<text x="350" y="112" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">conv 1</text>
+<text x="350" y="154" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">input</text>
+<text x="12" y="22" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">top unit sees</text>
+<text x="12" y="35" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">7 inputs</text>
+<text x="584" y="16" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">parameters, 32×32×3 → 28×28×6</text>
+<text x="500" y="57" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">fully connected</text>
+<rect x="508" y="40" width="114.6" height="24" rx="4" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="628.6" y="57" text-anchor="start" style="fill:var(--red-ink);font-size:10.5px;font-weight:700">14,450,000</text>
+<text x="500" y="101" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">6 conv filters 5×5×3</text>
+<rect x="508" y="84" width="42.5" height="24" rx="4" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="556.5" y="101" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">456</text>
+<text x="584" y="150" text-anchor="middle" style="fill:var(--muted);font-size:10.5px;font-weight:400">log scale: ≈ 31,000× fewer</text>
+</svg>
+<p class="fig-cap">Left: three stacked 3-wide layers (1-D for clarity): every unit is local, yet the top unit depends on 7 inputs; n stacked 3 × 3 layers see (2n + 1) × (2n + 1). Right: sharing one small filter everywhere slashes the parameter count.</p>
+</div>
+
 ---
 
 ## 8.10 Pooling and a full parameter count
@@ -405,6 +834,72 @@ Summarise each small window; applied to each depth slice separately; **no parame
 | bottom-right | 1, 2, 4, 8 | 8 | 3.75 |
 
 Max pooling: $\begin{bmatrix}6&5\\3&8\end{bmatrix}$; average pooling: $\begin{bmatrix}3.5&2\\1.5&3.75\end{bmatrix}$. Pooling gives a little **translation invariance** (a feature shifted by one pixel often lands in the same window).
+
+<div class="fig" role="img" aria-label="Max and average pooling">
+<svg viewBox="0 0 700 158" width="700" style="font-family:var(--font)" aria-hidden="true">
+<text x="80" y="14" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">input 4 × 4</text>
+<rect x="20" y="20" width="28" height="28" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="34" y="39" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:400">1</text>
+<rect x="50" y="20" width="28" height="28" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="64" y="39" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:400">3</text>
+<rect x="80" y="20" width="28" height="28" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1"/>
+<text x="94" y="39" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:400">2</text>
+<rect x="110" y="20" width="28" height="28" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1"/>
+<text x="124" y="39" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:400">1</text>
+<rect x="20" y="50" width="28" height="28" rx="3" style="fill:var(--green);stroke:var(--line-strong);stroke-width:1"/>
+<text x="34" y="69" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:400">4</text>
+<rect x="50" y="50" width="28" height="28" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:2.4"/>
+<text x="64" y="69" text-anchor="middle" style="fill:var(--green-ink);font-size:11px;font-weight:700">6</text>
+<rect x="80" y="50" width="28" height="28" rx="3" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:2.4"/>
+<text x="94" y="69" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">5</text>
+<rect x="110" y="50" width="28" height="28" rx="3" style="fill:var(--blue);stroke:var(--line-strong);stroke-width:1"/>
+<text x="124" y="69" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:400">0</text>
+<rect x="20" y="80" width="28" height="28" rx="3" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:2.4"/>
+<text x="34" y="99" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:700">3</text>
+<rect x="50" y="80" width="28" height="28" rx="3" style="fill:var(--yellow);stroke:var(--line-strong);stroke-width:1"/>
+<text x="64" y="99" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:400">1</text>
+<rect x="80" y="80" width="28" height="28" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="94" y="99" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:400">1</text>
+<rect x="110" y="80" width="28" height="28" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="124" y="99" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:400">2</text>
+<rect x="20" y="110" width="28" height="28" rx="3" style="fill:var(--yellow);stroke:var(--line-strong);stroke-width:1"/>
+<text x="34" y="129" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:400">0</text>
+<rect x="50" y="110" width="28" height="28" rx="3" style="fill:var(--yellow);stroke:var(--line-strong);stroke-width:1"/>
+<text x="64" y="129" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:400">2</text>
+<rect x="80" y="110" width="28" height="28" rx="3" style="fill:var(--red);stroke:var(--line-strong);stroke-width:1"/>
+<text x="94" y="129" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:400">4</text>
+<rect x="110" y="110" width="28" height="28" rx="3" style="fill:var(--red);stroke:var(--red-ink);stroke-width:2.4"/>
+<text x="124" y="129" text-anchor="middle" style="fill:var(--red-ink);font-size:11px;font-weight:700">8</text>
+<rect x="18" y="18" width="62" height="62" rx="5" style="fill:none;stroke:var(--fg);stroke-width:2.2"><animate attributeName="x" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="18;78;18;78"/><animate attributeName="y" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3;0.5;0.8" values="18;18;78;78"/></rect>
+<line x1="150" y1="74" x2="191.8" y2="74" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="196,74 190,76.9 190,71.1" style="fill:var(--line-strong)"/>
+<text x="248" y="14" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">max pooling</text>
+<rect x="206" y="28" width="42" height="42" rx="5" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="227" y="53" text-anchor="middle" style="fill:var(--green-ink);font-size:12px;font-weight:700">6</text>
+<rect x="250" y="28" width="42" height="42" rx="5" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="271" y="53" text-anchor="middle" style="fill:var(--blue-ink);font-size:12px;font-weight:700">5</text>
+<rect x="206" y="72" width="42" height="42" rx="5" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="227" y="97" text-anchor="middle" style="fill:var(--yellow-ink);font-size:12px;font-weight:700">3</text>
+<rect x="250" y="72" width="42" height="42" rx="5" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="271" y="97" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:700">8</text>
+<text x="388" y="14" text-anchor="middle" style="fill:var(--fg);font-size:11px;font-weight:700">average pooling</text>
+<rect x="346" y="28" width="42" height="42" rx="5" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="367" y="53" text-anchor="middle" style="fill:var(--green-ink);font-size:12px;font-weight:700">3.5</text>
+<rect x="390" y="28" width="42" height="42" rx="5" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="411" y="53" text-anchor="middle" style="fill:var(--blue-ink);font-size:12px;font-weight:700">2</text>
+<rect x="346" y="72" width="42" height="42" rx="5" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="367" y="97" text-anchor="middle" style="fill:var(--yellow-ink);font-size:12px;font-weight:700">1.5</text>
+<rect x="390" y="72" width="42" height="42" rx="5" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="411" y="97" text-anchor="middle" style="fill:var(--red-ink);font-size:12px;font-weight:700">3.75</text>
+<text x="480" y="52" text-anchor="start" style="fill:var(--fg);font-size:11.5px;font-weight:700">no parameters</text>
+<text x="480" y="70" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">2 × 2 window, stride 2, per depth slice</text>
+<text x="480" y="94" text-anchor="start" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">size: ⌊(W₁ − F)/S⌋ + 1</text>
+<text x="480" y="108" text-anchor="start" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">15 → ⌊(15 − 2)/2⌋ + 1 = 7</text>
+<text x="480" y="132" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">a feature shifted by one pixel often</text>
+<text x="480" y="145" text-anchor="start" style="fill:var(--muted);font-size:10.5px;font-weight:400">lands in the same window</text>
+</svg>
+<p class="fig-cap">The pooling example: each 2 × 2 window of the input (outlined square cycles through them) gives one number. Bold cells are the maxima.</p>
+</div>
 
 ### 8.10.2 [Exam] End-term: total parameters of a small CNN
 
@@ -460,19 +955,62 @@ $I=\begin{bmatrix}1&0&2\\0&0&0\\3&1&0\end{bmatrix}$, $K=\begin{bmatrix}1&-1\\1&1
 
 ImageNet (ILSVRC) top-5 error, as on the classic chart: AlexNet 16.4% (2012) → ZF-Net 11.7% (2013) → VGG 7.3% and GoogLeNet 6.7% (2014) → ResNet 3.6% (2015).
 
-```mermaid
-flowchart LR
-  LE(("LeNet-5<br/>1998, digits")):::base --> AX(("AlexNet 2012<br/>ReLU, dropout, GPU")):::core
-  AX --> ZF(("ZF-Net 2013<br/>7×7/2 first layer")):::core
-  ZF --> VG(("VGG 2014<br/>only 3×3, deep")):::q
-  ZF --> GN(("GoogLeNet 2014<br/>inception, 1×1")):::q
-  VG --> RN(("ResNet 2015<br/>skip connections, 152 layers")):::good
-  GN --> RN
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef q fill:#EEE8F5,stroke:#5A3C82,stroke-width:3px,color:#5A3C82,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Architectures compared">
+<svg viewBox="0 0 700 192" width="700" style="font-family:var(--font)" aria-hidden="true">
+<line x1="46" y1="160" x2="308" y2="160" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="123.9" x2="308" y2="123.9" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="87.8" x2="308" y2="87.8" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="51.7" x2="308" y2="51.7" style="stroke:var(--line);stroke-width:1;stroke-linecap:round"/>
+<line x1="46" y1="30" x2="46" y2="160" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<line x1="46" y1="160" x2="308" y2="160" style="stroke:var(--line-strong);stroke-width:1.5;stroke-linecap:round"/>
+<text x="40" y="163.5" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">0</text>
+<text x="40" y="127.4" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">5</text>
+<text x="40" y="91.3" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">10</text>
+<text x="40" y="55.2" text-anchor="end" style="fill:var(--muted);font-size:10px;font-weight:400">15</text>
+<text x="12" y="95" text-anchor="middle" transform="rotate(-90 12 95)" style="fill:var(--muted);font-size:10.5px;font-weight:400">top-5 error (%)</text>
+<text x="177" y="16" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">ImageNet top-5 error</text>
+<rect x="55.4" y="41.6" width="33.5" height="118.4" rx="3" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="72.2" y="37.6" text-anchor="middle" style="fill:var(--blue-ink);font-size:10px;font-weight:700">16.4</text>
+<text x="72.2" y="173" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:400">AlexNet</text>
+<text x="72.2" y="185" text-anchor="middle" style="fill:var(--muted);font-size:9.5px;font-weight:400">2012</text>
+<rect x="107.8" y="75.5" width="33.5" height="84.5" rx="3" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="124.6" y="71.5" text-anchor="middle" style="fill:var(--blue-ink);font-size:10px;font-weight:700">11.7</text>
+<text x="124.6" y="173" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:400">ZF-Net</text>
+<text x="124.6" y="185" text-anchor="middle" style="fill:var(--muted);font-size:9.5px;font-weight:400">2013</text>
+<rect x="160.2" y="107.3" width="33.5" height="52.7" rx="3" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="177" y="103.3" text-anchor="middle" style="fill:var(--blue-ink);font-size:10px;font-weight:700">7.3</text>
+<text x="177" y="173" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:400">VGG</text>
+<text x="177" y="185" text-anchor="middle" style="fill:var(--muted);font-size:9.5px;font-weight:400">2014</text>
+<rect x="212.6" y="111.6" width="33.5" height="48.4" rx="3" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="229.4" y="107.6" text-anchor="middle" style="fill:var(--blue-ink);font-size:10px;font-weight:700">6.7</text>
+<text x="229.4" y="173" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:400">GoogLeNet</text>
+<text x="229.4" y="185" text-anchor="middle" style="fill:var(--muted);font-size:9.5px;font-weight:400">2014</text>
+<rect x="265" y="134" width="33.5" height="26" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="281.8" y="130" text-anchor="middle" style="fill:var(--green-ink);font-size:10px;font-weight:700">3.6</text>
+<text x="281.8" y="173" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:400">ResNet</text>
+<text x="281.8" y="185" text-anchor="middle" style="fill:var(--muted);font-size:9.5px;font-weight:400">2015</text>
+<line x1="46" y1="123.2" x2="308" y2="123.2" style="stroke:var(--red-ink);stroke-width:1.4;stroke-linecap:round;stroke-dasharray:5 3"/>
+<text x="313" y="122.2" text-anchor="start" style="fill:var(--red-ink);font-size:10px;font-weight:700">human</text>
+<text x="313" y="134.2" text-anchor="start" style="fill:var(--red-ink);font-size:10px;font-weight:700">≈ 5.1%</text>
+<text x="565" y="16" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">parameters (millions, log scale)</text>
+<text x="472" y="45" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">LeNet-5</text>
+<rect x="480" y="30" width="29.6" height="20" rx="4" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="515.6" y="45" text-anchor="start" style="fill:var(--blue-ink);font-size:10.5px;font-weight:700">0.06</text>
+<text x="472" y="73" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">GoogLeNet</text>
+<rect x="480" y="58" width="105.6" height="20" rx="4" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="591.6" y="73" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">≈ 6</text>
+<text x="472" y="101" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">AlexNet</text>
+<rect x="480" y="86" width="144.1" height="20" rx="4" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="630.1" y="101" text-anchor="start" style="fill:var(--blue-ink);font-size:10.5px;font-weight:700">≈ 62</text>
+<text x="472" y="129" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">ResNet-152</text>
+<rect x="480" y="114" width="143.6" height="20" rx="4" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="629.6" y="129" text-anchor="start" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">≈ 60</text>
+<text x="472" y="157" text-anchor="end" style="fill:var(--fg-2);font-size:10.5px;font-weight:400">VGG-16</text>
+<rect x="480" y="142" width="157.3" height="20" rx="4" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="643.3" y="157" text-anchor="start" style="fill:var(--blue-ink);font-size:10.5px;font-weight:700">≈ 138</text>
+</svg>
+<p class="fig-cap">Left: ImageNet error fell every year from AlexNet to ResNet, which beat the commonly quoted human figure. Right: more depth did not mean more parameters; GoogLeNet and ResNet are far leaner than VGG.</p>
+</div>
 
 ### 8.12.1 LeNet-5 (handwritten digits)
 
@@ -546,21 +1084,61 @@ Fewer parameters **and** more non-linearities (a ReLU after each layer).
 
 Other ideas: **global average pooling** at the end ($7\times7\times1024\to1024$) instead of a huge FC layer (which would need $7\cdot7\cdot1024\cdot1000\approx50$ M weights); auxiliary classifiers in the middle to inject gradient; 22 layers with about 12× fewer parameters than AlexNet.
 
-```mermaid
-flowchart LR
-  P(("previous layer")):::base --> A(("1×1 conv")):::core
-  P --> B1(("1×1 reduce")):::q --> B2(("3×3 conv")):::core
-  P --> C1(("1×1 reduce")):::q --> C2(("5×5 conv")):::core
-  P --> D1(("3×3 max pool")):::core --> D2(("1×1 conv")):::q
-  A --> CAT(("concatenate<br/>along depth")):::good
-  B2 --> CAT
-  C2 --> CAT
-  D2 --> CAT
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-  classDef q fill:#EEE8F5,stroke:#5A3C82,stroke-width:3px,color:#5A3C82,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Inception module">
+<svg viewBox="0 0 700 152" width="700" style="font-family:var(--font)" aria-hidden="true">
+<rect x="0" y="52" width="72" height="48" rx="8" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.5"/>
+<text x="36" y="72.9" text-anchor="middle" style="fill:var(--fg-2);font-size:11px;font-weight:700">previous</text>
+<text x="36" y="86.9" text-anchor="middle" style="fill:var(--fg-2);font-size:9.5px;font-weight:500">layer</text>
+<line x1="72" y1="76" x2="106.1" y2="22.9" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="108,20 107.3,25.5 103.3,22.9" style="fill:var(--line-strong)"/>
+<line x1="72" y1="76" x2="104.9" y2="57.7" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="108,56 104.8,60.5 102.5,56.3" style="fill:var(--line-strong)"/>
+<line x1="72" y1="76" x2="104.8" y2="90.6" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="108,92 102.5,92.2 104.4,87.8" style="fill:var(--line-strong)"/>
+<line x1="72" y1="76" x2="106" y2="125.1" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="108,128 103.2,125.3 107.1,122.5" style="fill:var(--line-strong)"/>
+<rect x="110" y="6" width="230" height="28" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="225" y="23.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">1×1 conv</text>
+<rect x="110" y="42" width="104" height="28" rx="8" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="162" y="59.9" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:700">1×1 reduce</text>
+<line x1="214" y1="56" x2="232.5" y2="56" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="236,56 231,58.4 231,53.6" style="fill:var(--line-strong)"/>
+<rect x="236" y="42" width="104" height="28" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="288" y="59.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">3×3 conv</text>
+<rect x="110" y="78" width="104" height="28" rx="8" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="162" y="95.9" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:700">1×1 reduce</text>
+<line x1="214" y1="92" x2="232.5" y2="92" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="236,92 231,94.4 231,89.6" style="fill:var(--line-strong)"/>
+<rect x="236" y="78" width="104" height="28" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="288" y="95.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">5×5 conv</text>
+<rect x="110" y="114" width="104" height="28" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="162" y="131.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">3×3 max pool</text>
+<line x1="214" y1="128" x2="232.5" y2="128" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="236,128 231,130.4 231,125.6" style="fill:var(--line-strong)"/>
+<rect x="236" y="114" width="104" height="28" rx="8" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="288" y="131.9" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11px;font-weight:700">1×1 conv</text>
+<line x1="340" y1="20" x2="370.3" y2="73" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="372,76 367.4,72.8 371.6,70.5" style="fill:var(--line-strong)"/>
+<line x1="340" y1="56" x2="369" y2="74.1" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="372,76 366.5,75.4 369,71.3" style="fill:var(--line-strong)"/>
+<line x1="340" y1="92" x2="368.9" y2="77.6" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="372,76 368.6,80.4 366.5,76.1" style="fill:var(--line-strong)"/>
+<line x1="340" y1="128" x2="370.2" y2="79" style="stroke:var(--line-strong);stroke-width:1.3;stroke-linecap:round"/>
+<polygon points="372,76 371.4,81.5 367.3,79" style="fill:var(--line-strong)"/>
+<rect x="374" y="40" width="96" height="72" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="422" y="72.8" text-anchor="middle" style="fill:var(--green-ink);font-size:11.5px;font-weight:700">concatenate</text>
+<text x="422" y="87.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">along depth</text>
+<text x="600" y="14" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">multiplications, 5×5 to 32 maps</text>
+<rect x="540" y="34" width="44" height="96" rx="3" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="562" y="29" text-anchor="middle" style="fill:var(--red-ink);font-size:10.5px;font-weight:700">120.4 M</text>
+<text x="562" y="144" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">direct</text>
+<rect x="630" y="120.1" width="44" height="9.9" rx="3" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="652" y="115.1" text-anchor="middle" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">12.4 M</text>
+<text x="652" y="144" text-anchor="middle" style="fill:var(--muted);font-size:10px;font-weight:400">1×1 bottleneck</text>
+<text x="652" y="60" text-anchor="middle" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">≈ 10× fewer</text>
+</svg>
+<p class="fig-cap">Four filter sizes run in parallel and are concatenated along depth. Yellow 1×1 convolutions shrink the depth first, cutting the cost of the 5×5 branch about tenfold.</p>
+</div>
 
 ### 8.12.6 ResNet (2015): residual connections
 
@@ -572,17 +1150,44 @@ If the identity is best, the block only needs $F(\mathbf x)=0$, which is easy (w
 
 **[Derivation] Gradients flow through the shortcut.** $\dfrac{\partial\mathbf y}{\partial\mathbf x}=\dfrac{\partial F}{\partial\mathbf x}+I$. Even if $\partial F/\partial\mathbf x$ is tiny, the identity term carries the gradient straight back, so stacking many blocks does not make it vanish (contrast with the product of factors $\le\frac14$ in Week 7).
 
-```mermaid
-flowchart LR
-  X(("x")):::base --> C1(("conv + BN + ReLU")):::core
-  C1 --> C2(("conv + BN")):::core
-  C2 --> ADD(("+")):::good
-  X -- "identity shortcut" --> ADD
-  ADD --> R(("ReLU → y")):::good
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Residual block">
+<svg viewBox="0 0 700 124" width="700" style="font-family:var(--font)" aria-hidden="true">
+<circle cx="26" cy="76" r="14" style="fill:var(--surface-2);stroke:var(--fg-2);stroke-width:1.8"/>
+<text x="26" y="80" text-anchor="middle" style="fill:var(--fg);font-size:12px;font-weight:700">x</text>
+<line x1="40" y1="76" x2="61.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="66,76 60,78.9 60,73.1" style="fill:var(--line-strong)"/>
+<rect x="68" y="54" width="126" height="44" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="131" y="79.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">conv · BN · ReLU</text>
+<line x1="194" y1="76" x2="215.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="220,76 214,78.9 214,73.1" style="fill:var(--line-strong)"/>
+<rect x="222" y="54" width="90" height="44" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="267" y="79.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">conv · BN</text>
+<line x1="312" y1="76" x2="329.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="334,76 328,78.9 328,73.1" style="fill:var(--line-strong)"/>
+<circle cx="350" cy="76" r="15" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:2"/>
+<text x="350" y="81" text-anchor="middle" style="fill:var(--yellow-ink);font-size:18px;font-weight:700">+</text>
+<line x1="365" y1="76" x2="387.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="392,76 386,78.9 386,73.1" style="fill:var(--line-strong)"/>
+<rect x="394" y="58" width="56" height="36" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="422" y="79.9" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">ReLU</text>
+<line x1="450" y1="76" x2="469.8" y2="76" style="stroke:var(--line-strong);stroke-width:1.6;stroke-linecap:round"/>
+<polygon points="474,76 468,78.9 468,73.1" style="fill:var(--line-strong)"/>
+<circle cx="490" cy="76" r="14" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.8"/>
+<text x="490" y="80" text-anchor="middle" style="fill:var(--green-ink);font-size:12px;font-weight:700">y</text>
+<path d="M26,62 V28 H350 V59" fill="none" style="stroke:var(--green-ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"/>
+<polygon points="350,60 347.1,54 352.9,54" style="fill:var(--green-ink)"/>
+<text x="188" y="22" text-anchor="middle" style="fill:var(--green-ink);font-size:10.5px;font-weight:700">identity shortcut</text>
+<text x="190" y="114" text-anchor="middle" style="fill:var(--blue-ink);font-size:11px;font-weight:700">F(x)</text>
+<circle r="4" style="fill:var(--green-ink)"><animateMotion dur="5s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.8;1" path="M26,62 V28 H350 V60"/></circle>
+<rect x="530" y="10" width="164" height="46" rx="8" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="612" y="29.7" text-anchor="middle" style="fill:var(--yellow-ink);font-size:12px;font-weight:700">y = F(x) + x</text>
+<text x="612" y="44.7" text-anchor="middle" style="fill:var(--fg-2);font-size:10.5px;font-weight:500">∂y/∂x = ∂F/∂x + I</text>
+<rect x="530" y="66" width="164" height="46" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="612" y="85.8" text-anchor="middle" style="fill:var(--green-ink);font-size:11.5px;font-weight:700">F(x) = 0 ⇒ identity</text>
+<text x="612" y="100.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">easy to learn</text>
+</svg>
+<p class="fig-cap">The block only learns the change F(x). Even if ∂F/∂x is tiny, the identity term in ∂y/∂x carries the gradient straight back, so depth no longer makes it vanish.</p>
+</div>
 
 Other ingredients: batch norm after every conv, He initialization (Week 7), no dropout, global average pooling, **bottleneck blocks** ($1\times1$ reduce → $3\times3$ → $1\times1$ expand) in the deeper versions, 152 layers. ResNet-50's last convolutional block outputs a $7\times7\times2048$ feature map: 49 spatial locations, each a 2048-dimensional vector (used later in the course for attention over image regions).
 
@@ -603,20 +1208,31 @@ Other ingredients: batch norm after every conv, He initialization (Week 7), no d
 
 **Diagram — Week 8 at a glance**
 
-```mermaid
-flowchart TD
-  WD(("Words")):::base --> PMI(("PMI = log(c(w,c)N / c(w)c(c))<br/>PPMI = max(PMI, 0)")):::core
-  PMI --> SVD(("SVD: W_word = UΣ<br/>rank-k stores k(m + n + 1)")):::core
-  WD --> W2V(("CBOW / skip-gram<br/>∂L/∂u = (ŷ − y)v")):::core
-  W2V --> NS(("neg. sampling: log σ(u·v) + Σ log σ(−u_r·v)<br/>counts^¾ · hier. softmax log₂|V|")):::good
-  IM(("Images")):::base --> SZ(("W₂ = (W₁ − F + 2P)/S + 1<br/>D₂ = K")):::core
-  SZ --> PR(("params = K(F·F·D₁ + 1)<br/>pool: 0 params")):::core
-  PR --> BP(("shared weight grad =<br/>sum over positions")):::good
-  PR --> AR(("VGG 3×3 · inception 1×1<br/>ResNet y = F(x) + x")):::good
-  classDef base fill:#F7F7F9,stroke:#464646,stroke-width:3px,color:#1F1F1F,font-weight:bold
-  classDef core fill:#E6ECF5,stroke:#1F3A60,stroke-width:3px,color:#1F3A60,font-weight:bold
-  classDef good fill:#E3F1EE,stroke:#14645A,stroke-width:3px,color:#14645A,font-weight:bold
-```
+<div class="fig" role="img" aria-label="Week 8 at a glance">
+<svg viewBox="0 0 700 94" width="700" style="font-family:var(--font)" aria-hidden="true">
+<rect x="0" y="4" width="164" height="82" rx="8" style="fill:var(--blue);stroke:var(--blue-ink);stroke-width:1.5"/>
+<text x="82" y="27.3" text-anchor="middle" style="fill:var(--blue-ink);font-size:11.5px;font-weight:700">Word vectors</text>
+<text x="82" y="41.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">PMI = log p(w,c)/p(w)p(c)</text>
+<text x="82" y="56.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">PPMI = max(PMI, 0)</text>
+<text x="82" y="70.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">SVD: W_word = UΣ</text>
+<rect x="178.7" y="4" width="164" height="82" rx="8" style="fill:var(--green);stroke:var(--green-ink);stroke-width:1.5"/>
+<text x="260.7" y="27.3" text-anchor="middle" style="fill:var(--green-ink);font-size:11.5px;font-weight:700">Prediction</text>
+<text x="260.7" y="41.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">CBOW: ∂L/∂u = (ŷ − y)v</text>
+<text x="260.7" y="56.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">neg. sampling, counts^¾</text>
+<text x="260.7" y="70.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">hier. softmax: log₂|V|</text>
+<rect x="357.3" y="4" width="164" height="82" rx="8" style="fill:var(--yellow);stroke:var(--yellow-ink);stroke-width:1.5"/>
+<text x="439.3" y="27.3" text-anchor="middle" style="fill:var(--yellow-ink);font-size:11.5px;font-weight:700">Convolution</text>
+<text x="439.3" y="41.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">size (W − F + 2P)/S + 1</text>
+<text x="439.3" y="56.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">params K(F²D + 1)</text>
+<text x="439.3" y="70.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">pooling: 0 parameters</text>
+<rect x="536" y="4" width="164" height="82" rx="8" style="fill:var(--red);stroke:var(--red-ink);stroke-width:1.5"/>
+<text x="618" y="27.3" text-anchor="middle" style="fill:var(--red-ink);font-size:11.5px;font-weight:700">Architectures</text>
+<text x="618" y="41.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">VGG: stacked 3×3</text>
+<text x="618" y="56.3" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">inception: 1×1 bottleneck</text>
+<text x="618" y="70.8" text-anchor="middle" style="fill:var(--fg-2);font-size:10px;font-weight:500">ResNet: y = F(x) + x</text>
+</svg>
+<p class="fig-cap">Week 8 on one line.</p>
+</div>
 
 ### 8.13.1 Recognition rules
 

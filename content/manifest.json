@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-22T05:58:12.666Z",
+  "generated": "2026-10-22T06:22:33.297Z",
   "notes": [
     {
       "id": "smps-week-0-prep-guide",
@@ -418,9 +418,9 @@
       "color": "blue",
       "order": 5,
       "folder": "iitm-bs",
-      "updated": "2026-10-22T05:45:33.599Z",
-      "words": 3500,
-      "minutes": 16,
+      "updated": "2026-10-22T06:13:56.066Z",
+      "words": 3837,
+      "minutes": 17,
       "sections": 38,
       "outline": [
         "Contents",
@@ -429,7 +429,7 @@
         "5.2 The autoencoder: encoder, decoder, loss",
         "5.3 Link between PCA and autoencoders"
       ],
-      "v": "f764dac4"
+      "v": "baacdeed"
     },
     {
       "id": "smps-week-5-finding-optimal-paths",
@@ -496,9 +496,9 @@
       "color": "blue",
       "order": 6,
       "folder": "iitm-bs",
-      "updated": "2026-10-22T05:45:38.420Z",
-      "words": 3177,
-      "minutes": 14,
+      "updated": "2026-10-22T06:13:56.081Z",
+      "words": 3532,
+      "minutes": 16,
       "sections": 34,
       "outline": [
         "Contents",
@@ -507,7 +507,7 @@
         "6.2 Train error vs test error (why training error lies)",
         "6.3 L2 regularization"
       ],
-      "v": "f24e7adb"
+      "v": "ae59b4fc"
     },
     {
       "id": "smps-week-6-space-saving-a-star",
@@ -574,9 +574,9 @@
       "color": "blue",
       "order": 7,
       "folder": "iitm-bs",
-      "updated": "2026-10-22T05:45:41.587Z",
-      "words": 3154,
-      "minutes": 14,
+      "updated": "2026-10-22T06:13:56.096Z",
+      "words": 3565,
+      "minutes": 16,
       "sections": 33,
       "outline": [
         "Contents",
@@ -585,7 +585,7 @@
         "7.2 Greedy layer-wise pre-training",
         "7.3 Better activation functions"
       ],
-      "v": "8ed6c14d"
+      "v": "e45bd22c"
     },
     {
       "id": "smps-week-8",
@@ -626,15 +626,15 @@
       "color": "blue",
       "order": 8,
       "folder": "iitm-bs",
-      "updated": "2026-10-22T05:46:39.960Z",
-      "words": 4890,
-      "minutes": 22,
+      "updated": "2026-10-22T06:13:56.121Z",
+      "words": 5436,
+      "minutes": 25,
       "sections": 56,
       "outline": [
         "Part A: words as vectors",
         "Part B: convolutional neural networks"
       ],
-      "v": "eabb67df"
+      "v": "c4bc4d0e"
     },
     {
       "id": "smps-week-8-automated-planning",
