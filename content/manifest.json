@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-22T05:47:30.431Z",
+  "generated": "2026-10-22T05:58:12.666Z",
   "notes": [
     {
       "id": "smps-week-0-prep-guide",
@@ -432,6 +432,32 @@
       "v": "f764dac4"
     },
     {
+      "id": "smps-week-5-finding-optimal-paths",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-5-finding-optimal-paths.md",
+      "title": "Week 5 (Finding Optimal Paths: Lecture Notes)",
+      "summary": "Condensed lecture notes: brute force, branch and bound for state space and TSP, Dijkstra, A*, admissibility, informed heuristics and weighted A*.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 5.5,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-22T05:58:12.397Z",
+      "words": 7382,
+      "minutes": 34,
+      "sections": 52,
+      "outline": [
+        "1. Notation you must own",
+        "2. Why the earlier algorithms are not enough",
+        "3. Branch & Bound on a state space",
+        "4. Branch & Bound for TSP (refinement search)",
+        "5. Dijkstra's algorithm"
+      ],
+      "v": "5fbfd804"
+    },
+    {
       "id": "smps-week-6",
       "file": "algorithmic-search/ai-smps-iitm/smps-week-6.md",
       "title": "Week 6 (Advanced A* Variants)",
@@ -482,6 +508,58 @@
         "6.3 L2 regularization"
       ],
       "v": "f24e7adb"
+    },
+    {
+      "id": "smps-week-6-space-saving-a-star",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-6-space-saving-a-star.md",
+      "title": "Week 6 (Monotone Condition, Space-Saving A*: Lecture Notes)",
+      "summary": "Condensed lecture notes: monotone condition, IDA*, RBFS, sequence alignment, pruning CLOSED and OPEN, beam stack search.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 6.5,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-22T05:58:12.397Z",
+      "words": 4668,
+      "minutes": 21,
+      "sections": 45,
+      "outline": [
+        "1. Recap and the memory problem",
+        "2. The monotone (consistent) condition",
+        "3. Iterative Deepening A\\ (IDA\\)",
+        "4. Recursive Best First Search (RBFS)",
+        "5. Sequence alignment — the motivating problem"
+      ],
+      "v": "93c4b251"
+    },
+    {
+      "id": "smps-week-7-game-playing",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-7-game-playing.md",
+      "title": "Week 7 (Game Playing, Minimax, Alpha-Beta)",
+      "summary": "Game theory basics, game trees, strategies, k-ply lookahead and evaluation functions, Minimax, Alpha-Beta, SSS* and the horizon effect.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 7,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-22T05:58:12.398Z",
+      "words": 4659,
+      "minutes": 21,
+      "sections": 33,
+      "outline": [
+        "1. Game theory in one page",
+        "2. Board games and game trees",
+        "3. Strategies — what a \"solution\" means in a game",
+        "4. Limited lookahead: k-ply search and evaluation functions",
+        "5. Algorithm Minimax"
+      ],
+      "v": "d96e16ba"
     },
     {
       "id": "week-7",
@@ -557,6 +635,32 @@
         "Part B: convolutional neural networks"
       ],
       "v": "eabb67df"
+    },
+    {
+      "id": "smps-week-8-automated-planning",
+      "file": "algorithmic-search/ai-smps-iitm/smps-week-8-automated-planning.md",
+      "title": "Week 8 (Automated Planning: Lecture Notes)",
+      "summary": "Condensed lecture notes: STRIPS and PDDL, blocks world, forward and backward planning, goal stack, Sussman anomaly, plan space planning, Graphplan.",
+      "tags": [
+        "ai",
+        "smps",
+        "search"
+      ],
+      "color": "blue",
+      "order": 8.5,
+      "folder": "algorithmic-search/ai-smps-iitm",
+      "updated": "2026-10-22T05:58:12.398Z",
+      "words": 4307,
+      "minutes": 20,
+      "sections": 44,
+      "outline": [
+        "1. Planning in one page — the STRIPS world",
+        "2. The blocks world domain",
+        "3. Forward State Space Planning (FSSP)",
+        "4. Backward State Space Planning (BSSP)",
+        "5. Goal Stack Planning (GSP)"
+      ],
+      "v": "354fee27"
     },
     {
       "id": "smps-week-9",
